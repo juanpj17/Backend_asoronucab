@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { router } from '../routes/empleado.js';
+import { routerCliente } from '../routes/cliente.js';
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -17,7 +18,8 @@ class Server {
         this.port = process.env.SERVER_PORT || 3000;
         this.app = express();
         this.path = {
-            empleadoPath: '/api/empleado'
+            empleadoPath: '/api/empleado',
+            clientePath: '/api/cliente'
         };
         this.pool = pool;
 
@@ -52,6 +54,7 @@ class Server {
     }
 
     routes(){
+        this.app.use(this.path.clientePath, routerCliente);
         this.app.use(this.path.empleadoPath, router);
     }
 }
