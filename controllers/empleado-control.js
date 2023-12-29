@@ -13,13 +13,17 @@ const userGet = async (req = request, res = response) => {
 
 const userPost = (req, res = response) => {
 
-    const { nombre, edad } = req.body;
-
-    res.json({
-        msg: 'Mensaje: metodo post recibido - controlador',
-        nombre,
-        edad
-    });
+    pool.query(
+        (err, result) => {
+          if (err) {
+            console.error('Error al llamar al procedimiento almacenado:', err);
+          } else {
+            console.log('Procedimiento almacenado ejecutado con éxito:', result.rows);
+          }
+          // Cierra la conexión al finalizar
+          pool.end();
+        }
+      );
 }
 
 const userPut = (req, res = response) => {
