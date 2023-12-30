@@ -45,7 +45,7 @@ const userPost = async (req, res = response) => {
                 [numero, cod1_empleado, cod2_empleado]
             );
             
-            console.log(resultTelefono.rows[0].mensaje); // Puedes imprimir o manejar el mensaje de la inserción
+            console.log(resultTelefono.rows[0].mensaje); 
         });
     } catch (error) {
       console.error('Error al ejecutar las consultas:', error);
