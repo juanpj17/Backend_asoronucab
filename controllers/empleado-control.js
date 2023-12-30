@@ -50,9 +50,12 @@ const empleadoPost = async (req = request, res = response) => {
         p_apellido, s_apellido,
         direccion, sueldo,
         parroquia, contraseña,
-        rol, correo
+        rol, correo,
+        telefonos
     } = req.body;
-    
+
+
+
     try{
         const dbresponse = await pool.query(
             'CALL public.agregar_empleado($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
@@ -65,17 +68,27 @@ const empleadoPost = async (req = request, res = response) => {
                 rol, correo
             ]
         )
-
+        
+        const id = await buscarIdEmpleadoPorCedula(cedula);
+        console.log(id);
+        
+        
+        await Promise.all(
+            telefonos.map(async (telefono) => {
+                const dbresponseTelefono = await pool.query('SELECT public.insertar_telefono_empleado($1, $2, $3)', [telefono, id, cedula]);
+                console.log(dbresponseTelefono.rows[0].mensaje);
+            })
+        );
+  
         res.json({
-            msg: 'Mensaje: metodo post recibido - controlador',
-            dbresponse
+            msg: 'Mensaje: método post recibido - controlador',
+            dbresponse,
         });
 
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
-
 
 };
 

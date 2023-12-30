@@ -947,3 +947,23 @@ return mensaje;
 end;
 $BODY$;
 
+--Insertar telefonos del empleado
+CREATE OR REPLACE FUNCTION "insertar_telefono_empleado"( "numero" VARCHAR, "cod1_empleado" INT,
+	                                            "cod2_empleado" VARCHAR)
+RETURNS VARCHAR AS $$
+    declare mensaje varchar;
+    declare aux boolean;
+BEGIN
+    aux:=numero ~ '^[0-9]+$';
+	    if not aux then 
+	        mensaje:='Formato de numero invalido';
+	    else
+			INSERT INTO "Telefono"(
+			    tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+			    VALUES (numero,null,null,null,null, cod1_empleado, cod2_empleado);
+			mensaje:='Registro exitoso';
+	    end if;	
+    return mensaje;
+END;
+$$ LANGUAGE plpgsql;
+
