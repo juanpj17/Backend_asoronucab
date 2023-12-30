@@ -63,11 +63,32 @@ const userPut = (req, res = response) => {
     });
 }
 
-const userDelete = (req, res = response) => {
-    res.json({
-        msg: 'Mensaje: metodo delete recibido - controlador'
-    });
-}
+const buscarIdEmpleadoPorCedula = async (cedula) => {
+    try {
+      const result = await pool.query('SELECT per_nat_id FROM public."Empleado" WHERE per_nat_ci = $1', [cedula]);
+      if (result.rows.length > 0) {
+        return result.rows[0].per_nat_id;
+      } else {
+        throw new Error('Empleado no encontrado');
+      }
+    } catch (error) {
+      console.error('Error al buscar el ID del empleado:', error);
+      throw new Error('Error interno del servidor');
+    }
+  };
+  
+const userDelete = async (req, res = response) => {
+    const { cedula } = req.params;
+  
+    try {
+      const idEmpleado = await buscarIdEmpleadoPorCedula(cedula);
+      const mensaje = await pool.query('SELECT public.eliminar_empleado($1, $2)', [idEmpleado, cedula]);
+      res.json({ mensaje: `Empleado con cédula ${cedula} ${mensaje}` });
+    } catch (error) {
+      console.error('Error al eliminar el empleado:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
 
 export{
     userGet,

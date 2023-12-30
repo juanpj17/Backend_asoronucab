@@ -880,3 +880,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+--Eliminar empleado
+CREATE OR REPLACE FUNCTION public.eliminar_empleado(
+	id_empleado_1 integer,
+	id_empleado_2 character varying)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin
+    DELETE FROM public."Empleado"
+    WHERE per_nat_id=id_empleado_1 and per_nat_ci=id_empleado_2;
+    return 'Empleado eliminado exitosamente';
+end;
+$BODY$;
+
