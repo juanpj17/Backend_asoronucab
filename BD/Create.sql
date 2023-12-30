@@ -864,7 +864,7 @@ DECLARE
 	cod1_empleado INT;
 	cod2_empleado VARCHAR;
 BEGIN 
-	mens_1 := insertar_empleado("ced", "rif", "p_nombre", "s_nombre",
+	mens_1 := agregar_empleado("ced", "rif", "p_nombre", "s_nombre",
 								"p_apellido", "s_apellido", "direccion",
 								"sueldo", "fecha_ing", "parroquia");
 	RAISE NOTICE '%', mens_1;	

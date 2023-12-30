@@ -13,25 +13,26 @@ const userGet = async (req = request, res = response) => {
 
 const userPost = async (req, res = response) => {
     const {
+      cedula,
+      rif,
       primerNombre,
       segundoNombre,
       primerApellido,
       segundoApellido,
-      cedula,
-      rif,
-      sueldo,
       direccion,
-      password,
+      sueldo,
+      fecha_ing,
       parroquia,
+      password,
       rol,
       telefonos,
     } = req.body;
   
     try {
-      // Agregar empleado
+  
       const resultAgregarEmpleado = await pool.query(
-        'CALL public.agregar_empleado($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-        [cedula, rif, primerNombre, segundoNombre, primerApellido, segundoApellido, direccion, sueldo, parroquia, password, rol]
+        'CALL public.agregar_empleado($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
+        [cedula, rif, primerNombre, segundoNombre, primerApellido, segundoApellido, direccion, sueldo, fecha_ing ,parroquia, password, rol]
       );
     
      // Obtener el ID del empleado recién insertado
