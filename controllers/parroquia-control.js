@@ -1,10 +1,10 @@
 import { pool } from '../models/server.js';
 import { response, request } from 'express';
 
-const clienteGet = async(req = request, res = response) => {
+const parroquiaGet = async(req = request, res = response) => {
     try {
-        const cliente = await pool.query('SELECT * FROM public.seleccionar_todos_cliente_natural()');
-        res.json(cliente.rows);
+        const parroquia = await pool.query('SELECT "lug_nombre", "lug_id" FROM "Lugar" WHERE "lug_tipo"=\'parroquia\'');
+        res.json(parroquia.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -12,7 +12,7 @@ const clienteGet = async(req = request, res = response) => {
     
 };
 
-const clientePost = (req, res = response) => {
+const parroquiaPost = (req, res = response) => {
 
     const { nombre, edad } = req.body;
 
@@ -23,7 +23,7 @@ const clientePost = (req, res = response) => {
     });
 }
 
-const clientePut = (req, res = response) => {
+const parroquiaPut = (req, res = response) => {
 
     const id = req.params.id;
 
@@ -33,15 +33,15 @@ const clientePut = (req, res = response) => {
     });
 }
 
-const clienteDelete = (req, res = response) => {
+const parroquiaDelete = (req, res = response) => {
     res.json({
         msg: 'Mensaje: metodo delete recibido - controlador'
     });
 }
 
 export{
-    clienteGet,
-    clientePost,
-    clientePut,
-    clienteDelete
+    parroquiaGet,
+    parroquiaPost,
+    parroquiaPut,
+    parroquiaDelete
 }
