@@ -849,6 +849,7 @@ END;
 $$ language plpgsql;
 
 --agregar empleado
+--agregar empleado
 CREATE OR REPLACE PROCEDURE "agregar_empleado"
 (
 	"ced" VARCHAR, "rif" VARCHAR, "p_nombre" VARCHAR,

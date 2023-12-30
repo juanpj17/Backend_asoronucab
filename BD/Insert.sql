@@ -514,11 +514,12 @@ VALUES
 
 INSERT INTO "Proveedor" ("per_jur_rif", "per_jur_denominacion_comercial", "per_jur_razon_social", "per_jur_pagina_web", "per_jur_direccion_fiscal", "per_jur_direccion_fisica", "per_jur_capital")
 VALUES
-  ('J123456789', 'RonExquisite', 'Destilería Ron Exquisite C.A.', 'www.ronexquisite.com', 'Av. Principal, Ciudad Bolívar', 'Galpón 25, Zona Industrial', 500000),
-  ('J987654321', 'RonAñejo', 'Ron Añejo S.A.', 'www.ronanejo.com', 'Calle Rivas, Caracas', 'Oficina 10, Edificio Central', 800000),
-  ('J567890123', 'RonPremium', 'Ron Premium Internacional C.A.', 'www.ronpremium.com', 'Avenida 5 de Julio, Maracaibo', 'Suite 301, Torre Empresarial', 700000),
-  ('J012345678', 'RonSelecto', 'Ron Selecto Ltda.', 'www.ronselecto.com', 'Carrera 15, Valencia', 'Piso 4, Edificio Ejecutivo', 600000),
-  ('J456789012', 'RonMaster', 'Ron Master Distillers Corp.', 'www.ronmaster.com', 'Autopista Libertador, Barquisimeto', 'Local 7, Centro Comercial', 550000);
+  ('J123456789', 'RonExquisito', 'Destilería Ron Exquisite C.A.', 'www.ronexquisite.com', 'Av. Principal, Ciudad Bolívar', 'Galpón 25, Zona Industrial', 500000),
+  ('J987654321', 'Ron Pampero', 'Ron Pampero S.A.', 'www.pamperoo.com', 'Calle Rivas, Caracas', 'Oficina 10, Edificio Central', 800000),
+  ('J567890123', 'Ron Cacique', 'Ron Cacique Internacional C.A.', 'www.roncaciquepremium.com', 'Avenida 5 de Julio, Maracaibo', 'Suite 301, Torre Empresarial', 700000),
+  ('J012345678', 'Ron Roble', 'Ron Selecto Roble.', 'www.rrselecto.com', 'Carrera 15, Valencia', 'Piso 4, Edificio Ejecutivo', 600000),
+  ('J012345679', 'Ron Carúpano', 'Ron Carúpano Ltda.', 'www.carupanoron.com', 'Carrera 15, Maracay', 'Piso 10, Torre Premium', 600000),
+  ('J456789012', 'Ron Santa Teresa', 'Ron Santa Teresa Corp.', 'www.ronsantateresa.com', 'Autopista Libertador, Barquisimeto', 'Local 7, Centro Comercial', 550000);
 
 INSERT INTO "Añejamiento" ("añe_id", "añe_descripcion", "añe_fecha_ini", "añe_fecha_final", "fk_añejamiento", "fk_destilacion")
 VALUES
@@ -533,41 +534,42 @@ VALUES
   (1, 'Ron Reserva Especial', 40, 'Un ron añejo con sabor excepcional', 'Industrial', 1, 'J123456789', 101, 1, 1),
   (2, 'Ron Premium Extra Añejo', 45, 'Exquisito ron premium con aromas intensos', 'Industrial', 2, 'J123456789', 102, 2, 2),
   (3, 'Ron Dorado Clásico', 38, 'Clásico ron dorado para disfrutar en cualquier ocasión', 'Industrial', 3, 'J123456789', 103, 1, 3),
-  (4, 'Ron Blanco Suave', 35, 'Ron blanco suave con notas frescas y delicadas', 'Industrial', 4, 'J987654321', 104, 2, 4),
-  (5, 'Ron Añejo Reserva Familiar', 42, 'Ron añejo con carácter y suavidad incomparables', 'Industrial', 5, 'J987654321', 105, 4, 5);
+  (4, 'Ron Blanco Suave', 35, 'Ron blanco suave con notas frescas y delicadas', 'Industrial', 'J123456789', 104, 2, 4),
+  (5, 'Ron Añejo Reserva Familiar', 42, 'Ron añejo con carácter y suavidad incomparables', 'Industrial', 5, 'J123456789', 105, 4, 5);
 
 INSERT INTO "Producto" ("pro_codigo", "pro_nombre", "pro_grados_alcohol", "pro_descripcion", "pro_tipo", "fk_añejamiento", "fk_proveedor", "fk_lugar", "fk_categoria", "fk_variedad")
 VALUES
-  (7, 'Ron Reserva Familiar', 43, 'Ron con carácter único y aroma excepcional', 'Agricola', 1, 'J987654321', 106, 5, 1),
-  (6, 'Ron Oscuro Intenso', 50, 'Ron oscuro con intensidad de sabores', 'Agricola', 2, 'J567890123', 107, 6, 2),
-  (8, 'Ron Ligero Premium', 37, 'Ron ligero y suave para paladares exigentes', 'Agricola', 3, 'J567890123', 108, 7, 3),
-  (9, 'Ron Reserva Especial 10 Años', 46, 'Ron añejo con 10 años de maduración', 'Agricola', 4, 'J567890123', 109, 7, 4),
-  (10, 'Ron Blanco Refrescante', 33, 'Ron blanco con notas refrescantes', 'Agricola', 5, 'J012345678', 110, 5, 5),
-  (11, 'Ron Premium Sutil', 48, 'Ron premium con sutileza y elegancia', 'Agricola', 5, 'J012345678', 111, 4, 5),
-  (12, 'Ron Dorado Especial', 39, 'Ron dorado con carácter especial', 'Agricola', 4, 'J012345678', 112, 3, 4),
-  (13, 'Ron Añejo 8 Años', 44, 'Ron añejo con 8 años de añejamiento', 'Agricola', 3, 'J456789012', 113, 2, 3),
-  (14, 'Ron Ligero Tropical', 36, 'Ron ligero con toques tropicales', 'Agricola', 2, 'J456789012', 114, 2, 2),
-  (15, 'Ron Reserva Única', 47, 'Ron con mezcla única y reserva exclusiva', 'Agricola', 1, 'J456789012', 115, 1, 1),
+  (7, 'Ron Reserva Familiar', 43, 'Ron con carácter único y aroma excepcional', 'Agricola', 1, 'J123456789', 106, 5, 1),
+  (6, 'Ron Oscuro Intenso', 50, 'Ron oscuro con intensidad de sabores', 'Agricola', 2, 'J123456789', 107, 6, 2),
+  (8, 'Ron Ligero Premium', 37, 'Ron ligero y suave para paladares exigentes', 'Agricola', 3, 'J123456789', 108, 7, 3),
+  (9, 'Ron Reserva Especial 10 Años', 46, 'Ron añejo con 10 años de maduración', 'Agricola', 4, 'J123456789', 109, 7, 4),
+  (10, 'Ron Blanco Refrescante', 33, 'Ron blanco con notas refrescantes', 'Agricola', 5, 'J123456789', 110, 5, 5),
+  (11, 'Ron Premium Sutil', 48, 'Ron premium con sutileza y elegancia', 'Agricola', 5, 'J123456789', 111, 4, 5),
+  (12, 'Ron Dorado Especial', 39, 'Ron dorado con carácter especial', 'Agricola', 4,'J123456789', 112, 3, 4),
+  (13, 'Ron Añejo 8 Años', 44, 'Ron añejo con 8 años de añejamiento', 'Agricola', 3, 'J123456789', 113, 2, 3),
+  (14, 'Ron Ligero Tropical', 36, 'Ron ligero con toques tropicales', 'Agricola', 2, 'J123456789', 114, 2, 2),
+  (15, 'Ron Reserva Única', 47, 'Ron con mezcla única y reserva exclusiva', 'Agricola', 1, 'J123456789', 115, 1, 1),
   (16, 'Pampero',40, 'Es un ron oscuro de color, sabor y aroma excepcionales, ampliamente reconocido como uno de los mejores rones del mundo.', 'Agricola' ,2, 'J987654321',4,1,2 ),
-  (17,'Pampero',  20, 'Destilería La Miel, es uno de los rones más populares de Venezuela y es conocido por su sabor suave y equilibrado.', 'Industrial',  1, 'J123456789',11,2,3),
+  (17,'Pampero',  20, 'Destilería La Miel, es uno de los rones más populares de Venezuela y es conocido por su sabor suave y equilibrado.', 'Industrial',  1, 'J987654321',11,2,3),
   (18, 'Pampero',10,  'Es un ron de alta calidad que es perfecto para disfrutar de cualquier ocasión. Es un ron suave y equilibrado que se puede disfrutar solo o en cócteles.',  'Agricola', 5, 'J987654321' , 19,2,4),
   (19, 'Pampero',50,  'Es un ron versátil que se puede disfrutar solo o en cócteles. Es un excelente ron para maridar con mariscos o con frutas tropicales',  'Industrial', 4, 'J987654321', 57, 3, 5),
-  (20, 'Cacique', 30, 'Tiene un color dorado brillante, un aroma suave y equilibrado, y un sabor suave y afrutado.', 'Industrial', 2, 'J987654321', 74,2,2),
-  (21, 'Roble',45, 'El aroma del Ron Roble Viejo Maestro es complejo y aromático. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos y frutas tropicales', 'Agricola', 3, 'J987654321', 94,3,3),
-  (22, 'Roble Viejo Extra Añejo', 25,  'El ron tiene un color dorado oscuro, un aroma complejo y aromático, y un sabor intenso y equilibrado.', 'Agricola', 4,'J456789012',96,1, 1),
-  (23, 'Roble Viejo Ultra Añejo', 20,  'El ron tiene un color ámbar oscuro, un aroma complejo y aromático, y un sabor rico y profundo.', 'Industrial', 5, 'J456789012', 105, 4, 5),
-  (24, 'Roble Viejo Zafra', 25,  'El ron tiene un color ámbar oscuro, un aroma complejo y aromático, y un sabor rico y profundo.', 'Industrial', 4, 'J456789012' , 201, 1, 5),
-  (25, 'Santa Teresa 1796', 35,  'Es un ron de alta calidad que ofrece una experiencia de sabor única. Es un ron perfecto para cualquier ocasión especial.', 'Agricola', 3, 'J012345678', 502, 5, 1),
-  (26, 'Santa Teresa Gran Reserva', 25,  'Tiene un color ámbar dorado, brillante y limpio. Tiene lágrimas gruesas que caen lentamente por el costado de la copa.', 'Industrial', 1, 'J012345678', 786, 5,1),
-  (27,'Santa Teresa Linaje', 20,  'Es un ron de alta calidad que ofrece una experiencia de sabor única. Es un ron perfecto para cualquier ocasión especial.',  'Agricola', 2, 'J012345678', 524, 3,1),
-  (28, 'Santa Teresa Arakú', 45, 'Se pueden apreciar notas de vainilla, caramelo, roble, café, frutos secos, frutas tropicales y especias. El final es complejo y deja una sensación agradable en boca.', 'Industrial',2,'J012345678', 1436, 3,1),
-  (29, 'Carúpano Legendario', 30,  'Es rico y profundo. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos, frutas tropicales, especias y chocolate. El sabor es complejo y agradable, y deja un final largo y persistente.', 'Agricola' , 4, 'J567890123',753, 1, 5),
-  (30, 'Carúpano X.O', 25,  'Es un ron de alta calidad que ofrece una experiencia de sabor única. Es una excelente opción para aquellos que buscan un ron de alta calidad que sea rico y complejo', 'Industrial',5, 'J567890123' ,111, 5,1),
-  (31,'Carúpano Reserve 1996', 30,  'Se envejece en barricas de roble americano que han sido tratadas con un proceso especial. Este proceso ayuda a desarrollar un sabor más intenso y complejo.', 'Agricola', 3, 'J567890123', 158, 1,3),
-  (32,'Carúpano 21', 30,  'Es complejo y aromático. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos y frutas tropicales. ', 'Agricola', 3, 'J567890123', 158, 1,3),
+  (20, 'Cacique', 30, 'Tiene un color dorado brillante, un aroma suave y equilibrado, y un sabor suave y afrutado.', 'Industrial', 2, 'J568790123', 74,2,2),
+  (21, 'Roble',45, 'El aroma del Ron Roble Viejo Maestro es complejo y aromático. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos y frutas tropicales', 'Agricola', 3, 'J012345678', 94,3,3),
+  (22, 'Roble Viejo Extra Añejo', 25,  'El ron tiene un color dorado oscuro, un aroma complejo y aromático, y un sabor intenso y equilibrado.', 'Agricola', 4,'J012345678',96,1, 1),
+  (23, 'Roble Viejo Ultra Añejo', 20,  'El ron tiene un color ámbar oscuro, un aroma complejo y aromático, y un sabor rico y profundo.', 'Industrial', 5, 'J012345678', 105, 4, 5),
+  (24, 'Roble Viejo Zafra', 25,  'El ron tiene un color ámbar oscuro, un aroma complejo y aromático, y un sabor rico y profundo.', 'Industrial', 4, 'J012345678' , 201, 1, 5),
+  (25, 'Santa Teresa 1796', 35,  'Es un ron de alta calidad que ofrece una experiencia de sabor única. Es un ron perfecto para cualquier ocasión especial.', 'Agricola', 3, 'J456789012', 502, 5, 1),
+  (26, 'Santa Teresa Gran Reserva', 25,  'Tiene un color ámbar dorado, brillante y limpio. Tiene lágrimas gruesas que caen lentamente por el costado de la copa.', 'Industrial', 1, 'J456789012', 786, 5,1),
+  (27,'Santa Teresa Linaje', 20,  'Es un ron de alta calidad que ofrece una experiencia de sabor única. Es un ron perfecto para cualquier ocasión especial.',  'Agricola', 2, 'J456789012', 524, 3,1),
+  (28, 'Santa Teresa Arakú', 45, 'Se pueden apreciar notas de vainilla, caramelo, roble, café, frutos secos, frutas tropicales y especias. El final es complejo y deja una sensación agradable en boca.', 'Industrial',2,'J456789012', 1436, 3,1),
+  (29, 'Carúpano Legendario', 30,  'Es rico y profundo. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos, frutas tropicales, especias y chocolate. El sabor es complejo y agradable, y deja un final largo y persistente.', 'Agricola' , 4, 'J012345679',753, 1, 5),
+  (30, 'Carúpano X.O', 25,  'Es un ron de alta calidad que ofrece una experiencia de sabor única. Es una excelente opción para aquellos que buscan un ron de alta calidad que sea rico y complejo', 'Industrial',5, 'J012345679' ,111, 5,1),
+  (31,'Carúpano Reserve 1996', 30,  'Se envejece en barricas de roble americano que han sido tratadas con un proceso especial. Este proceso ayuda a desarrollar un sabor más intenso y complejo.', 'Agricola', 3, 'J012345679', 158, 1,3),
+  (32,'Carúpano 21', 30,  'Es complejo y aromático. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos y frutas tropicales. ', 'Agricola', 3, 'J012345679', 158, 1,3),
   (33,'Cacique', 30,  'Suaves y excepcionalmente sabrosos, elaborados al pie de la selva tropical venezolana. En su producción participan los arroyos de agua dulce y la caña de azúcar venezolana. Destilado en los límites de la naturaleza salvaje del Parque Nacional Terepaima', 'Agricola', 3, 'J567890123', 158, 1,3),
-  (37, 'Roble', 40, 'Este grupo de inconformes se aventuró a buscar la fórmula perfecta, dedicándose a desarrollar un producto venezolano referencia de calidad internacional.', 'Industrial', 1, 'J123456789', 101, 1, 1);
+  (37, 'Roble', 40, 'Este grupo de inconformes se aventuró a buscar la fórmula perfecta, dedicándose a desarrollar un producto venezolano referencia de calidad internacional.', 'Industrial', 1, 'J012345678', 101, 1, 1);
   		
+
 
 
 INSERT INTO "Producto_Color" ("pro_col_id", "fk_producto", "fk_color")
