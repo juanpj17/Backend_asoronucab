@@ -4,6 +4,7 @@ import { router } from '../routes/empleado.js';
 import { routerCliente } from '../routes/cliente.js';
 import { routerEvento } from '../routes/eventos.js';
 import { routerParroquia } from '../routes/parroquia.js';
+import { routerProveedor } from '../routes/proveedor.js';
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -26,6 +27,7 @@ class Server {
             clientePath: '/api/cliente',
             eventoPath: '/api/evento',
             parroquiaPath: '/api/parroquia',
+            proveedorPath: '/api/proveedor',
         };
         this.pool = pool;
 
@@ -60,6 +62,7 @@ class Server {
     }
 
     routes(){
+        this.app.use(this.path.proveedorPath, routerProveedor);
         this.app.use(this.path.parroquiaPath, routerParroquia);
         this.app.use(this.path.eventoPath, routerEvento);
         this.app.use(this.path.clientePath, routerCliente);

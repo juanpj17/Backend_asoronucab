@@ -894,5 +894,17 @@ begin
     WHERE per_nat_id=id_empleado_1 and per_nat_ci=id_empleado_2;
     return 'Empleado eliminado exitosamente';
 end;
+
+CREATE OR REPLACE FUNCTION seleccionar_proveedores()
+RETURNS table (nombre varchar, rif varchar)
+AS
+$$
+BEGIN
+   return query SELECT  per_jur_denominacion_comercial, per_jur_rif
+				FROM public."Proveedor";
+END;
+$$
+LANGUAGE plpgsql;
+
 $BODY$;
 
