@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { userGet, userPost, userPut, userDelete } from '../controllers/empleado-control.js';
+import { empleadoGet, empleadoPost, empleadoPut, empleadoDelete } from '../controllers/empleado-control.js';
 
-export const router = Router();
+export const routerEmpleado = Router();
 
-router.get('/', userGet);
+routerEmpleado.get('/', empleadoGet);
 
-router.put('/', userPut)
+routerEmpleado.put('/', empleadoPut);
 
-router.post('/', userPost)
+routerEmpleado.post('/', empleadoPost);
 
-router.delete('/:cedula', userDelete)
+routerEmpleado.delete('/:cedula', empleadoDelete);
 

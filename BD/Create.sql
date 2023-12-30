@@ -849,22 +849,26 @@ END;
 $$ language plpgsql;
 
 --agregar empleado
+--agregar empleado
 CREATE OR REPLACE PROCEDURE "agregar_empleado"
 (
 	"ced" VARCHAR, "rif" VARCHAR, "p_nombre" VARCHAR,
 	"s_nombre" VARCHAR, "p_apellido" VARCHAR, 
 	"s_apellido" VARCHAR, "direccion" VARCHAR, 
-	"sueldo" NUMERIC(10,0), "fecha_ing" TIMESTAMP,
+	"sueldo" NUMERIC(10,0), 
 	"parroquia" INT, "contraseña" VARCHAR,
-	"rol" INT
+	"rol" INT, "correo" VARCHAR
 ) 
 AS $$
 DECLARE 
 	mens_1 VARCHAR;
+	mens_2 VARCHAR;
+	fecha_ing TIMESTAMP;
 	cod1_empleado INT;
 	cod2_empleado VARCHAR;
-BEGIN 
-	mens_1 := agregar_empleado("ced", "rif", "p_nombre", "s_nombre",
+BEGIN
+	fecha_ing = CURRENT_TIMESTAMP;
+	mens_1 := insertar_empleado("ced", "rif", "p_nombre", "s_nombre",
 								"p_apellido", "s_apellido", "direccion",
 								"sueldo", "fecha_ing", "parroquia");
 	RAISE NOTICE '%', mens_1;	
@@ -876,7 +880,9 @@ BEGIN
 	cod2_empleado := "ced";
 	
 	PERFORM insertar_usuario_empleado("contraseña", "rol",
-									  cod1_empleado, cod2_empleado);	
+									  cod1_empleado, cod2_empleado);
+	mens_2 := insertar_correo("correo", cod1_empleado, cod2_empleado,
+							  NULL, NULL, NULL);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -894,15 +900,72 @@ begin
     WHERE per_nat_id=id_empleado_1 and per_nat_ci=id_empleado_2;
     return 'Empleado eliminado exitosamente';
 end;
+$BODY$;
 
-CREATE OR REPLACE FUNCTION seleccionar_proveedores()
-RETURNS table (nombre varchar, rif varchar)
-AS
-$$
+--Insertar un correo
+CREATE OR REPLACE FUNCTION public.insertar_correo(
+	correo character varying,
+	cod1_empleado integer,
+	cod2_empleado character varying,
+	cod1_cliente_natural integer,
+	cod2_cliente_natural character varying,
+	cod_cliente_juridico character varying)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare mensaje varchar;
+declare aux boolean;
+begin
+aux:=correo ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$';
+	if not aux then 
+	mensaje:='Formato de correo invalido';
+	else
+		if (cod1_empleado IS NULL and cod2_empleado IS NULL and cod_cliente_juridico IS NULL) then
+			INSERT INTO public."Correo"(
+			cor_direccion, fk_empleado, fk_empleado_1, fk_cliente_natural, fk_cliente_natural_1, fk_cliente_juridico, fk_proveedor)
+			VALUES (correo, null, null, cod1_cliente_natural, cod2_cliente_natural,null, null);
+			mensaje:='Registro exitoso' ;
+		else
+			if cod1_empleado IS NULL and cod2_empleado IS NULL and cod1_cliente_natural IS NULL and cod2_cliente_natural IS NULL then
+				INSERT INTO public."Correo"(
+				cor_direccion, fk_empleado, fk_empleado_1, fk_cliente_natural, fk_cliente_natural_1, fk_cliente_juridico, fk_proveedor)
+				VALUES (correo, null, null,null ,null ,cod_cliente_juridico, null);
+				mensaje:='Registro exitoso';
+			else 
+				if cod1_cliente_natural IS NULL and cod2_cliente_natural IS NULL and cod_cliente_juridico IS NULL then
+				INSERT INTO public."Correo"(
+				cor_direccion, fk_empleado, fk_empleado_1, fk_cliente_natural, fk_cliente_natural_1, fk_cliente_juridico, fk_proveedor)
+				VALUES (correo,cod1_empleado  , cod2_empleado ,null ,null ,null, null);
+				mensaje:='Registro exitoso';
+				end if;
+			end if;
+		end if;
+	end if;	
+return mensaje;
+end;
+$BODY$;
+
+--Insertar telefonos del empleado
+CREATE OR REPLACE FUNCTION "insertar_telefono_empleado"( "numero" VARCHAR, "cod1_empleado" INT,
+	                                            "cod2_empleado" VARCHAR)
+RETURNS VARCHAR AS $$
+    declare mensaje varchar;
+    declare aux boolean;
 BEGIN
-   return query SELECT  per_jur_denominacion_comercial, per_jur_rif
-				FROM public."Proveedor";
+    aux:=numero ~ '^[0-9]+$';
+	    if not aux then 
+	        mensaje:='Formato de numero invalido';
+	    else
+			INSERT INTO "Telefono"(
+			    tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+			    VALUES (numero,null,null,null,null, cod1_empleado, cod2_empleado);
+			mensaje:='Registro exitoso';
+	    end if;	
+    return mensaje;
 END;
+$$ LANGUAGE plpgsql;
 $$
 LANGUAGE plpgsql;
 
