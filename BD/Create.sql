@@ -1038,4 +1038,56 @@ end;
 $BODY$;
 
 
+-- FUNCTION: public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.registro_cliente_natural(
+	ced character varying,
+	rif character varying,
+	p_nombre character varying,
+	s_nombre character varying,
+	p_apellido character varying,
+	s_apellido character varying,
+	direccion character varying,
+	parroquia integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare mensaje varchar;
+declare ValCedRif boolean;
+declare ValnombApell boolean;
+begin
+ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9VE]' )and (REPLACE(rif, ' ', '') !~ '[^0-9N]');
+ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
+(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
+	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
+	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else
+			if  not ValCedRif then
+			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
+			else
+				if not ValnombApell then
+					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
+				else
+					if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
+						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
+					else 
+						mensaje:='Registro exitoso';
+						INSERT INTO public."Cliente_Natural"(
+						per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion,per_nat_punto,fk_cliente_juridico, fk_proveedor, fk_lugar)
+						VALUES ( ced, rif, p_nombre, s_nombre, p_apellido, s_apellido, direccion,0,null, null,parroquia);
+					end if;
+				end if;
+			end if; 
+	end if;
+    RETURN mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+    OWNER TO postgres;
 
