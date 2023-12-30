@@ -11,20 +11,26 @@ const userGet = async (req = request, res = response) => {
     }
 };
 
-const userPost = (req, res = response) => {
 
-    pool.query(
-        (err, result) => {
-          if (err) {
-            console.error('Error al llamar al procedimiento almacenado:', err);
-          } else {
-            console.log('Procedimiento almacenado ejecutado con éxito:', result.rows);
-          }
-          // Cierra la conexión al finalizar
-          pool.end();
-        }
-      );
-}
+const userPost = async (req = request, res = response) => {
+    try {
+        const { ci, rif, nombre_p, nombre_s, p_apellido, s_apellido, direccion, sueldo , fecha_ingreso , fk_cliente_juridico, fk_proveedor, fk_lugar} = req.body;
+
+        const result = await pool.query(
+            'Select public.agregar_empleado($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+            [ci, rif, nombre_p, nombre_s, p_apellido, s_apellido, direccion, sueldo , fecha_ingreso , fk_cliente_juridico, fk_proveedor, fk_lugar]
+        );
+
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
+
+
 
 const userPut = (req, res = response) => {
 

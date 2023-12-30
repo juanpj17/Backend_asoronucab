@@ -27,11 +27,12 @@ const eventoPost = async (req = request, res = response) => {
     try {
         const { nombre, descripcion, num_entradas, fecha_hora_inicial, fecha_hora_final, direccion, parroquia } = req.body;
 
-        // Realizar la inserción en la base de datos
         const result = await pool.query(
-            'INSERT INTO public."Evento" (eve_nombre, eve_descripcion, eve_cantidad_entradas, eve_fecha_hora_inicial, eve_fecha_hora_final, eve_direccion, fk_lugar) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            'SELECT insertar_evento($1, $2, $3, $4, $5, $6, $7)',
             [nombre, descripcion, num_entradas, fecha_hora_inicial, fecha_hora_final, direccion, parroquia]
-        );
+          );
+          
+
 
         res.json(result.rows[0]);
     } catch (error) {
