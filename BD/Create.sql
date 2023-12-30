@@ -906,5 +906,82 @@ END;
 $$
 LANGUAGE plpgsql;
 
+
+
+-- Crear función de filtrado de productos por proveedor
+CREATE OR REPLACE FUNCTION obtener_productos_por_proveedor(proveedor_id VARCHAR)
+RETURNS TABLE (
+  codigo INT,
+  nombre VARCHAR
+
+)
+AS $$
+BEGIN
+  RETURN QUERY
+    SELECT pro_codigo, pro_nombre
+    FROM "Producto"
+    WHERE fk_proveedor = proveedor_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_un_evento(codigo int)
+RETURNS table (nombre varchar,descripcion varchar,num_entradas numeric,
+			   fecha_hora_inicial timestamp,fecha_hora_final timestamp, direccion varchar,
+			  parroquia int)
+AS
+$$
+BEGIN
+   return query SELECT  eve_nombre, eve_descripcion, eve_cantidad_entradas, eve_fecha_hora_inicial, eve_fecha_hora_final, eve_direccion, fk_lugar
+				FROM public."Evento"
+				where eve_id=codigo;
+END;
+$$
+LANGUAGE plpgsql;
+
+-- FUNCTION: public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.modificar_evento(
+	codigo integer,
+	nomb character varying,
+	descrip character varying,
+	entradas integer,
+	fh_i timestamp without time zone,
+	fh_f timestamp without time zone,
+	direccion character varying,
+	parroquia integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+
+declare mensaje varchar;
+declare Fnombre boolean;
+begin
+  Fnombre:= REPLACE(nomb, ' ', '') !~ '[^0-9A-Za-z]';
+  	if (REPLACE(nomb, ' ', '')='' or REPLACE(descrip, ' ', '')='' or REPLACE(direccion, ' ', '')='' )then
+		mensaje:='Hay campos sin llenar en su registro';
+	else 
+		if not Fnombre  then 
+			mensaje:='No se aceptan caracteres especiales en el nombre del evento';
+		else 
+			mensaje:='Modificacion Exitosa';
+			UPDATE public."Evento"
+			SET eve_nombre=nomb, eve_descripcion=descrip, eve_cantidad_entradas=entradas, 
+			eve_fecha_hora_inicial=fh_i, eve_fecha_hora_final=fh_f, eve_direccion=direccion, fk_lugar=parroquia
+			WHERE eve_id=codigo;
+		end if;
+	end if;
+return mensaje;
+end;
+$BODY$;
+
+ALTER FUNCTION public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer)
+    OWNER TO postgres;
+
+
+
 $BODY$;
 
