@@ -9,5 +9,5 @@ router.put('/', userPut)
 
 router.post('/', userPost)
 
-router.delete('/', userDelete)
+router.delete('/:cedula', userDelete)
 
