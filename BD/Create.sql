@@ -1001,10 +1001,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- FUNCTION: public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer)
-
--- DROP FUNCTION IF EXISTS public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer);
-
 CREATE OR REPLACE FUNCTION public.modificar_evento(
 	codigo integer,
 	nomb character varying,
@@ -1041,10 +1037,5 @@ return mensaje;
 end;
 $BODY$;
 
-ALTER FUNCTION public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer)
-    OWNER TO postgres;
 
-
-
-$BODY$;
 

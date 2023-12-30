@@ -22,6 +22,7 @@ const empleadoDelete = async (req, res = response) => {
       console.error('Error al eliminar el empleado:', error);
       res.status(500).json({ error: 'Error interno del servidor' });
     }
+    
 };
 
 const buscarIdEmpleadoPorCedula = async (cedula) => {
@@ -42,7 +43,6 @@ const buscarIdEmpleadoPorCedula = async (cedula) => {
 
 const empleadoPost = async (req = request, res = response) => {
 
-    console.log(req.body);
     const 
     {
         cedula, rif,
@@ -53,8 +53,6 @@ const empleadoPost = async (req = request, res = response) => {
         rol, correo,
         telefonos
     } = req.body;
-
-
 
     try{
         const dbresponse = await pool.query(
@@ -92,7 +90,11 @@ const empleadoPost = async (req = request, res = response) => {
 
 };
 
-const empleadoPut = () => {}
+const empleadoPut = () => {
+
+
+
+}
 
 export{
     empleadoGet,
