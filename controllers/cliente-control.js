@@ -44,7 +44,7 @@ const clienteDelete = (req, res = response) => {
 const clienteGetN = async(req = request, res = response) => {
     try {
         const { cedula } = req.query;
-        console.log(req.query)
+
         const cliente = await pool.query('SELECT * FROM public.seleccionar_un_cliente_natural_por_ci($1)', [cedula]);
         res.json(cliente.rows);
     } catch (error) {
@@ -85,7 +85,7 @@ const clientePutN = (req, res = response) => {
 
 const clienteDeleteN = async (req, res = response) => {
     const { cedula } = req.query;
-    console.log(req.query)
+
     try {
 
       const mensaje = await pool.query('SELECT public.eliminar_un_cliente_natural_por_ci($2)', [ cedula]);
@@ -102,7 +102,7 @@ const clienteGetJ = async(req = request, res = response) => {
     try {
    
         const { rif } = req.query;
-        console.log(rif)
+
         
         const cliente = await pool.query('SELECT * FROM public.seleccionar_un_cliente_juridico($1)',[rif]);
         res.json(cliente.rows);
@@ -117,7 +117,7 @@ const clientePostJ = async (req, res = response) => {
     try {
 
         const { rif, denominacion_comer, razon_soc, pagina_web, direccion_fisica, direccion_fiscal, capital} = req.body;
-        console.log(req.body)
+
         const result = await pool.query(
             'SELECT public.insertar_cliente_juridico($1, $2, $3, $4, $5, $6, $7)',
             [rif, denominacion_comer, razon_soc, pagina_web, direccion_fisica, direccion_fiscal, capital]

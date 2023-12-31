@@ -1464,3 +1464,53 @@ BEGIN
     WHERE cod_pre = pre_id;
 END;
 $BODY$;
+
+CREATE OR REPLACE FUNCTION seleccionar_un_evento(codigo int)
+RETURNS table (nombre varchar,descripcion varchar,num_entradas numeric,
+			   fecha_hora_inicial timestamp,fecha_hora_final timestamp, direccion varchar,
+			  parroquia int)
+AS
+$$
+BEGIN
+   return query SELECT  eve_nombre, eve_descripcion, eve_cantidad_entradas, eve_fecha_hora_inicial, eve_fecha_hora_final, eve_direccion, fk_lugar
+				FROM public."Evento"
+				where eve_id=codigo;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_un_lugar(codigo int)
+RETURNS table (nombre varchar)
+AS
+$$
+BEGIN
+   return query SELECT  lug_nombre
+				FROM public."Lugar"
+				where codigo = lug_id;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_una_presentacion1(codigo int)
+RETURNS table (cod int)
+AS
+$$
+BEGIN
+   return query SELECT  fk_presentacion
+				FROM public."Presentacion_Evento"
+				where codigo = fk_evento;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_una_presentacion2(codigo int)
+RETURNS table (cod varchar)
+AS
+$$
+BEGIN
+   return query SELECT  pre_nombre
+				FROM public."Presentacion"
+				where codigo = pre_id;
+END;
+$$
+LANGUAGE plpgsql;

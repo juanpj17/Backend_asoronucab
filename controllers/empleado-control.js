@@ -53,8 +53,7 @@ const empleadoPost = async (req = request, res = response) => {
         rol, correo,
         telefonos
     } = req.body;
-    console.log('imprimo ci')
-    console.log(req.body)
+
     try{
         const dbresponse = await pool.query(
             'CALL public.agregar_empleado($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
@@ -69,7 +68,7 @@ const empleadoPost = async (req = request, res = response) => {
         )
         
         const id = await buscarIdEmpleadoPorCedula(cedula);
-        console.log(id);
+   
         
         
         await Promise.all(
