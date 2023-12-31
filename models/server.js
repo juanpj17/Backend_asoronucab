@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { routerTiendaFisica } from '../routes/tienda-fisica.js';
 import { routerProducto } from '../routes/producto.js';
 import { routerEmpleado } from '../routes/empleado.js';
 import { routerCliente } from '../routes/cliente.js';
@@ -26,6 +27,7 @@ class Server {
         this.port = process.env.SERVER_PORT || 3000;
         this.app = express();
         this.path = {
+            tiendafisicaPath: '/api/tiendafisica',
             empleadoPath: '/api/empleado',
             clientePath: '/api/cliente',
             eventoPath: '/api/evento',
@@ -59,7 +61,7 @@ class Server {
     }
 
     routes(){
-    
+        this.app.use(this.path.tiendafisicaPath, routerTiendaFisica);
         this.app.use(this.path.productoPath, routerProducto);
         this.app.use(this.path.rolesPath, routerRoles);
         this.app.use(this.path.proveedorPath, routerProveedor);

@@ -73,7 +73,7 @@ const eventoHora = async(req, res = response) => {
 
     try {
         const result = await pool.query('SELECT * FROM public.obtener_eventos_activos()');
-        console.log('Eventos consultados con éxito');
+
         res.json(result.rows);
       } catch (error) {
         console.error('Error al buscar los eventos:', error);

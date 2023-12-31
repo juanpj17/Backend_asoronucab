@@ -1439,3 +1439,28 @@ BEGIN
 					FROM public."Evento";
 END;
 $BODY$;
+
+CREATE OR REPLACE FUNCTION verificar_presentacion(cod_pre integer, cod_eve integer)
+    RETURNS TABLE(precio numeric) 
+    LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+    SELECT pre_eve_precio_venta 
+    FROM public."Presentacion_Evento"
+    WHERE cod_pre = fk_presentacion AND cod_eve = fk_evento;
+END;
+$BODY$;
+
+
+CREATE OR REPLACE FUNCTION presentacion_particular(cod_pre integer)
+    RETURNS TABLE(nombre varchar) 
+    LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+    SELECT pre_nombre 
+    FROM public."Presentacion"
+    WHERE cod_pre = pre_id;
+END;
+$BODY$;
