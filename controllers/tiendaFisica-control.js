@@ -10,12 +10,10 @@ const tiendaFisicaPost = async(req, res = response) => {
 
     try {
         const { cod_pro, cod_eve} = req.body;
-
         const result = await pool.query(
             'SELECT verificar_presentacion($1, $2)',
             [cod_pro, cod_eve]
           );
-        
         res.json(result.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
@@ -60,11 +58,30 @@ const traerNamePost = async(req, res = response) => {
     
 }
 
+const tiendaFisicaSolaPost = async(req, res = response) => {
+
+    try {
+        const { cod_pro, cod_eve} = req.body;
+        const result = await pool.query(
+            'SELECT verificar_presentacion($1, $2)',
+            [cod_pro, cod_eve]
+          );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    
+    };
+    
+}
+
+
 export{
     tiendaFisicaGet,
     tiendaFisicaPost,
     tiendaFisicaPut,
     tiendaFisicaDelete,
-    traerNamePost
+    traerNamePost,
+    tiendaFisicaSolaPost
   
 }
