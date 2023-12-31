@@ -52,10 +52,18 @@ const eventoPut = (req, res = response) => {
     });
 }
 
-const eventoDelete = (req, res = response) => {
-    res.json({
-        msg: 'Mensaje: metodo delete recibido - controlador'
-    });
+const eventoDelete = async(req, res = response) => {
+    const { codigo } = req.query;
+  
+    try {
+        const result = await pool.query('SELECT eliminar_evento($1)', [codigo]);
+        console.log('Evento eliminado con éxito');
+        console.log(result)
+        // Puedes hacer algo más con el resultado si es necesario
+      } catch (error) {
+        console.error('Error al eliminar el evento:', error);
+        // Maneja el error según sea necesario
+      }
 }
 
 export{

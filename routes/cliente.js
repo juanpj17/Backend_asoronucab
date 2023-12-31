@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { clienteGet, clientePost, clientePut, clienteDelete, clienteGetN ,clientePutN, clientePostN, clienteDeleteN } from '../controllers/cliente-control.js';
+import { clienteGet, clientePost, clientePut, clienteDelete, clienteGetN ,clientePutN, clientePostN, clienteDeleteN , clienteGetJ ,clientePutJ, clientePostJ, clienteDeleteJ } from '../controllers/cliente-control.js';
 
 export const routerCliente = Router();
 
@@ -18,3 +18,11 @@ routerCliente.put('/natural', clientePutN)
 routerCliente.post('/natural', clientePostN)
 
 routerCliente.delete('/natural', clienteDeleteN)
+
+routerCliente.get('/juridico', clienteGetJ);
+
+routerCliente.put('/juridico', clientePutJ)
+
+routerCliente.post('/juridico', clientePostJ)
+
+routerCliente.delete('/juridico', clienteDeleteJ)

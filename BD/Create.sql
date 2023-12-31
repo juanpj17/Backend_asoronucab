@@ -966,8 +966,7 @@ BEGIN
     return mensaje;
 END;
 $$ LANGUAGE plpgsql;
-$$
-LANGUAGE plpgsql;
+
 
 
 
@@ -1000,6 +999,10 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+-- FUNCTION: public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer);
 
 CREATE OR REPLACE FUNCTION public.modificar_evento(
 	codigo integer,
@@ -1037,57 +1040,125 @@ return mensaje;
 end;
 $BODY$;
 
+ALTER FUNCTION public.modificar_evento(integer, character varying, character varying, integer, timestamp without time zone, timestamp without time zone, character varying, integer)
+    OWNER TO postgres;
 
--- FUNCTION: public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
 
--- DROP FUNCTION IF EXISTS public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer);
+CREATE OR REPLACE FUNCTION eliminar_evento(codigo int)
+RETURNS void AS
+$$
+BEGIN
+    DELETE FROM public."Evento"
+	WHERE eve_id=codigo;
+END;
+$$
+LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION public.registro_cliente_natural(
-	ced character varying,
-	rif character varying,
-	p_nombre character varying,
-	s_nombre character varying,
-	p_apellido character varying,
-	s_apellido character varying,
-	direccion character varying,
-	parroquia integer)
+CREATE OR REPLACE FUNCTION seleccionar_eventos()
+RETURNS table (codigo int,nombre varchar,descripcion varchar,num_entradas numeric,
+			   fecha_hora_inicial timestamp,fecha_hora_final timestamp, direccion varchar,
+			  parroquia int)
+AS
+$$
+BEGIN
+   return query SELECT eve_id, eve_nombre, eve_descripcion, eve_cantidad_entradas, eve_fecha_hora_inicial, eve_fecha_hora_final, eve_direccion, fk_lugar
+				FROM public."Evento";
+END;
+$$
+LANGUAGE plpgsql;
+
+-- FUNCTION: public.eliminar_un_cliente_natural(integer, character varying)
+
+-- DROP FUNCTION IF EXISTS public.eliminar_un_cliente_natural(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.eliminar_un_cliente_natural(
+	cod1 integer,
+	cod2 character varying)
     RETURNS character varying
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-declare mensaje varchar;
-declare ValCedRif boolean;
-declare ValnombApell boolean;
 begin
-ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9VE]' )and (REPLACE(rif, ' ', '') !~ '[^0-9N]');
-ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
-(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
-	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
-	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
-	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
-	else
-			if  not ValCedRif then
-			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
-			else
-				if not ValnombApell then
-					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
-				else
-					if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
-						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
-					else 
-						mensaje:='Registro exitoso';
-						INSERT INTO public."Cliente_Natural"(
-						per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion,per_nat_punto,fk_cliente_juridico, fk_proveedor, fk_lugar)
-						VALUES ( ced, rif, p_nombre, s_nombre, p_apellido, s_apellido, direccion,0,null, null,parroquia);
-					end if;
-				end if;
-			end if; 
-	end if;
-    RETURN mensaje;
-END;
+DELETE FROM public."Cliente_Natural"
+	WHERE per_nat_id=cod1 and per_nat_ci=cod2;
+return 'Cliente eliminado';
+end;
 $BODY$;
 
-ALTER FUNCTION public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+ALTER FUNCTION public.eliminar_un_cliente_natural(integer, character varying)
     OWNER TO postgres;
 
+-- FUNCTION: public.insertar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.insertar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.insertar_cliente_juridico(
+	rif character varying,
+	denominacion_comer character varying,
+	razon_soc character varying,
+	pagina_web character varying,
+	direccion_fisica character varying,
+	direccion_fiscal character varying,
+	capital integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare aux boolean;
+declare aux2 boolean;
+declare mensaje varchar;
+begin
+aux:=(REPLACE(rif, ' ', '') !~ '[^0-9JG]');
+aux2:=(REPLACE(denominacion_Comer, ' ', '') !~ '[^a-zA-z]') and (REPLACE(razon_Soc, ' ', '') !~ '[^a-zA-z]') ;
+	if (REPLACE(rif, ' ', '')='' or REPLACE(denominacion_Comer, ' ', '')=''or 
+	    REPLACE(razon_Soc, ' ', '')='' or REPLACE(pagina_Web, ' ', '')=''or REPLACE(direccion_fiscal, ' ', '')=''
+   		or REPLACE(direccion_fisica, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else 
+		if not aux then
+			mensaje:='Formato de rif invalido';
+		else
+			if length(rif)<10 then
+				mensaje:='El rif debe tener minimo 10 numeros';
+			else
+				if  not aux2 then
+					mensaje:='La denominacion comercial y la razon social no acepta numeros ni caracteres especiales';
+				else
+					mensaje:='Registro exitoso';
+					INSERT INTO public."Cliente_Juridico"(
+					per_jur_rif, per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital)
+					VALUES (rif, denominacion_Comer , razon_Soc , pagina_Web, direccion_fiscal, direccion_fisica , capital);
+				end if;
+			end if;
+		end if;
+	end if;
+return mensaje;
+end;
+$BODY$;
+
+ALTER FUNCTION public.insertar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, integer)
+    OWNER TO postgres;
+
+-- FUNCTION: public.seleccionar_todos_cliente_juridico()
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_todos_cliente_juridico();
+
+CREATE OR REPLACE FUNCTION public.seleccionar_todos_cliente_juridico(
+	)
+    RETURNS TABLE(rif character varying, denominacion_comercial character varying, razon_social character varying, pagina_web character varying, direccion_fiscal character varying, direccion_fisica character varying, capital numeric) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT per_jur_rif, per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital
+				FROM public."Cliente_Juridico";
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_todos_cliente_juridico()
+    OWNER TO postgres;
