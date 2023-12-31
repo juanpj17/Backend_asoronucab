@@ -60,10 +60,10 @@ const productoDelete = (req, res = response) => {
 
 const presentacionByProveedor = async(req = request, res = response) => {
     try {
-        console.log('se llama')
+       
         const { proveedor } = req.query;
-        console.log('estoy recibiendo esto this.proveedor')
-        console.log(proveedor)
+       
+     
         const productos = await pool.query('SELECT * FROM obtener_presentaciones_por_proveedor($1)', [proveedor]);
         res.json(productos.rows);
       } catch (error) {

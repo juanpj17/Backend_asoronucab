@@ -81,6 +81,35 @@ const eventoHora = async(req, res = response) => {
       }
 }
 
+const presentacionEvento = async(req, res = response) => {
+ 
+    try {
+        const { cantidad, precio, cod_presentacion, cod_evento, cod_premio } = req.body;
+        console.log(req.body)
+        const result = await pool.query(
+            'CALL insertar_presentacion_evento($1, $2, $3, $4, $5)',
+            [cantidad, precio, cod_presentacion, cod_evento, cod_premio]
+          );
+          
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
+const ultimoEventoGet = async(req = request, res = response) => {
+    try {
+        const evento = await pool.query('SELECT * FROM ultimo_id()');
+        res.json(evento.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+    
+};
+
 
 
 export{
@@ -89,4 +118,6 @@ export{
     eventoPut,
     eventoDelete,
     eventoHora,
+    presentacionEvento,
+    ultimoEventoGet
 }

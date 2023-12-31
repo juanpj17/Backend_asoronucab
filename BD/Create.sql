@@ -1397,3 +1397,45 @@ $BODY$;
 
 ALTER FUNCTION public.seleccionar_roles()
     OWNER TO postgres;
+
+
+CREATE OR REPLACE PROCEDURE insertar_presentacion_evento(
+  IN p_pre_eve_cantidad NUMERIC(10, 0),
+  IN p_pre_eve_precio_venta NUMERIC(12, 3),
+  IN p_fk_presentacion INT,
+  IN p_fk_evento INT,
+  IN p_fk_premio INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  INSERT INTO "Presentacion_Evento"(
+	  pre_eve_cantidad, 
+	  pre_eve_precio_venta, 
+	  fk_presentacion, 
+	  fk_evento, 
+	  fk_premio)
+  VALUES (
+	  p_pre_eve_cantidad, 
+	  p_pre_eve_precio_venta,
+	  p_fk_presentacion, 
+	  p_fk_evento, 
+	  p_fk_premio);
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION ultimo_id(
+	)
+    RETURNS TABLE(codigo integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+BEGIN
+   return query 	SELECT MAX(eve_id)
+					FROM public."Evento";
+END;
+$BODY$;
