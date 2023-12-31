@@ -3,8 +3,8 @@ import { response, request } from 'express';
 
 const clienteGet = async(req = request, res = response) => {
     try {
-        const juridico = await pool.query('SELECT * FROM public.seleccionar_todos_cliente_juridico()');
-        const natural = await pool.query('SELECT * FROM public.seleccionar_todos_cliente_natural()');
+        // const juridico = await pool.query('SELECT * FROM public.seleccionar_todos_cliente()');
+        const natural = await pool.query('SELECT * FROM public.seleccionar_todos_cliente()');
         res.json(natural.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
@@ -43,7 +43,9 @@ const clienteDelete = (req, res = response) => {
 
 const clienteGetN = async(req = request, res = response) => {
     try {
-        const cliente = await pool.query('SELECT * FROM public.seleccionar_todos_cliente_natural()');
+        const { cedula } = req.query;
+        console.log(req.query)
+        const cliente = await pool.query('SELECT * FROM public.seleccionar_un_cliente_natural_por_ci($1)', [cedula]);
         res.json(cliente.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
@@ -82,11 +84,11 @@ const clientePutN = (req, res = response) => {
 }
 
 const clienteDeleteN = async (req, res = response) => {
-    const { codigo, cedula } = req.query;
-
+    const { cedula } = req.query;
+    console.log(req.query)
     try {
 
-      const mensaje = await pool.query('SELECT public.eliminar_un_cliente_natural($1, $2)', [codigo, cedula]);
+      const mensaje = await pool.query('SELECT public.eliminar_un_cliente_natural_por_ci($2)', [ cedula]);
       res.json({ mensaje: `Empleado con cédula ${cedula} ${mensaje}` });
     } catch (error) {
       console.error('Error al eliminar el empleado:', error);
@@ -98,7 +100,11 @@ const clienteDeleteN = async (req, res = response) => {
 
 const clienteGetJ = async(req = request, res = response) => {
     try {
-        const cliente = await pool.query('SELECT * FROM public.seleccionar_todos_cliente_natural()');
+   
+        const { rif } = req.query;
+        console.log(rif)
+        
+        const cliente = await pool.query('SELECT * FROM public.seleccionar_un_cliente_juridico($1)',[rif]);
         res.json(cliente.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);

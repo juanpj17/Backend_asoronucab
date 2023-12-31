@@ -1162,3 +1162,238 @@ $BODY$;
 
 ALTER FUNCTION public.seleccionar_todos_cliente_juridico()
     OWNER TO postgres;
+
+
+-- FUNCTION: public.seleccionar_un_cliente_natural(integer, character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_un_cliente_natural(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_natural(
+	cod1 integer,
+	cod2 character varying)
+    RETURNS TABLE(rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, puntos_acumulados numeric, parroquia integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, per_nat_punto,fk_lugar
+				FROM public."Cliente_Natural"
+				where per_nat_id=cod1 and per_nat_ci=cod2;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_natural(integer, character varying)
+    OWNER TO postgres;
+
+-- FUNCTION: public.seleccionar_un_cliente_juridico(character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_un_cliente_juridico(character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_juridico(
+	rif character varying)
+    RETURNS TABLE(denominacion_comercial character varying, razon_social character varying, pagina_web character varying, direccion_fiscal character varying, direccion_fisica character varying, capital numeric) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT  per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital
+				FROM public."Cliente_Juridico"
+				where per_jur_rif=rif;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_juridico(character varying)
+    OWNER TO postgres;
+
+
+
+CREATE OR REPLACE FUNCTION public.seleccionar_todos_clientes()
+    RETURNS TABLE(doc character varying, nombre character varying, apellido character varying, puntos_acumulados character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+        SELECT 
+            per_jur_rif AS doc, 
+            per_jur_denominacion_comercial AS nombre, 
+            per_jur_razon_social AS apellido, 
+            per_jur_pagina_web AS puntos_acumulados
+        FROM public."Cliente_Juridico"
+        UNION ALL
+        SELECT 
+            per_nat_ci AS doc, 
+            per_nat_p_nombre AS denominacion_comercial, 
+            per_nat_p_apellido AS razon_social, 
+            per_nat_punto AS pagina_web
+        FROM public."Cliente_Natural";
+END;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_todos_clientes()
+    OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_natural_por_ci(
+	cod2 character varying)
+    RETURNS TABLE(rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, puntos_acumulados numeric, parroquia integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, per_nat_punto,fk_lugar
+				FROM public."Cliente_Natural"
+				where per_nat_ci=cod2;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_natural_por_ci( character varying)
+    OWNER TO postgres;
+
+
+
+
+-- FUNCTION: public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.registro_cliente_natural(
+	ced character varying,
+	rif character varying,
+	p_nombre character varying,
+	s_nombre character varying,
+	p_apellido character varying,
+	s_apellido character varying,
+	direccion character varying,
+	parroquia integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare mensaje varchar;
+declare ValCedRif boolean;
+declare ValnombApell boolean;
+begin
+ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9VE]' )and (REPLACE(rif, ' ', '') !~ '[^0-9N]');
+ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
+(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
+	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
+	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else
+			if  not ValCedRif then
+			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
+			else
+				if not ValnombApell then
+					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
+				else
+					if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
+						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
+					else 
+						mensaje:='Registro exitoso';
+						INSERT INTO public."Cliente_Natural"(
+						per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion,per_nat_punto,fk_cliente_juridico, fk_proveedor, fk_lugar)
+						VALUES ( ced, rif, p_nombre, s_nombre, p_apellido, s_apellido, direccion,0,null, null,parroquia);
+					end if;
+				end if;
+			end if; 
+	end if;
+    RETURN mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION obtener_eventos_activos()
+    RETURNS TABLE(
+        
+        evento_id  int,
+        nombre_evento varchar,
+        fecha_hora_inicial timestamp,
+        fecha_hora_final timestamp
+    )
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            eve_id as id,
+            eve_nombre as nombre,
+            eve_fecha_hora_inicial as hora_inicio,
+            eve_fecha_hora_final as hora_fin
+        FROM public."Evento"
+        WHERE CURRENT_TIMESTAMP BETWEEN (eve_fecha_hora_inicial AND eve_fecha_hora_final);
+END;
+$$;
+
+
+
+
+
+CREATE OR REPLACE FUNCTION obtener_presentaciones_por_proveedor(rif_proveedor VARCHAR)
+RETURNS TABLE (
+    producto_id INT,
+    nombre_producto VARCHAR,
+    presentacion_id INT,
+    nombre_presentacion VARCHAR
+)
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
+ROWS 1000
+AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            p.pro_codigo as producto_id,
+            p.pro_nombre as nombre_producto,
+            pr.pre_id as presentacion_id,
+            pr.pre_nombre as nombre_presentacion
+        FROM
+            public."Producto" p
+        JOIN
+            public."Presentacion" pr ON p.pro_codigo = pr.fk_producto
+        WHERE
+            p.fk_proveedor = rif_proveedor;
+END;
+$$;
+
+
+-- FUNCTION: public.seleccionar_roles()
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_roles();
+
+CREATE OR REPLACE FUNCTION public.seleccionar_roles(
+	)
+    RETURNS TABLE(codigo integer, nombre character varying, descripcion character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+BEGIN
+   return query 	SELECT rol_id, rol_nombre, rol_descripcion
+					FROM public."Rol";
+END;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_roles()
+    OWNER TO postgres;

@@ -53,8 +53,9 @@ const eventoPut = (req, res = response) => {
 }
 
 const eventoDelete = async(req, res = response) => {
+    console.log('llega?')
     const { codigo } = req.query;
-  
+    console.log(req.query)
     try {
         const result = await pool.query('SELECT eliminar_evento($1)', [codigo]);
         console.log('Evento eliminado con éxito');
@@ -66,9 +67,26 @@ const eventoDelete = async(req, res = response) => {
       }
 }
 
+
+
+const eventoHora = async(req, res = response) => {
+
+    try {
+        const result = await pool.query('SELECT * FROM public.obtener_eventos_activos()');
+        console.log('Eventos consultados con éxito');
+        res.json(result.rows);
+      } catch (error) {
+        console.error('Error al buscar los eventos:', error);
+        // Maneja el error según sea necesario
+      }
+}
+
+
+
 export{
     eventoGet,
     eventoPost,
     eventoPut,
-    eventoDelete
+    eventoDelete,
+    eventoHora,
 }

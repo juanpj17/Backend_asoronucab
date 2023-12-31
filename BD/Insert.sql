@@ -870,3 +870,15 @@ VALUES
 (3,'123456', 3, NULL, NULL, NULL, NULL, 52, 9876543),
 (4,'123456', 4, NULL, NULL, NULL, NULL, 53, 1111111),
 (5,'123456', 5, NULL, NULL, NULL, NULL, 54, 2222222);
+
+-- Insertar dos presentaciones para cada producto
+INSERT INTO "Presentacion" (pre_nombre, pre_descripcion, fk_caja, fk_producto, fk_material_tapa_1, fk_material_tapa_2, fk_material_tapa_3, fk_material_botella_1, fk_material_botella_2,fk_material_botella_3)
+VALUES
+    ('Botella Estándar 0,75ml', 'Presentación estándar en botella',1, 21,1,3,1,1,3,1),
+    ('Botella Premium 1l', 'Presentación premium en botella',2, 23,1,3,1,1,3,1),
+    ('Edición Especial 0,80ml', 'Presentación especial para coleccionistas', 1,27,1,3,1,1,3,1),
+    ('Botella Grande 1,2l', 'Presentación en botella grande',3, 28,1,3,1,1,3,1),
+    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 30,1,3,1,1,3,1),
+    ('Botella Pequeña 0,45l', 'Presentación en botella pequeña',1,  31,1,3,1,1,3,1);
+
+   

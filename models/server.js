@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import { routerProducto } from '../routes/producto.js';
 import { routerEmpleado } from '../routes/empleado.js';
 import { routerCliente } from '../routes/cliente.js';
 import { routerEvento } from '../routes/eventos.js';
 import { routerParroquia } from '../routes/parroquia.js';
 import { routerProveedor } from '../routes/proveedor.js';
 import { routerRoles } from '../routes/roles.js';
-import { routerProducto } from '../routes/producto.js';
+
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -32,6 +33,7 @@ class Server {
             proveedorPath: '/api/proveedor',
             rolesPath: '/api/roles',
             productoPath: '/api/producto',
+     
         };
         this.pool = pool;
 
@@ -57,6 +59,7 @@ class Server {
     }
 
     routes(){
+    
         this.app.use(this.path.productoPath, routerProducto);
         this.app.use(this.path.rolesPath, routerRoles);
         this.app.use(this.path.proveedorPath, routerProveedor);
