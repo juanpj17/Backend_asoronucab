@@ -91,7 +91,7 @@ const presentacionEvento = async(req, res = response) => {
  
     try {
         const { cantidad, precio, cod_presentacion, cod_evento, cod_premio } = req.body;
-  
+        console.log(req.body)
         const result = await pool.query(
             'CALL insertar_presentacion_evento($1, $2, $3, $4, $5)',
             [cantidad, precio, cod_presentacion, cod_evento, cod_premio]
