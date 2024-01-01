@@ -4,7 +4,7 @@ import { response, request } from 'express';
 const clienteGet = async(req = request, res = response) => {
     try {
         // const juridico = await pool.query('SELECT * FROM public.seleccionar_todos_cliente()');
-        const natural = await pool.query('SELECT * FROM public.seleccionar_todos_cliente()');
+        const natural = await pool.query('SELECT * FROM public.seleccionar_todos_clientes()');
         res.json(natural.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);

@@ -1214,7 +1214,10 @@ ALTER FUNCTION public.seleccionar_un_cliente_juridico(character varying)
 
 
 CREATE OR REPLACE FUNCTION public.seleccionar_todos_clientes()
-    RETURNS TABLE(doc character varying, nombre character varying, apellido character varying, puntos_acumulados character varying) 
+    RETURNS TABLE(doc character varying, 
+				  nombre character varying, 
+				  apellido character varying, 
+				  puntos_acumulados character varying) 
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
@@ -1234,11 +1237,10 @@ BEGIN
             per_nat_ci AS doc, 
             per_nat_p_nombre AS denominacion_comercial, 
             per_nat_p_apellido AS razon_social, 
-            per_nat_punto AS pagina_web
+            CAST(per_nat_punto AS VARCHAR(255)) AS pagina_web
         FROM public."Cliente_Natural";
 END;
 $BODY$;
-
 ALTER FUNCTION public.seleccionar_todos_clientes()
     OWNER TO postgres;
 
@@ -1511,6 +1513,182 @@ BEGIN
    return query SELECT  pre_nombre
 				FROM public."Presentacion"
 				where codigo = pre_id;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+-- FUNCTION: public.seleccionar_empleado(integer, character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_empleado(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_empleado(
+	codigo integer,
+	ced character varying)
+    RETURNS TABLE(cedula character varying, rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, sueldo numeric, fecha_ing timestamp without time zone, parroquia integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query SELECT per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, emp_sueldo, emp_fecha_ingreso, fk_lugar
+	FROM public."Empleado"
+	where per_nat_id=codigo and per_nat_ci=ced;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_empleado(integer, character varying)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION seleccionar_un_usuario(codigo int, doc varchar)
+RETURNS table (contrasena varchar, rol integer)
+AS
+$$
+BEGIN
+   return query SELECT  usu_contraseña, fk_rol
+				FROM public."Usuario"
+				where fk_empleado_1=codigo
+				AND fk_empleado_2 =doc;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+-- FUNCTION: public.modificar_usuario_password(character varying, integer, character varying, integer, character varying, character varying)
+
+-- DROP FUNCTION IF EXISTS public.modificar_usuario_password(character varying, integer, character varying, integer, character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.modificar_usuario_password(
+	"contraseña" character varying,
+	cod1_cliente_natural integer,
+	cod2_cliente_natural character varying,
+	cod1_empleado integer,
+	cod2_empleado character varying,
+	cod_cliente_juridico character varying,
+    rol integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin 
+	if  not "contraseña"='' then
+		if (cod1_empleado=0 and cod2_empleado='' and cod_cliente_juridico='') then
+			UPDATE public."Usuario"
+			SET "usu_contraseña"="contraseña", fk_rol=rol
+			where fk_cliente_natural_1=cod1_cliente_natural and fk_cliente_natural_2=cod2_cliente_natural;
+		else
+			if cod1_empleado=0 and cod2_empleado='' and cod1_cliente_natural=0 and cod2_cliente_natural=''then
+				UPDATE public."Usuario"
+				SET "usu_contraseña"="contraseña",fk_rol=rol	
+				where fk_cliente_juridico=cod_cliente_juridico;
+			else 
+				if cod1_cliente_natural=0 and cod2_cliente_natural='' and cod_cliente_juridico='' then
+					UPDATE public."Usuario"
+					SET "usu_contraseña"="contraseña", fk_rol=rol
+					where fk_empleado_1=cod1_empleado and fk_empleado_2=cod2_empleado;
+				end if;
+			end if;
+		end if;
+	end if;
+end;
+$BODY$;
+
+ALTER FUNCTION public.modificar_usuario_password(character varying, integer, character varying, integer, character varying, character varying, integer)
+    OWNER TO postgres;
+
+-- FUNCTION: public.modificar_empleado(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, numeric, timestamp without time zone, integer)
+
+-- DROP FUNCTION IF EXISTS public.modificar_empleado(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, numeric, timestamp without time zone, integer);
+
+CREATE OR REPLACE FUNCTION public.modificar_empleado(
+	codigo integer,
+	ced character varying,
+	rif character varying,
+	p_nombre character varying,
+	s_nombre character varying,
+	p_apellido character varying,
+	s_apellido character varying,
+	direccion character varying,
+	sueldo numeric,
+	parroquia integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare mensaje varchar;
+declare ValCedRif boolean;
+declare ValnombApell boolean;
+BEGIN
+ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9]' )and (REPLACE(rif, ' ', '') !~ '[^0-9]');
+ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
+(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
+	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
+	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else
+			if  not ValCedRif then
+			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
+			else
+				if not ValnombApell then
+					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
+				else
+					if sueldo=0 then
+					mensaje:='El sueldo no puede ser 0bs';
+					else
+						if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
+						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
+						else
+						mensaje:='Modificacion exitosa';
+						UPDATE public."Empleado"
+						SET  per_nat_ci=ced, per_nat_rif=rif, per_nat_p_nombre=p_nombre, per_nat_s_nombre=s_nombre, per_nat_p_apellido=p_apellido, per_nat_s_apellido=s_apellido, per_nat_direccion=direccion, emp_sueldo=sueldo, fk_lugar=parroquia
+						WHERE per_nat_ci=ced and per_nat_id=codigo;
+						end if;
+					end if;
+				end if;
+			end if; 
+	end if;
+    RETURN mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.modificar_empleado(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, numeric, integer)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION insertar_telefono_empleado( numero VARCHAR, cod1_empleado INT,
+	                                            cod2_empleado VARCHAR)
+RETURNS VARCHAR AS $$
+    declare mensaje varchar;
+    declare aux boolean;
+BEGIN
+    aux:=numero ~ '^[0-9]+$';
+	    if not aux then 
+	        mensaje:='Formato de numero invalido';
+	    else
+			INSERT INTO "Telefono"(
+			    tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+			    VALUES (numero,null,null,null,null, cod1_empleado, cod2_empleado);
+			mensaje:='Registro exitoso';
+	    end if;	
+    return mensaje;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION seleccionar_telefonos_empleado(codigo int, doc varchar)
+RETURNS table (telefono varchar, telf_id integer)
+AS
+$$
+BEGIN
+   return query SELECT  tel_numero, tel_id
+				FROM public."Telefono"
+				where fk_empleado_1=codigo
+				AND fk_empleado_2 =doc;
 END;
 $$
 LANGUAGE plpgsql;
