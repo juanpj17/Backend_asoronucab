@@ -469,6 +469,32 @@ ADD CONSTRAINT "fk_virtual"
 FOREIGN KEY ("fk_virtual") REFERENCES "Virtual"("aso_id")
 ON DELETE CASCADE;
 
+--Tarjeta
+-- Variables
+ALTER TABLE "Tarjeta"
+ADD COLUMN "fk_cliente_juridico" VARCHAR(16),
+ADD COLUMN "fk_cliente_natural_1" INT,
+ADD COLUMN "fk_cliente_natural_2" VARCHAR(16);
+
+-- Foraneas
+ALTER TABLE "Tarjeta"
+ADD CONSTRAINT "fk_cliente_juridico"
+FOREIGN KEY ("fk_cliente_juridico") REFERENCES "Cliente_Juridico"("per_jur_rif")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_cliente_natural_1"
+FOREIGN KEY ("fk_cliente_natural_1", "fk_cliente_natural_2") REFERENCES "Cliente_Natural"("per_nat_id", "per_nat_ci")
+ON DELETE CASCADE;
+
+--Arco Tarjeta
+ALTER TABLE "Tarjeta"
+ADD CHECK(
+    CASE WHEN (fk_cliente_natural_1 IS NOT NULL AND fk_cliente_natural_2 IS NOT NULL) 
+    AND fk_cliente_juridico IS NULL THEN 1
+    WHEN (fk_cliente_natural_1 IS NULL AND fk_cliente_natural_2 IS NULL) 
+    AND fk_cliente_juridico IS NOT NULL THEN 1
+    ELSE 0 END = 1
+);
+
 
 --Telefono
 ALTER TABLE "Telefono"
