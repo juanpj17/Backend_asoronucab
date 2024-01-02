@@ -821,35 +821,27 @@ VALUES
     (6, 12, 27.80, 5,6),
     (7, 18, 40.25, 1, 7);
 
-INSERT INTO "Inventario_Fisico_Presentacion" ("inv_fis_pre_id", "inv_fis_cantidad", "fk_fisica", "fk_presentacion")
+INSERT INTO "Inventario_Fisico_Presentacion" ("inv_fis_pre_id", "inv_fis_cantidad", "fk_fisica", "fk_presentacion", "inv_fis_precio")
 VALUES 
-    (1, 100, 1, 1),
-    (2, 150, 2, 2),
-    (3, 75, 3, 3),
-    (4, 200, 4, 4),
-    (5, 50,5, 5),
-    (6, 120, 5, 6),
-    (7, 180, 1, 6);
-	
-INSERT INTO "Inventario_Fisico_Presentacion" ("inv_fis_pre_id", "inv_fis_cantidad", "fk_fisica", "fk_presentacion")
-VALUES 
-    (1, 100, 1, 2),
-    (2, 150, 2, 3),
-    (3, 75, 3, 2),
-    (4, 200, 4, 5),
-    (5, 50,5, 3),
-    (6, 120, 5, 1),
-    (7, 180, 1, 2);
+    (1, 100, 1, 1, 50.00),
+    (2, 150, 2, 2, 30.25),
+    (3, 75, 3,  3, 45.75),
+    (4, 200, 4, 4, 20.50),
+    (5, 50, 5,  5, 15.00),
+    (6, 120, 5, 6, 27.80),
+    (7, 180, 1, 6, 40.25);
 
-INSERT INTO "Inventario_Virtual_Presentacion" ("inv_vir_pre_id", "inv_vir_pre_cantidad", "fk_virtual", "fk_presentacion")
+
+
+INSERT INTO "Inventario_Virtual_Presentacion" ("inv_vir_pre_id", "inv_vir_pre_cantidad", "fk_virtual", "fk_presentacion", "inv_vir_precio")
 VALUES 
-    (1, 100, 1, 2),
-    (2, 150, 2, 3),
-    (3, 75, 3, 2),
-    (4, 200, 4, 5),
-    (5, 50,5, 3),
-    (6, 120, 5, 1),
-    (7, 180, 1, 2);
+    (1, 100, 1, 2, 50),
+    (2, 150, 2, 3, 30.25),
+    (3, 75, 3, 2 , 45.75),
+    (4, 200, 4, 5, 20.50),
+    (5, 50,5, 3  , 15.00),
+    (6, 120, 5, 1, 27.80),
+    (7, 180, 1, 2, 40.25);
 
 INSERT INTO "Afiliado" ("afi_id", "afi_fecha_afiliacion", "afi_QR", "fk_fisica", "fk_virtual", "fk_cliente_natural", "fk_cliente_natural_2", "fk_estatus", "fk_cliente_juridico", "fk_proveedor")
 VALUES 

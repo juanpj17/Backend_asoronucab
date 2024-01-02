@@ -236,7 +236,7 @@ ON DELETE CASCADE;
 ---Imagen
 --Variables
 ALTER TABLE "Imagen"
-ADD COLUMN "fk_producto" INT UNIQUE;
+ADD COLUMN "fk_producto" INT;
 --Foranea
 ALTER TABLE "Imagen"
 ADD CONSTRAINT "fk_producto"
@@ -434,6 +434,7 @@ ADD COLUMN "fk_proveedor" VARCHAR(16) NOT NULL,
 ADD COLUMN "fk_lugar" INT NOT NULL,
 ADD COLUMN "fk_categoria" INT NOT NULL,
 ADD COLUMN "fk_variedad" INT NOT NULL;
+
 
 -- Foraneas
 ALTER TABLE "Producto"

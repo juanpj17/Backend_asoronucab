@@ -572,6 +572,7 @@ CREATE TABLE IF NOT EXISTS "Empleado_Horario" (
 CREATE TABLE IF NOT EXISTS "Inventario_Fisico_Presentacion" (
     "inv_fis_pre_id" SERIAL,
     "inv_fis_cantidad" NUMERIC(10,0) NOT NULL CHECK ("inv_fis_cantidad" > 0),
+    "inv_fis_precio" NUMERIC(10,0) NOT NULL CHECK ("inv_fis_precio_unitario" > 0),
     "fk_fisica" INT,
     "fk_presentacion" INT,
     PRIMARY KEY("inv_fis_pre_id", "fk_fisica", "fk_presentacion"),
@@ -584,6 +585,7 @@ CREATE TABLE IF NOT EXISTS "Inventario_Fisico_Presentacion" (
 CREATE TABLE IF NOT EXISTS "Inventario_Virtual_Presentacion" (
     "inv_vir_pre_id" SERIAL,
     "inv_vir_pre_cantidad" NUMERIC(10,0) NOT NULL CHECK ("inv_vir_pre_cantidad" > 0),
+    "inv_vir_pre_precio" NUMERIC(10,0) NOT NULL CHECK ("inv_vir_pre_precio_unitario" > 0),
     "fk_virtual" INT,
     "fk_presentacion" INT,
     PRIMARY KEY ("inv_vir_pre_id", "fk_virtual", "fk_presentacion"),
@@ -1695,20 +1697,67 @@ aux:=REPLACE(nombre, ' ', '') !~ '[^a-zA-z]';
 END;
 $BODY$;
 
---Seleccionar Productos
-CREATE OR REPLACE FUNCTION public.seleccionar_productos(
-	)
-    RETURNS TABLE(codigo integer, nombre character varying, grados_alcohol numeric, descripcion character varying, tipo character varying, parroquia integer, categoria integer, variedad integer) 
+--Seleccionar Producto
+CREATE OR REPLACE FUNCTION public.seleccionar_productos()
+RETURNS TABLE(
+    codigo integer,
+    nombre character varying,
+    grados_alcohol numeric,
+    descripcion character varying,
+    tipo character varying,
+    parroquia integer,
+    categoria integer,
+    variedad integer,
+    url varchar,
+    capacidad numeric,
+	precio numeric
+)
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
+ROWS 1000
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+    SELECT 
+        pr.pro_codigo, 
+        pr.pro_nombre, 
+        pr.pro_grados_alcohol, 
+        pr.pro_descripcion, 
+        pr.pro_tipo, 
+        pr.fk_lugar, 
+        pr.fk_categoria, 
+        pr.fk_variedad,
+        i.ima_url,
+        b.bot_capacidad,
+		inv.inv_vir_precio
+    FROM "Producto" as pr
+    JOIN "Imagen" as i ON i."fk_producto" = pr."pro_codigo"
+    JOIN "Presentacion" as pre ON pre."fk_producto" = pr."pro_codigo"
+    JOIN "Botella" as b ON b."bot_id" = pre."fk_material_botella_3"
+    JOIN "Inventario_Virtual_Presentacion" as inv ON  "fk_presentacion" = "pre_id";
+END;
+$BODY$;
+
+-- Eliminar Producto
+CREATE OR REPLACE FUNCTION public.eliminar_producto(
+	codigo integer)
+    RETURNS void
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
-    ROWS 1000
-
 AS $BODY$
 begin
-	return query SELECT pro_codigo, pro_nombre, pro_grados_alcohol, pro_descripcion, 
-	pro_tipo, fk_lugar, fk_categoria, fk_variedad
-	FROM public."Producto";
+	UPDATE public."Imagen"
+	SET  fk_producto=null
+	WHERE fk_producto=codigo;
+	DELETE FROM public."Producto"
+	WHERE pro_codigo=codigo;
 end;
 $BODY$;
+
+ALTER FUNCTION public.eliminar_producto(integer)
+    OWNER TO postgres;
+
+
 
