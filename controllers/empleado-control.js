@@ -126,9 +126,6 @@ const modificarEmpleado = async(req, res = response) => {
        
     try {
         const { cedula, rif, p_nombre, s_nombre, p_apellido, s_apellido, direccion, sueldo, parroquia } = req.body;
-        console.log(cedula)
-        console.log(p_nombre)
-        console.log(req.body)
         const idEmpleado = await buscarIdEmpleadoPorCedula(cedula);
         const result = await pool.query(
             'SELECT * FROM public.modificar_empleado($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',

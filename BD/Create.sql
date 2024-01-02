@@ -636,60 +636,24 @@ CREATE TABLE IF NOT EXISTS "Pago_Afiliacion_Cuota_Metodo_Pago" (
     "pa_af_me_pa_id" SERIAL,
     "Monto_parcial" NUMERIC(12, 3) NOT NULL CHECK ("Monto_parcial" > 0),
     "fk_pago_afiliacion_cuota" INT,
-    "fk_tarjeta" INT,
-    "fk_cheque" INT,
-    "fk_efectivo" INT,
-    "fk_mi_punto" INT,
-    PRIMARY KEY ("pa_af_me_pa_id", "fk_pago_afiliacion_cuota", "fk_tarjeta", "fk_cheque", "fk_efectivo", "fk_mi_punto"),
+    PRIMARY KEY ("pa_af_me_pa_id", "fk_pago_afiliacion_cuota"),
     CONSTRAINT "fk_pago_afiliacion_cuota" FOREIGN KEY ("fk_pago_afiliacion_cuota")
     REFERENCES "Pago_Afiliacion_Cuota" ("pa_af_cuo_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_tarjeta" FOREIGN KEY ("fk_tarjeta")
-    REFERENCES "Tarjeta" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_cheque" FOREIGN KEY ("fk_cheque")
-    REFERENCES "Cheque" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_efectivo" FOREIGN KEY ("fk_efectivo")
-    REFERENCES "Efectivo" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_mi_punto" FOREIGN KEY ("fk_mi_punto")
-    REFERENCES "Mi_Punto" ("met_pag_id") ON DELETE CASCADE  
 );
 
 CREATE TABLE IF NOT EXISTS "Pago_Entrada_Metodo_Pago" (
     "pag_ent_met_pag_id" SERIAL,
     "pag_ent_met_pag_Monto_parcial" NUMERIC(12, 3) NOT NULL CHECK ("pag_ent_met_pag_Monto_parcial" > 0),
     "fk_entrada" INT,
-    "fk_efectivo" INT,
-    "fk_cheque" INT,
-    "fk_tarjeta" INT,
-    "fk_mi_punto" INT,
-     PRIMARY KEY ("pag_ent_met_pag_id", "fk_entrada", "fk_efectivo", "fk_cheque", "fk_tarjeta", "fk_mi_punto"),
+     PRIMARY KEY ("pag_ent_met_pag_id", "fk_entrada"),
     CONSTRAINT "fk_entrada" FOREIGN KEY ("fk_entrada")
-    REFERENCES "Entrada" ("ent_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_efectivo" FOREIGN KEY ("fk_efectivo")
-    REFERENCES "Efectivo" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_cheque" FOREIGN KEY ("fk_cheque")
-    REFERENCES "Cheque" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_tarjeta" FOREIGN KEY ("fk_tarjeta")
-    REFERENCES "Tarjeta" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_mi_punto" FOREIGN KEY ("fk_mi_punto")
-    REFERENCES "Mi_Punto" ("met_pag_id") ON DELETE CASCADE
+    REFERENCES "Entrada" ("ent_id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "Pago_Metodo_Pago" (
     "pag_met_pag_id" SERIAL,
     "monto_parcial" NUMERIC NOT NULL CHECK ("monto_parcial" > 0),
-    "fk_efectivo" INT,
-    "fk_cheque" INT,
-    "fk_tarjeta" INT,
-    "fk_mi_punto" INT,
-    PRIMARY KEY ("pag_met_pag_id", "fk_efectivo", "fk_cheque", "fk_tarjeta", "fk_mi_punto"),
-    CONSTRAINT "fk_efectivo" FOREIGN KEY ("fk_efectivo")
-    REFERENCES "Efectivo" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_cheque" FOREIGN KEY ("fk_cheque")
-    REFERENCES "Cheque" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_tarjeta" FOREIGN KEY ("fk_tarjeta")
-    REFERENCES "Tarjeta" ("met_pag_id") ON DELETE CASCADE,
-    CONSTRAINT "fk_mi_punto" FOREIGN KEY ("fk_mi_punto")
-    REFERENCES "Mi_Punto" ("met_pag_id") ON DELETE CASCADE
+    PRIMARY KEY ("pag_met_pag_id")
 );
 
 CREATE TABLE IF NOT EXISTS "Producto_Color" (
@@ -1692,3 +1656,59 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+----------------------------------------------Producto 
+
+--Insertar Producto
+CREATE OR REPLACE FUNCTION public.registrar_producto(
+	nombre character varying,
+	descripcion character varying,
+	gradosa numeric,
+	tipo character varying,
+	anejamiento integer,
+	proveedor integer,
+	parroquia integer,
+	categoria integer,
+	variedad integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE mensaje varchar;
+declare aux boolean;
+BEGIN 
+aux:=REPLACE(nombre, ' ', '') !~ '[^a-zA-z]';
+	if  (REPLACE(nombre, ' ', '')='' or REPLACE(descripcion, ' ', '')='' or REPLACE(tipo, ' ', '')='')then
+		mensaje:='Hay campos obligatorios vacios en el registro';
+	else
+		if not aux then
+			mensaje:='El nombre del producto no acepta numeros ni caracteres especiales';
+		else
+			INSERT INTO public."Producto"(
+			 pro_nombre, pro_grados_alcohol, pro_descripcion, pro_tipo, "fk_añejamiento", fk_proveedor, fk_lugar, fk_categoria, fk_variedad)
+			 VALUES (nombre, gradosA,descripcion ,tipo, anejamiento, proveedor, parroquia, categoria, variedad);
+			 mensaje:='Registro exitoso';
+		end if;
+	end if;
+    RETURN mensaje ;
+END;
+$BODY$;
+
+--Seleccionar Productos
+CREATE OR REPLACE FUNCTION public.seleccionar_productos(
+	)
+    RETURNS TABLE(codigo integer, nombre character varying, grados_alcohol numeric, descripcion character varying, tipo character varying, parroquia integer, categoria integer, variedad integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query SELECT pro_codigo, pro_nombre, pro_grados_alcohol, pro_descripcion, 
+	pro_tipo, fk_lugar, fk_categoria, fk_variedad
+	FROM public."Producto";
+end;
+$BODY$;
+

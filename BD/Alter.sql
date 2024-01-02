@@ -282,11 +282,42 @@ ADD CONSTRAINT "fk_afiliado"
 FOREIGN KEY ("fk_afiliado") REFERENCES "Afiliado"("afi_id")
 ON DELETE CASCADE;
 
+--Pago_afiliacion_cuota_metodo_pago
+ALTER TABLE "Pago_Afiliacion_Cuota_Metodo_Pago"
+ADD COLUMN "fk_tarjeta" INT,
+ADD COLUMN "fk_efectivo" INT,
+ADD COLUMN "fk_cheque" INT,
+ADD COLUMN "fk_mi_punto" INT;
+
+ALTER TABLE "Pago_Afiliacion_Cuota_Metodo_Pago"
+ADD CONSTRAINT "fk_tarjeta"
+FOREIGN KEY ("fk_tarjeta") REFERENCES "Tarjeta"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_efectivo"
+FOREIGN KEY ("fk_efectivo") REFERENCES "Efectivo"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_cheque"
+FOREIGN KEY ("fk_cheque") REFERENCES "Cheque"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_mi_punto"
+FOREIGN KEY ("fk_mi_punto") REFERENCES "Mi_Punto"("met_pag_id")
+ON DELETE CASCADE;
+
+-- Foraneas
+ALTER TABLE "Pago_Afiliacion_Cuota"
+ADD CONSTRAINT "fk_afiliado"
+FOREIGN KEY ("fk_afiliado") REFERENCES "Afiliado"("afi_id")
+ON DELETE CASCADE;
+
 --Pago_Entrada_metodo_pago
 -- Variables
 ALTER TABLE "Pago_Entrada_Metodo_Pago"
 ADD COLUMN "fk_venta_fisica_entrada" INT NOT NULL,
-ADD COLUMN "fk_venta_virtual_entrada" INT NOT NULL;
+ADD COLUMN "fk_venta_virtual_entrada" INT NOT NULL,
+ADD COLUMN "fk_tarjeta" INT,
+ADD COLUMN "fk_efectivo" INT,
+ADD COLUMN "fk_cheque" INT,
+ADD COLUMN "fk_mi_punto" INT;
 
 -- Foraneas
 ALTER TABLE "Pago_Entrada_Metodo_Pago"
@@ -295,6 +326,18 @@ FOREIGN KEY ("fk_venta_fisica_entrada") REFERENCES "Venta_Fisica_Entrada"("ven_f
 ON DELETE CASCADE,
 ADD CONSTRAINT "fk_venta_virtual_entrada"
 FOREIGN KEY ("fk_venta_virtual_entrada") REFERENCES "Venta_Virtual_Entrada"("ven_vir_ent_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_tarjeta"
+FOREIGN KEY ("fk_tarjeta") REFERENCES "Tarjeta"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_efectivo"
+FOREIGN KEY ("fk_efectivo") REFERENCES "Efectivo"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_cheque"
+FOREIGN KEY ("fk_cheque") REFERENCES "Cheque"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_mi_punto"
+FOREIGN KEY ("fk_mi_punto") REFERENCES "Mi_Punto"("met_pag_id")
 ON DELETE CASCADE;
 
 --Arco_Pago_Entrada_Metodo_Pago
@@ -309,7 +352,11 @@ ADD CHECK(
 -- Variables
 ALTER TABLE "Pago_Metodo_Pago"
 ADD COLUMN "fk_venta_fisica" INT NOT NULL,
-ADD COLUMN "fk_venta_virtual" INT NOT NULL;
+ADD COLUMN "fk_venta_virtual" INT NOT NULL,
+ADD COLUMN "fk_tarjeta" INT,
+ADD COLUMN "fk_efectivo" INT,
+ADD COLUMN "fk_cheque" INT,
+ADD COLUMN "fk_mi_punto" INT;
 
 -- Foraneas
 ALTER TABLE "Pago_Metodo_Pago"
@@ -318,6 +365,18 @@ FOREIGN KEY ("fk_venta_fisica") REFERENCES "Venta_Fisica"("ven_fis_id")
 ON DELETE CASCADE,
 ADD CONSTRAINT "fk_venta_virtual"
 FOREIGN KEY ("fk_venta_virtual") REFERENCES "Venta_Virtual"("detallev_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_tarjeta"
+FOREIGN KEY ("fk_tarjeta") REFERENCES "Tarjeta"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_efectivo"
+FOREIGN KEY ("fk_efectivo") REFERENCES "Efectivo"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_cheque"
+FOREIGN KEY ("fk_cheque") REFERENCES "Cheque"("met_pag_id")
+ON DELETE CASCADE,
+ADD CONSTRAINT "fk_mi_punto"
+FOREIGN KEY ("fk_mi_punto") REFERENCES "Mi_Punto"("met_pag_id")
 ON DELETE CASCADE;
 
 --Arco_Pago_Metodo_Pago
