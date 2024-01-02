@@ -8,6 +8,7 @@ import { routerEvento } from '../routes/eventos.js';
 import { routerParroquia } from '../routes/parroquia.js';
 import { routerProveedor } from '../routes/proveedor.js';
 import { routerRoles } from '../routes/roles.js';
+import { routerTelefono } from '../routes/telefono.js';
 
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -35,7 +36,7 @@ class Server {
             proveedorPath: '/api/proveedor',
             rolesPath: '/api/roles',
             productoPath: '/api/producto',
-     
+            telefonoPath:'/api/telefono'
         };
         this.pool = pool;
 
@@ -61,6 +62,7 @@ class Server {
     }
 
     routes(){
+        this.app.use(this.path.telefonoPath, routerTelefono);
         this.app.use(this.path.tiendafisicaPath, routerTiendaFisica);
         this.app.use(this.path.productoPath, routerProducto);
         this.app.use(this.path.rolesPath, routerRoles);

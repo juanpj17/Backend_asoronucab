@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { empleadoGet, empleadoPost, empleadoPut, empleadoDelete, consultarEmpleado, consultarUsuario, modificarUsuario, modificarEmpleado, telefonoEmpleado, consultarTelefonoEmpleado} from '../controllers/empleado-control.js';
+import { empleadoGet, empleadoPost, empleadoPut, empleadoDelete, consultarEmpleado, consultarUsuario, 
+    modificarUsuario, modificarEmpleado, telefonoEmpleado, consultarTelefonoEmpleado, consultarCorreoEmpleado,
+    modificarCorreo
+    } from '../controllers/empleado-control.js';
 
 export const routerEmpleado = Router();
 
@@ -22,3 +25,7 @@ routerEmpleado.put('/modificar', modificarEmpleado);
 routerEmpleado.post('/telefono', telefonoEmpleado);
 
 routerEmpleado.post('/consultartelefono', consultarTelefonoEmpleado);
+
+routerEmpleado.post('/consultarcorreo', consultarCorreoEmpleado);
+
+routerEmpleado.put('/correo', modificarCorreo);
