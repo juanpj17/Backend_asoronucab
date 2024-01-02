@@ -17,6 +17,38 @@ const productoGet = async(req = request, res = response) => {
     
 };
 
+const productoParroquiasGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM parroquias()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoProveedorGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_proveedor()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
 const productoByProveedor = async(req = request, res = response) => {
     try {
         const { proveedor } = req.query;
@@ -82,10 +114,23 @@ const productoPut = (req, res = response) => {
     });
 }
 
-const productoDelete = (req, res = response) => {
-    res.json({
-        msg: 'Mensaje: metodo delete recibido - controlador'
-    });
+const productoDelete = async(req, res = response) => {
+   
+    const codigo = req.params.codigo;
+
+    try{
+
+        const dbresponse = await pool.query('SELECT eliminar_producto($1)', [codigo]);
+        res.json(' solicitud recibida ');
+
+    }catch(error) {
+
+        console.error(error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+
+    }
+    
+
 }
 
 
@@ -111,4 +156,6 @@ export{
     productoDelete,
     productoByProveedor,
     presentacionByProveedor,
+    productoParroquiasGet,
+    productoProveedorGet
 }
