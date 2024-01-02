@@ -2,12 +2,17 @@ import { pool } from '../models/server.js';
 import { response, request } from 'express';
 
 const productoGet = async(req = request, res = response) => {
+
     try {
-        const producto = await pool.query('SELECT * FROM public.seleccionar_roles()');
-        res.json(producto.rows);
+
+        const productos = await pool.query('SELECT * FROM seleccionar_productos()');
+        res.json(productos.rows);   
+
     } catch (error) {
+
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+            
     }
     
 };
@@ -29,17 +34,43 @@ const productoByProveedor = async(req = request, res = response) => {
 
 
 const productoPost = async (req = request, res = response) => {
+    
+    const {
+        nombre,
+        descripcion,
+        gradosa,
+        tipo,
+        anejamiento,
+        proveedor,
+        parroquia,
+        categoria,
+        variedad
+    } = req.body
+    console.log(req.body)
     try {
         
+        const dbresponse = await pool.query('SELECT public.registrar_producto($1, $2, $3, $4, $5, $6, $7, $8, $9)', 
+        [
+            nombre, 
+            descripcion, 
+            gradosa, 
+            tipo, 
+            anejamiento, 
+            proveedor, 
+            parroquia, 
+            categoria, 
+            variedad
+        ]);
 
+        res.json(dbresponse.rows[0]);
 
-        res.json(result.rows[0]);
     } catch (error) {
+
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+
     }
 };
-
 
 const productoPut = (req, res = response) => {
 
@@ -60,10 +91,7 @@ const productoDelete = (req, res = response) => {
 
 const presentacionByProveedor = async(req = request, res = response) => {
     try {
-       
         const { proveedor } = req.query;
-       
-     
         const productos = await pool.query('SELECT * FROM obtener_presentaciones_por_proveedor($1)', [proveedor]);
         res.json(productos.rows);
       } catch (error) {
