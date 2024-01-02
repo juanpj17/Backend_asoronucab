@@ -136,7 +136,31 @@ const consultarUsuario = async(req, res = response) => {
     }
 }
 
+const modificarPostJ = async (req, res = response) => {
+    
+    try {
+        const { denominacion_comercial, 
+            razon_social, pagina_web,
+            capital_disponible, rif,
+            clave, parroquia_fisica,
+            direccion_fisica, parroquia_fiscal,
+            direccion_fiscal, paraNull, tipoFa, tipoFl} = req.body;
+        console.log('este es el query')
+        console.log(req.body)
+        const result = await pool.query(
+            'CALL modificar_juridico($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+            [denominacion_comercial, razon_social, pagina_web, capital_disponible, rif, clave, parroquia_fisica, direccion_fisica, parroquia_fiscal, direccion_fiscal, paraNull, tipoFa, tipoFl]
+          );
+          
 
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    
+};
+}
 
 
 
@@ -223,6 +247,47 @@ const clientePostJ = async (req, res = response) => {
 };
 }
 
+const consultarLugar = async(req, res = response) => {
+ 
+    try {
+        const { tipo, rif } = req.body;
+        console.log('lugarPersona')
+        console.log(req.body)
+        const result = await pool.query(
+            'SELECT * FROM seleccionar_un_lugar_personaJ($1, $2)',
+            [tipo, rif]
+          );
+          
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
+const consultarUsuarioJ = async(req, res = response) => {
+ 
+    try {
+        const { rif } = req.body;
+        console.log('lugarPersona')
+        console.log(req.body)
+        const result = await pool.query(
+            'SELECT * FROM seleccionar_usuarioJ($1)',
+            [rif]
+          );
+          
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
+
+
+
 const clientePutJ = (req, res = response) => {
 
     const id = req.params.id;
@@ -304,6 +369,43 @@ const modificarUsuario = async(req, res = response) => {
 
 
 
+
+const consultarTelefonoJ = async(req, res = response) => {
+ 
+    try {
+        const { codigo } = req.body;
+        const result = await pool.query(
+            'SELECT * FROM seleccionar_telefonos_juridico($1)',
+            [codigo]
+          );
+          
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+const insertarTelefonoJ = async(req, res = response) => {
+ 
+    try {
+        console.log('llega')
+        const { num1, num2, codigo } = req.body;
+        console.log(req.body)
+        const result = await pool.query(
+            'SELECT * From insertar_telefono_clienteJ($1, $2, $3)',
+            [num1, num2, codigo]
+          );
+          
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+
+
+
 const consultarClienteJ = async(req, res = response) => {
 
     try {
@@ -344,5 +446,10 @@ export{
     consultarClienteJ,
     buscarCorreoN,
     consultarUsuario,
-    modificarCorreo
+    modificarCorreo,
+    consultarLugar,
+    consultarUsuarioJ,
+    consultarTelefonoJ,
+    insertarTelefonoJ,
+    modificarPostJ
 }

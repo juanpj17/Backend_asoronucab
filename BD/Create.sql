@@ -2131,4 +2131,242 @@ ALTER FUNCTION public.eliminar_producto(integer)
     OWNER TO postgres;
 
 
+CREATE OR REPLACE FUNCTION seleccionar_un_lugar_personaJ(tipo varchar, doc varchar)
+RETURNS table (lugar integer)
+AS
+$$
+BEGIN
+   return query SELECT  fk_lugar
+				FROM public."Lugar_Persona"
+				where fk_cliente_juridico=doc
+				AND "Lug_per_tipo" =tipo;
+END;
+$$
+LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION seleccionar_usuarioJ( doc varchar)
+RETURNS table (clave varchar)
+AS
+$$
+BEGIN
+   return query SELECT  "usu_contraseña"
+				FROM public."Usuario"
+				where fk_cliente_juridico=doc;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insertar_telefono_clienteJ(numero1 VARCHAR, numero2 VARCHAR, codigo varchar)
+RETURNS VARCHAR AS $$
+DECLARE
+    mensaje VARCHAR;
+    aux1 BOOLEAN;
+    aux2 BOOLEAN;
+BEGIN
+
+    aux2 := numero2 ~ '^[0-9]+$';
+
+    IF NOT aux2 THEN 
+        mensaje := 'Formato de número invalido';
+    ELSE
+        -- Verificar si el registro ya existe
+        IF EXISTS (
+            SELECT 1
+            FROM "Telefono"
+            WHERE fk_cliente_juridico = codigo
+              AND tel_numero = numero1
+        ) THEN
+            -- Realizar la actualización
+            UPDATE "Telefono"
+            SET tel_numero = numero2
+            WHERE fk_cliente_juridico= codigo
+              AND tel_numero = numero1;
+            mensaje := 'Actualización exitosa';
+        ELSE
+            -- Realizar la inserción
+            INSERT INTO "Telefono"(
+                tel_tipo, tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+                VALUES ('hola', numero2, NULL, NULL, codigo, NULL, NULL, NULL);
+            mensaje := 'Registro exitoso';
+        END IF;
+    END IF;
+
+    RETURN mensaje;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_telefonos_juridico(codigo varchar)
+RETURNS table (telefono varchar)
+AS
+$$
+BEGIN
+   return query SELECT  tel_numero
+				FROM public."Telefono"
+				where fk_cliente_juridico=codigo;
+END;
+$$
+LANGUAGE plpgsql;
+
+-- FUNCTION: public.modificar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric)
+
+-- DROP FUNCTION IF EXISTS public.modificar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric);
+
+CREATE OR REPLACE FUNCTION public.modificar_cliente_juridico(
+	rif character varying,
+	denominacion_comer character varying,
+	razon_soc character varying,
+	pagina_web character varying,
+	direccion_fiscal character varying,
+	direccion_fisica character varying,
+	capital numeric)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare aux boolean;
+declare aux2 boolean;
+declare mensaje varchar;
+begin
+aux:=(REPLACE(rif, ' ', '') !~ '[^0-9JG]');
+aux2:=(REPLACE(denominacion_Comer, ' ', '') !~ '[^a-zA-z]') and (REPLACE(razon_Soc, ' ', '') !~ '[^a-zA-z]') ;
+	if (REPLACE(rif, ' ', '')='' or REPLACE(denominacion_Comer, ' ', '')=''or 
+	    REPLACE(razon_Soc, ' ', '')='' or REPLACE(pagina_Web, ' ', '')=''or REPLACE(direccion_fiscal, ' ', '')=''
+   		or REPLACE(direccion_fisica, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else 
+		if not aux then
+			mensaje:='Formato de rif invalido';
+		else
+			if length(rif)<10 then
+			mensaje:='El rif debe tener minimo 10 numeros';
+			else
+				if  not aux2 then
+					mensaje:='La denominacion comercial y la razon social no acepta numeros ni caracteres especiales';
+				else
+					mensaje:='Registro exitoso';
+					UPDATE public."Cliente_Juridico"
+					SET per_jur_rif=rif, per_jur_denominacion_comercial=denominacion_Comer, per_jur_razon_social=razon_Soc, per_jur_pagina_web=pagina_Web, 
+					per_jur_direccion_fiscal=direccion_fiscal, per_jur_direccion_fisica=direccion_fisica, per_jur_capital=capital
+					WHERE  per_jur_rif=rif;
+				end if;
+			end if;
+		end if;
+	end if;
+return mensaje;
+end;
+$BODY$;
+
+ALTER FUNCTION public.modificar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric)
+    OWNER TO postgres;
+
+-- CREATE OR REPLACE FUNCTION public.modificar_clienteJ_correo(
+-- 	correo character varying, codClienteJ character varying )
+--     RETURNS void
+--     LANGUAGE 'plpgsql'
+--     COST 100
+--     VOLATILE PARALLEL UNSAFE
+-- AS $BODY$
+-- begin 
+-- 	if  not correo='' then
+-- 		UPDATE public."Correo"
+-- 		SET cor_direccion=correo
+-- 		where fk_empleado=codEmpleado
+-- 		And fk_cliente_juridico=codClienteJ;
+-- 	end if;
+-- end;
+-- $BODY$;
+
+CREATE OR REPLACE PROCEDURE modificar_juridico(
+    denominacion_comercial VARCHAR,
+    razon_social VARCHAR,
+    pagina_web VARCHAR,
+    capital_disponible NUMERIC(12, 3),
+    rif VARCHAR,
+    clave VARCHAR,
+    parroquia_fisica INT,
+    direccion_fisica VARCHAR,
+    parroquia_fiscal INT,
+    direccion_fiscal VARCHAR,
+	paraNull CHARACTER VARYING,
+    tipoFa CHARACTER VARYING,
+    tipoFl CHARACTER VARYING
+
+) AS $$
+DECLARE
+    mens_1 VARCHAR;
+    mens_2 VARCHAR;
+    mens_3 VARCHAR;
+    mens_4 VARCHAR;
+BEGIN
+
+    
+    mens_1 := public.modificar_lugar_persona(
+        tipoFa,
+        parroquia_fisica,
+        rif
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_1;
+
+
+    mens_4 := public.modificar_lugar_persona(
+        tipoFl,
+        parroquia_fiscal,
+        rif
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_4;
+
+
+     -- Llamar a la función modificar_clienteJ
+    mens_2 := modificar_cliente_juridico(
+        rif,
+        denominacion_comercial,
+        razon_social,
+		pagina_web,
+		direccion_fisica,
+		direccion_fiscal,
+        capital_disponible
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_2;
+    
+
+    -- Llamar a la función modificar_clienteJ
+    mens_2 := modificar_cliente_juridico(
+        rif,
+        denominacion_comercial,
+        razon_social,
+		pagina_web,
+		direccion_fisica,
+		direccion_fiscal,
+        capital_disponible
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_2;
+
+    -- Llamar a la función modificar_usuario_clave
+    mens_3 := public.modificar_usuario_password(
+        clave,0 , paraNull, 0, paraNull, rif, 9
+        -- Agrega otros parámetros según los requerimientos de modificar_usuario_clave
+    );
+    RAISE NOTICE '%', mens_3;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION public.modificar_lugar_persona(
+	tipo character varying, lugar int,
+	cod_cliente character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin 
+			UPDATE public."Lugar_Persona"
+			SET fk_lugar=lugar
+			where fk_cliente_juridico=cod_cliente and "Lug_per_tipo"=tipo;
+	
+end;
+$BODY$;
