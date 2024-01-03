@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+
 import { routerEmpleado } from '../routes/empleado.js';
 import { routerCliente } from '../routes/cliente.js';
 import { routerEvento } from '../routes/eventos.js';
@@ -13,6 +14,9 @@ import { routerUsuario } from '../routes/usuario.js';
 import {routerAfiliado} from '../routes/afiliado.js';
 import { routerAfiliarse } from '../routes/afiliarse.js';
 import { routerFacturaAfiliado } from '../routes/facturaAfiliado.js';
+import { routerTelefono } from '../routes/telefono.js';
+import { routerEntrada } from '../routes/entrada.js';
+import { routerTiendaFisica } from '../routes/tienda-fisica.js';
 
 
 import pkg from 'pg';
@@ -33,6 +37,7 @@ class Server {
         this.port = process.env.SERVER_PORT || 3000;
         this.app = express();
         this.path = {
+            tiendafisicaPath: '/api/tiendafisica',
             empleadoPath: '/api/empleado',
             clientePath: '/api/cliente',
             eventoPath: '/api/evento',
@@ -45,8 +50,9 @@ class Server {
             usuarioPath:'/api/usuario',
             afiliadoPath:'/api/afiliado',
             afiliarsePath:'/api/afiliarse',
-            facturaAfiliado:'/api/facturaAfiliado'
-          
+            facturaAfiliado:'/api/facturaAfiliado',
+            telefonoPath:'/api/telefono',
+            entradaPath:'/api/entrada'
         };
         this.pool = pool;
 
@@ -72,6 +78,9 @@ class Server {
     }
 
     routes(){
+        this.app.use(this.path.entradaPath, routerEntrada);
+        this.app.use(this.path.telefonoPath, routerTelefono);
+        this.app.use(this.path.tiendafisicaPath, routerTiendaFisica);
         this.app.use(this.path.productoPath, routerProducto);
         this.app.use(this.path.rolesPath, routerRoles);
         this.app.use(this.path.proveedorPath, routerProveedor);
