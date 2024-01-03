@@ -1,27 +1,3 @@
-DROP TRIGGER IF EXISTS "arc_afiliado" ON "Afiliado";
-DROP TRIGGER IF EXISTS "arc_correo" ON "Correo";
-DROP TRIGGER IF EXISTS "arc_persona_lugar" ON "Persona_Lugar";
-DROP TRIGGER IF EXISTS "arc_pago_entrada_metodo_pago" ON "Pago_Entrada_Metodo_Pago";
-DROP TRIGGER IF EXISTS "arc_pago_metodo_pago" ON "Pago_Metodo_Pago";
-DROP TRIGGER IF EXISTS "arc_usuario" ON "Usuario";
-DROP TRIGGER IF EXISTS "arc_telefono" ON "Telefono";
-DROP TRIGGER IF EXISTS "arc_venta_fisica" ON "Venta_Fisica";
-DROP TRIGGER IF EXISTS "arc_venta_fisica_entrada" ON "Venta_Fisica_Entrada";
-DROP TRIGGER IF EXISTS "arc_venta_virtual" ON "Venta_Virtual";
-DROP TRIGGER IF EXISTS "arc_venta_virtual_entrada" ON "Venta_Virtual_Entrada";
-
-DROP FUNCTION IF EXISTS "arc_afiliado";
-DROP FUNCTION IF EXISTS "arc_correo";
-DROP FUNCTION IF EXISTS "arc_lugar_persona";
-DROP FUNCTION IF EXISTS "arc_pago_entrada_metodo_pago";
-DROP FUNCTION IF EXISTS "arc_pago_metodo_pago"; 
-DROP FUNCTION IF EXISTS "arc_usuario";
-DROP FUNCTION IF EXISTS "arc_telefono"; 
-DROP FUNCTION IF EXISTS "arc_venta_fisica"; 
-DROP FUNCTION IF EXISTS "arc_venta_fisica_entrada"; 
-DROP FUNCTION IF EXISTS "arc_venta_virtual"; 
-DROP FUNCTION IF EXISTS "arc_venta_virtual_entrada";
-
 DROP TABLE IF EXISTS "Pago_Afiliacion_Cuota_Metodo_Pago";
 DROP TABLE IF EXISTS "Pago_Afiliacion_Cuota";
 DROP TABLE IF EXISTS "Detalle_Venta_Fisica_Entrada_Entrada";

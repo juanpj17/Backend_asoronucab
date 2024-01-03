@@ -283,7 +283,7 @@ INSERT INTO "Cliente_Juridico" ("per_jur_rif", "per_jur_denominacion_comercial",
 VALUES
 ('J123456789', 'Empresa A', 'Razón Social A', 'www.empresa-a.com', 'Avenida Principal, Ciudad X', 'Calle Principal, Ciudad X', 100000.00),
 ('J987654321', 'Empresa B', 'Razón Social B', 'www.empresa-b.com', 'Avenida Secundaria, Ciudad Y', 'Calle Secundaria, Ciudad Y', 150000.50),
-('J567890123', 'Empresa C', 'Razón Social C', 'www.empresa-c.com', 'Avenida Terciaria, Ciudad Z', 'Calle Terciaria, Ciudad Z', 200000.75),
+('J568790123', 'Empresa C', 'Razón Social C', 'www.empresa-c.com', 'Avenida Terciaria, Ciudad Z', 'Calle Terciaria, Ciudad Z', 200000.75),
 ('J234567890', 'Empresa D', 'Razón Social D', 'www.empresa-d.com', 'Avenida Cuaternaria, Ciudad A', 'Calle Cuaternaria, Ciudad A', 120000.25),
 ('J876543210', 'Empresa E', 'Razón Social E', 'www.empresa-e.com', 'Avenida Quintenaria, Ciudad B', 'Calle Quintenaria, Ciudad B', 180000.00),
 ('J345678901', 'Empresa F', 'Razón Social F', 'www.empresa-f.com', 'Avenida Sextenaria, Ciudad C', 'Calle Sextenaria, Ciudad C', 220000.50),
@@ -534,7 +534,7 @@ VALUES
   (1, 'Ron Reserva Especial', 40, 'Un ron añejo con sabor excepcional', 'Industrial', 1, 'J123456789', 101, 1, 1),
   (2, 'Ron Premium Extra Añejo', 45, 'Exquisito ron premium con aromas intensos', 'Industrial', 2, 'J123456789', 102, 2, 2),
   (3, 'Ron Dorado Clásico', 38, 'Clásico ron dorado para disfrutar en cualquier ocasión', 'Industrial', 3, 'J123456789', 103, 1, 3),
-  (4, 'Ron Blanco Suave', 35, 'Ron blanco suave con notas frescas y delicadas', 'Industrial', 'J123456789', 104, 2, 4),
+  (4, 'Ron Blanco Suave', 35, 'Ron blanco suave con notas frescas y delicadas', 'Industrial', 2, 'J123456789', 104, 2, 4),
   (5, 'Ron Añejo Reserva Familiar', 42, 'Ron añejo con carácter y suavidad incomparables', 'Industrial', 5, 'J123456789', 105, 4, 5);
 
 INSERT INTO "Producto" ("pro_codigo", "pro_nombre", "pro_grados_alcohol", "pro_descripcion", "pro_tipo", "fk_añejamiento", "fk_proveedor", "fk_lugar", "fk_categoria", "fk_variedad")
@@ -553,7 +553,7 @@ VALUES
   (17,'Pampero',  20, 'Destilería La Miel, es uno de los rones más populares de Venezuela y es conocido por su sabor suave y equilibrado.', 'Industrial',  1, 'J987654321',11,2,3),
   (18, 'Pampero',10,  'Es un ron de alta calidad que es perfecto para disfrutar de cualquier ocasión. Es un ron suave y equilibrado que se puede disfrutar solo o en cócteles.',  'Agricola', 5, 'J987654321' , 19,2,4),
   (19, 'Pampero',50,  'Es un ron versátil que se puede disfrutar solo o en cócteles. Es un excelente ron para maridar con mariscos o con frutas tropicales',  'Industrial', 4, 'J987654321', 57, 3, 5),
-  (20, 'Cacique', 30, 'Tiene un color dorado brillante, un aroma suave y equilibrado, y un sabor suave y afrutado.', 'Industrial', 2, 'J568790123', 74,2,2),
+  (20, 'Cacique', 30, 'Tiene un color dorado brillante, un aroma suave y equilibrado, y un sabor suave y afrutado.', 'Industrial', 2, 'J567890123', 74,2,2),
   (21, 'Roble',45, 'El aroma del Ron Roble Viejo Maestro es complejo y aromático. Se pueden apreciar notas de vainilla, caramelo, roble, frutos secos y frutas tropicales', 'Agricola', 3, 'J012345678', 94,3,3),
   (22, 'Roble Viejo Extra Añejo', 25,  'El ron tiene un color dorado oscuro, un aroma complejo y aromático, y un sabor intenso y equilibrado.', 'Agricola', 4,'J012345678',96,1, 1),
   (23, 'Roble Viejo Ultra Añejo', 20,  'El ron tiene un color ámbar oscuro, un aroma complejo y aromático, y un sabor rico y profundo.', 'Industrial', 5, 'J012345678', 105, 4, 5),
@@ -652,18 +652,18 @@ VALUES
   (10, 1, 1);
   
   
-  INSERT INTO "Tarjeta" ("met_pag_id", "tar_nombre", "tar_numero", "tar_CVV", "tar_fecha_vencimiento")
+  INSERT INTO "Tarjeta" ("met_pag_id", "tar_nombre", "tar_numero", "tar_CVV", "tar_fecha_vencimiento", "fk_cliente_juridico", "fk_cliente_natural_1", "fk_cliente_natural_2")
 VALUES
-  (1, 'Tarjeta Visa', '4111111111111111', '123', '2023-12-01 00:00:00'),
-  (2, 'MasterCard', '5555555555554444', '456', '2024-06-01 00:00:00'),
-  (3, 'American Express', '378282246310005', '789', '2022-09-01 00:00:00'),
-  (4, 'Tarjeta Discover', '6011111111111117', '321', '2023-03-01 00:00:00'),
-  (5, 'Visa Electron', '4026000000000002', '987', '2024-02-01 00:00:00'),
-  (6, 'Maestro', '5018000000000009', '654', '2022-11-01 00:00:00'),
-  (7, 'JCB', '3530111333300000', '012', '2023-08-01 00:00:00'),
-  (8, 'Diners Club', '30569309025904', '789', '2024-04-01 00:00:00'),
-  (9, 'Tarjeta Santander', '4815162345678905', '567', '2022-10-01 00:00:00'),
-  (10, 'Tarjeta BBVA', '5105105105105100', '890', '2023-05-01 00:00:00');
+  (1, 'Tarjeta Visa', '4111111111111111', '123', '2023-12-01 00:00:00', 'J123456789', NULL, NULL),
+  (2, 'MasterCard', '5555555555554444', '456', '2024-06-01 00:00:00', 'J987654321', NULL, NULL),
+  (3, 'American Express', '378282246310005', '789', '2022-09-01 00:00:00', 'J568790123', NULL, NULL),
+  (4, 'Tarjeta Discover', '6011111111111117', '321', '2023-03-01 00:00:00', 'J234567890', NULL, NULL),
+  (5, 'Visa Electron', '4026000000000002', '987', '2024-02-01 00:00:00', 'J876543210', NULL, NULL),
+  (6, 'Maestro', '5018000000000009', '654', '2022-11-01 00:00:00', 'J345678901', NULL, NULL),
+  (7, 'JCB', '3530111333300000', '012', '2023-08-01 00:00:00', NULL, 1,'9876143'),
+  (8, 'Diners Club', '30569309025904', '789', '2024-04-01 00:00:00', NULL, 3,'5555535'),
+  (9, 'Tarjeta Santander', '4815162345678905', '567', '2022-10-01 00:00:00', NULL, 8,'9999989'),
+  (10, 'Tarjeta BBVA', '5105105105105100', '890', '2023-05-01 00:00:00',NULL, 10,'4441444');
 
 
 INSERT INTO "Vacacion" ("vac_id", "vac_fecha_inicio", "vac_fecha_fin")
@@ -749,26 +749,25 @@ VALUES
     (7, 'Imagen7', 'Descripción de la Imagen 7', 'https://revistaelconocedor.com/wp-content/uploads/2017/01/ron-1-1024x817.jpg', 7);
 
 
+    -- Insertar dos presentaciones para cada producto
+INSERT INTO "Presentacion" (pre_nombre, pre_descripcion, fk_caja, fk_producto, fk_material_tapa_1, fk_material_tapa_2, fk_material_tapa_3, fk_material_botella_1, fk_material_botella_2,fk_material_botella_3)
+VALUES
+    ('Botella Estándar 0,75ml', 'Presentación estándar en botella',1, 21,1,3,1,1,3,1),
+    ('Botella Premium 1l', 'Presentación premium en botella',2, 23,1,3,1,1,3,1),
+    ('Edición Especial 0,80ml', 'Presentación especial para coleccionistas', 1,27,1,3,1,1,3,1),
+    ('Botella Grande 1,2l', 'Presentación en botella grande',3, 28,1,3,1,1,3,1),
+    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 30,1,3,1,1,3,1),
+    ('Botella Pequeña 0,45l', 'Presentación en botella pequeña',1,  31,1,3,1,1,3,1);
 
 
 INSERT INTO "Lugar_Persona" ("lug_per_id", "Lug_per_tipo", "fk_lugar", "fk_cliente_juridico", "fk_proveedor")
 VALUES
   (1, 'Fisica', 700,'J123456789', NULL),
   (2, 'Fisica', 200,'J987654321', NULL),
-  (3, 'Fisica', 300,'J567890123', NULL),
+  (3, 'Fisica', 300,'J568790123', NULL),
   (5, 'Fiscal', 500,'J876543210', NULL),
   (6, 'Fiscal', 600, 'J345678901', NULL);
   
- INSERT INTO "Presentacion" ("pre_id", "pre_nombre", "pre_descripcion", "fk_caja", "fk_producto", "fk_material_tapa_1", "fk_material_tapa_2", "fk_material_tapa_3", "fk_material_botella_1", "fk_material_botella_2", "fk_material_botella_3")
-VALUES 
-    (1, 'Presentacion1', 'Descripción de Presentacion 1', 1, 1, 1, 3, 1, 1, 3, 1),
-    (2, 'Presentacion2', 'Descripción de Presentacion 2', 2, 2, 2, 7, 2, 2, 7, 2),
-    (3, 'Presentacion3', 'Descripción de Presentacion 3', 3, 3, 3, 5, 3, 3, 5, 3),
-    (4, 'Presentacion4', 'Descripción de Presentacion 4', 4, 4, 4, 9, 4, 4, 9, 4),
-    (5, 'Presentacion5', 'Descripción de Presentacion 5', 5, 5, 5, 2, 5, 5, 2, 5),
-    (6, 'Presentacion6', 'Descripción de Presentacion 6', 3, 6, 6, 1, 2, 6, 1, 2);
-
-
 INSERT INTO "Presentacion_Evento" ("pre_eve_id", "pre_eve_cantidad", "pre_eve_precio_venta", "fk_presentacion", "fk_evento", "fk_premio")
 VALUES 
     (1, 10, 50.00, 1,1,2),
@@ -811,6 +810,7 @@ VALUES
     (6, 27, '2023-06-12', '2023-06-30', 5, 3),
     (7, 40, '2023-07-08', '2023-07-25', 4, 1);
 
+
 INSERT INTO "Compra_Presentacion" ("com_prod_id", "com_prod_cantidad", "com_prod_precio_unitario", "fk_presentacion", "fk_producto")
 VALUES 
     (1, 10, 50.00,1, 1),
@@ -821,27 +821,27 @@ VALUES
     (6, 12, 27.80, 5,6),
     (7, 18, 40.25, 1, 7);
 
-INSERT INTO "Inventario_Fisico_Presentacion" ("inv_fis_pre_id", "inv_fis_cantidad", "fk_fisica", "fk_presentacion", "inv_fis_precio")
+INSERT INTO "Inventario_Fisico_Presentacion" ("inv_fis_pre_id", "inv_fis_cantidad",  "inv_fis_precio", "fk_fisica", "fk_presentacion")
 VALUES 
-    (1, 100, 1, 1, 50.00),
-    (2, 150, 2, 2, 30.25),
-    (3, 75, 3,  3, 45.75),
-    (4, 200, 4, 4, 20.50),
-    (5, 50, 5,  5, 15.00),
-    (6, 120, 5, 6, 27.80),
-    (7, 180, 1, 6, 40.25);
+    (1, 100, 50, 1, 1),
+    (2, 150, 30.25, 2, 2),
+    (3, 75, 45.75, 3,  3),
+    (4, 200, 20.50, 4, 4),
+    (5, 50, 15.00, 5,  5),
+    (6, 120, 27.80, 5, 6),
+    (7, 180, 40.25, 1, 6);
 
 
 
-INSERT INTO "Inventario_Virtual_Presentacion" ("inv_vir_pre_id", "inv_vir_pre_cantidad", "fk_virtual", "fk_presentacion", "inv_vir_precio")
+INSERT INTO "Inventario_Virtual_Presentacion" ("inv_vir_pre_id", "inv_vir_pre_cantidad", "inv_vir_precio", "fk_virtual", "fk_presentacion")
 VALUES 
-    (1, 100, 1, 2, 50),
-    (2, 150, 2, 3, 30.25),
-    (3, 75, 3, 2 , 45.75),
-    (4, 200, 4, 5, 20.50),
-    (5, 50,5, 3  , 15.00),
-    (6, 120, 5, 1, 27.80),
-    (7, 180, 1, 2, 40.25);
+    (1, 100, 50, 1, 2),
+    (2, 150, 30.25, 2, 3),
+    (3, 75, 45.75, 3, 2),
+    (4, 200, 20.50, 4, 5),
+    (5, 50, 15.00, 5, 3),
+    (6, 120,27.80, 5, 1),
+    (7, 180, 40.25, 1, 2);
 
 INSERT INTO "Afiliado" ("afi_id", "afi_fecha_afiliacion", "afi_QR", "fk_fisica", "fk_virtual", "fk_cliente_natural", "fk_cliente_natural_2", "fk_estatus", "fk_cliente_juridico", "fk_proveedor")
 VALUES 
@@ -857,20 +857,11 @@ INSERT INTO "Usuario"("usu_id", "usu_contraseña", "fk_rol",
 					 "fk_cliente_natural_1", "fk_cliente_natural_2",
 					 "fk_empleado_1", "fk_empleado_2")
 VALUES
-(1,'123456', 1, NULL, NULL, NULL, NULL, 50, 1234567),
-(2,'123456', 2, NULL, NULL, NULL, NULL, 51, 7654321),
-(3,'123456', 3, NULL, NULL, NULL, NULL, 52, 9876543),
-(4,'123456', 4, NULL, NULL, NULL, NULL, 53, 1111111),
-(5,'123456', 5, NULL, NULL, NULL, NULL, 54, 2222222);
+(1,'123456', 1, NULL, NULL, NULL, NULL, 1, 1234567),
+(2,'123456', 2, NULL, NULL, NULL, NULL, 2, 7654321),
+(3,'123456', 3, NULL, NULL, NULL, NULL, 3, 9876543),
+(4,'123456', 4, NULL, NULL, NULL, NULL, 4, 1111111),
+(5,'123456', 5, NULL, NULL, NULL, NULL, 5, 2222222);
 
--- Insertar dos presentaciones para cada producto
-INSERT INTO "Presentacion" (pre_nombre, pre_descripcion, fk_caja, fk_producto, fk_material_tapa_1, fk_material_tapa_2, fk_material_tapa_3, fk_material_botella_1, fk_material_botella_2,fk_material_botella_3)
-VALUES
-    ('Botella Estándar 0,75ml', 'Presentación estándar en botella',1, 21,1,3,1,1,3,1),
-    ('Botella Premium 1l', 'Presentación premium en botella',2, 23,1,3,1,1,3,1),
-    ('Edición Especial 0,80ml', 'Presentación especial para coleccionistas', 1,27,1,3,1,1,3,1),
-    ('Botella Grande 1,2l', 'Presentación en botella grande',3, 28,1,3,1,1,3,1),
-    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 30,1,3,1,1,3,1),
-    ('Botella Pequeña 0,45l', 'Presentación en botella pequeña',1,  31,1,3,1,1,3,1);
 
    

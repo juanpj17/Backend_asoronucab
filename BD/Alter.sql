@@ -75,8 +75,8 @@ ADD CONSTRAINT "fk_proveedor"
 FOREIGN KEY ("fk_proveedor") REFERENCES "Proveedor"("per_jur_rif") 
 ON DELETE CASCADE,
 ADD CONSTRAINT "fk_lugar" 
-FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id") 
-ON DELETE CASCADE;
+FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id");
+
 
 --COMPRA 
 -- Variables
@@ -193,8 +193,8 @@ ADD CONSTRAINT "fk_proveedor"
 FOREIGN KEY ("fk_proveedor") REFERENCES "Proveedor"("per_jur_rif")
 ON DELETE CASCADE,
 ADD CONSTRAINT "fk_lugar"
-FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"(lug_id)
-ON DELETE CASCADE;
+FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"(lug_id);
+
 
 --Entrada
 -- Variables
@@ -215,8 +215,7 @@ ADD COLUMN "fk_lugar" INT NOT NULL;
 -- Foraneas 
 ALTER TABLE "Evento"
 ADD CONSTRAINT "fk_lugar"
-FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id")
-ON DELETE CASCADE;
+FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id");
 
 --Fisica
 -- Variables
@@ -227,8 +226,7 @@ ADD COLUMN "fk_tasa" INT UNIQUE NOT NULL;
 -- Foraneas
 ALTER TABLE "Fisica"
 ADD CONSTRAINT "fk_lugar"
-FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id")
-ON DELETE CASCADE,
+FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id"),
 ADD CONSTRAINT "fk_tasa"
 FOREIGN KEY ("fk_tasa") REFERENCES "Tasa"("tas_id")
 ON DELETE CASCADE;
@@ -303,11 +301,6 @@ ADD CONSTRAINT "fk_mi_punto"
 FOREIGN KEY ("fk_mi_punto") REFERENCES "Mi_Punto"("met_pag_id")
 ON DELETE CASCADE;
 
--- Foraneas
-ALTER TABLE "Pago_Afiliacion_Cuota"
-ADD CONSTRAINT "fk_afiliado"
-FOREIGN KEY ("fk_afiliado") REFERENCES "Afiliado"("afi_id")
-ON DELETE CASCADE;
 
 --Pago_Entrada_metodo_pago
 -- Variables
@@ -445,8 +438,7 @@ ADD CONSTRAINT "fk_proveedor"
 FOREIGN KEY ("fk_proveedor") REFERENCES "Proveedor"("per_jur_rif")
 ON DELETE CASCADE,
 ADD CONSTRAINT "fk_lugar"
-FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id")
-ON DELETE CASCADE,
+FOREIGN KEY ("fk_lugar") REFERENCES "Lugar"("lug_id"),
 ADD CONSTRAINT "fk_categoria"
 FOREIGN KEY ("fk_categoria") REFERENCES "Categoria"("cat_id")
 ON DELETE CASCADE,
