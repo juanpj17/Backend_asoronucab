@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS "Cliente_Juridico" (
     "per_jur_direccion_fiscal" VARCHAR(255) NOT NULL,
     "per_jur_direccion_fisica" VARCHAR(255) NOT NULL,
     "per_jur_capital" NUMERIC(12,3) NOT NULL CHECK ("per_jur_capital" > 0),
+    "per_jur_punto"   NUMERIC(5,0) CHECK ("per_jur_punto" >= 0),
     PRIMARY KEY("per_jur_rif")
 );
 
