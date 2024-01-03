@@ -4,7 +4,7 @@ import { response, request } from 'express';
 
 const proveedorGet = async(req = request, res = response) => {
     try {
-        const evento = await pool.query('SELECT * FROM seleccionar_proveedores()');
+        const evento = await pool.query('SELECT * FROM obtener_proveedores()');
         res.json(evento.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
@@ -17,7 +17,7 @@ const proveedorGet = async(req = request, res = response) => {
 
 const  proveedorPost = async (req = request, res = response) => {
     try {
-        const evento = await pool.query('SELECT * FROM seleccionar_proveedores()');
+        const evento = await pool.query('SELECT * FROM obtener_proveedores()');
         res.json(evento.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);

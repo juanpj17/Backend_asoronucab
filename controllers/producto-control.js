@@ -37,7 +37,7 @@ const productoProveedorGet = async(req = request, res = response) => {
 
     try {
 
-        const productos = await pool.query('SELECT * FROM seleccionar_proveedor()');
+        const productos = await pool.query('SELECT * FROM obtener_proveedores()');
         res.json(productos.rows);   
 
     } catch (error) {

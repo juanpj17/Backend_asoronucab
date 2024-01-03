@@ -829,7 +829,7 @@ AS $$
 DECLARE 
 	mens_1 VARCHAR;
 	mens_2 VARCHAR;
-    mens_ VARCHAR;
+    mens_3 VARCHAR;
 	fecha_ing TIMESTAMP;
 	cod1_empleado INT;
 	cod2_empleado VARCHAR;
