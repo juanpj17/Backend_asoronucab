@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { clienteGet, clientePost, clientePut, clienteDelete, clienteGetN ,clientePutN, clientePostN, 
     clienteDeleteN , clienteGetJ ,clientePutJ, clientePostJ, clienteDeleteJ , telefonoClienteN, 
     modificarClienteN, modificarUsuario, consultarClienteJ, buscarCorreoN, consultarUsuario,
-    modificarCorreo
+    modificarCorreo, consultarLugar, consultarUsuarioJ, consultarTelefonoJ, insertarTelefonoJ,
+    modificarPostJ
 } from '../controllers/cliente-control.js';
 
 export const routerCliente = Router();
@@ -47,3 +48,12 @@ routerCliente.post('/usuarioN', consultarUsuario)
 
 routerCliente.put('/correoNatural', modificarCorreo)
 
+routerCliente.post('/lugarPersona', consultarLugar)
+
+routerCliente.post('/consultarUsuarioJ', consultarUsuarioJ)
+
+routerCliente.post('/consultarTelefonoJ', consultarTelefonoJ)
+
+routerCliente.post('/insertarTelefonoJ', insertarTelefonoJ)
+
+routerCliente.post('/modificarPostJ', modificarPostJ)
