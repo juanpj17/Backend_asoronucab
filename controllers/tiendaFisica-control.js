@@ -11,7 +11,7 @@ const tiendaFisicaPost = async(req, res = response) => {
     try {
         const { cod_pro, cod_eve} = req.body;
         const result = await pool.query(
-            'SELECT verificar_presentacion($1, $2)',
+            'SELECT * FROM verificar_presentacion($1, $2)',
             [cod_pro, cod_eve]
           );
         res.json(result.rows);

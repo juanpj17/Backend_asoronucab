@@ -16,7 +16,7 @@ routerCliente.post('/', clientePost)
 
 routerCliente.delete('/', clienteDelete)
 
-// routerCliente.get('/naturalllllll', clienteGetN);
+routerCliente.post('/naturalUno', clienteGetN);
 
 routerCliente.put('/natural', clientePutN)
 

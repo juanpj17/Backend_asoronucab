@@ -829,6 +829,7 @@ AS $$
 DECLARE 
 	mens_1 VARCHAR;
 	mens_2 VARCHAR;
+    mens_ VARCHAR;
 	fecha_ing TIMESTAMP;
 	cod1_empleado INT;
 	cod2_empleado VARCHAR;
@@ -849,6 +850,8 @@ BEGIN
 									  cod1_empleado, cod2_empleado);
 	mens_2 := insertar_correo("correo", cod1_empleado, cod2_empleado,
 							  NULL, NULL, NULL);
+
+    mens_3 := insertar_empleado_horario(cod1_empleado, cod2_empleado);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1413,12 +1416,12 @@ END;
 $BODY$;
 
 CREATE OR REPLACE FUNCTION verificar_presentacion(cod_pre integer, cod_eve integer)
-    RETURNS TABLE(precio numeric) 
+    RETURNS TABLE(precio numeric, cantidad numeric) 
     LANGUAGE 'plpgsql'
 AS $BODY$
 BEGIN
     RETURN QUERY 
-    SELECT pre_eve_precio_venta 
+    SELECT pre_eve_precio_venta, pre_eve_cantidad
     FROM public."Presentacion_Evento"
     WHERE cod_pre = fk_presentacion AND cod_eve = fk_evento;
 END;
@@ -2370,3 +2373,70 @@ begin
 	
 end;
 $BODY$;
+
+CREATE OR REPLACE FUNCTION insertar_empleado_horario(
+    codigo_empleado_1 int,
+    codigo_empleado_2 VARCHAR
+)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Empleado_Horario" (fk_empleado, fk_empleado_2, fk_horario)
+    VALUES (codigo_empleado_1, codigo_empleado_2, 1);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insertar_entrada(
+    codigo int,
+    fecha_inicial DATE,
+    fecha_final DATE,
+    precio numeric
+)
+RETURNS VOID AS $$
+DECLARE
+    fecha_actual DATE := fecha_inicial;
+    i INT := 1;
+BEGIN
+    -- Iniciar el bucle
+    WHILE fecha_actual <= fecha_final LOOP
+        -- Realizar la inserción en la tabla "Entrada"
+        INSERT INTO "Entrada" (ent_fecha_hora, ent_precio, fk_evento)
+        VALUES (fecha_actual, precio, codigo);
+
+        -- Incrementar la fecha y el índice
+        fecha_actual := fecha_actual + INTERVAL '1 day';
+        i := i + 1;
+        
+       
+        EXIT WHEN fecha_actual > fecha_final;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_cantidad_entrada(
+    codigo int
+)
+RETURNS INT AS $$
+
+BEGIN
+    -- Obtener la suma de la cantidad de entradas para el código dado
+    SELECT ent_precio
+    FROM "Entrada"
+    WHERE fk_evento = codigo;
+
+    RETURN ent_precio;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION actualizar_precio_entradas(
+    codigo INT,
+    precio numeric
+)
+RETURNS VOID AS $$
+BEGIN
+
+    UPDATE "Entrada"
+    SET ent_precio =precio
+    WHERE fk_evento = codigo;
+
+END;
+$$ LANGUAGE plpgsql;
