@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS "Cliente_Juridico" (
     "per_jur_direccion_fiscal" VARCHAR(255) NOT NULL,
     "per_jur_direccion_fisica" VARCHAR(255) NOT NULL,
     "per_jur_capital" NUMERIC(12,3) NOT NULL CHECK ("per_jur_capital" > 0),
+    "per_jur_punto"   NUMERIC(5,0) CHECK ("per_jur_punto" >= 0),
     PRIMARY KEY("per_jur_rif")
 );
 
@@ -829,7 +830,11 @@ AS $$
 DECLARE 
 	mens_1 VARCHAR;
 	mens_2 VARCHAR;
+<<<<<<< HEAD
     mens_3 VARCHAR;
+=======
+    mens_ VARCHAR;
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
 	fecha_ing TIMESTAMP;
 	cod1_empleado INT;
 	cod2_empleado VARCHAR;
@@ -1022,6 +1027,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+<<<<<<< HEAD
 
 CREATE OR REPLACE FUNCTION seleccionar_eventos()
 RETURNS table (codigo int,nombre varchar,descripcion varchar,num_entradas numeric,
@@ -2440,3 +2446,2139 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
+--gaby desde aqui
+--Historicos
+--tasa de cambio
+create or replace function obtener_historico_tasa()
+returns table (valor numeric,fecha_i timestamp,fecha_f timestamp)
+as $$
+begin
+return query SELECT tas_valor, tas_fecha_inicial, tas_fecha_final
+			  FROM public."Tasa"
+			   order by  tas_fecha_inicial desc;
+end
+$$ language plpgsql;
+-- historico de punto
+create or replace function obtener_historico_punto()
+returns table (valor numeric,fecha_i timestamp,fecha_f timestamp)
+as $$
+begin
+return query SELECT pun_valor, pun_fecha_inicial, pun_fecha_final
+			  FROM public."Punto"
+			  order by  pun_fecha_inicial desc;
+end
+$$ language plpgsql;
+--Afiliados
+--codigo identificador
+CREATE SEQUENCE IF NOT EXISTS public.carnet_secuencia
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.carnet_secuencia
+    OWNER TO postgres;
+	
+CREATE OR REPLACE FUNCTION generar_secuencia() RETURNS bigint AS $$
+DECLARE
+   secuencia bigint;
+   codigo varchar;
+   i int;
+BEGIN
+   codigo:='';
+    FOR i IN 0..8 STEP BY 1
+	LOOP
+	    secuencia := nextval('carnet_secuencia');
+		codigo:= codigo || cast(secuencia as varchar) ;
+		
+		RAISE NOTICE 'Valor de la variable i es %', cast(secuencia as varchar);
+		RAISE NOTICE 'Valor de la codigo es %', codigo;
+	END LOOP;
+	
+   
+   RETURN SUBSTRING ( codigo ,1 , 8 );
+END;
+$$ LANGUAGE plpgsql;
+--obtener usuario
+CREATE OR REPLACE FUNCTION public.obtener_codigo_rif_cliente(
+	correo character varying,
+	"contraseña" character varying)
+    RETURNS TABLE(cod1 integer, cod2 character varying, tipo text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+declare codCN varchar;
+declare codEmp varchar;
+declare codCJ varchar;
+declare codCN_1 varchar;
+declare codEmp_1 varchar;
+declare codCJ_1 varchar;
+declare mensaje varchar;
+begin
+	--buscar por correo
+	select CAST ( fk_cliente_natural AS varchar )|| fk_cliente_natural_1 as codigo_cliente
+	into codCN
+	from "Correo" where cor_direccion=correo;
+	
+	select CAST ( fk_empleado AS varchar )|| fk_empleado_1 as codigo_empleado
+	into codEmp
+	from "Correo" where cor_direccion=correo;
+
+	select fk_cliente_juridico 
+	into codCJ
+	from "Correo" where cor_direccion=correo;
+	--buscar por contraseña
+	select CAST ( fk_cliente_natural_1 AS varchar )|| fk_cliente_natural_2 as codigo_cliente
+	into codCN_1
+	from "Usuario" where "usu_contraseña"="contraseña" and fk_empleado_1 is null and
+	fk_empleado_2 is null and fk_cliente_juridico is null ;
+	
+	select CAST ( fk_empleado_1 AS varchar )|| fk_empleado_2 as codigo_empleado
+	into codEmp_1
+	from "Usuario" where "usu_contraseña"="contraseña" and fk_cliente_juridico is null and
+	fk_cliente_natural_1 is null and fk_cliente_natural_2 is null;
+	
+	select  fk_cliente_juridico 
+	into codCJ_1
+	from "Usuario" where "usu_contraseña"="contraseña" and fk_cliente_natural_1 is null and fk_cliente_natural_2 is null
+	and fk_empleado_1 is null and fk_empleado_2 is null;
+	--verificar si coinciden
+	
+	RAISE NOTICE 'n: ==> %',codCN;
+	RAISE NOTICE 'n: ==> %',codCN_1;
+	if (codCN=codCN_1  and  codCN is not null)then
+		RAISE NOTICE 'n: ==> %',codCN;
+		return query select fk_cliente_natural,fk_cliente_natural_1,'Cliente_Natural'
+					 from "Correo" where cor_direccion=correo;
+	else
+		if codCJ=codCJ_1 and codCJ is not null  then
+			return query select 0,fk_cliente_juridico,'Cliente_Juridico'
+					 from "Correo" where cor_direccion=correo;
+		else
+			if codEmp=codEmp_1 and codEmp  is not null then
+			    	return query select fk_empleado,fk_empleado_1,'Empleado'
+					 from "Correo" where cor_direccion=correo;
+			end if;
+		end if;
+	end if;	
+			
+
+end;
+$BODY$;
+
+ALTER FUNCTION public.obtener_codigo_rif_cliente(character varying, character varying)
+    OWNER TO postgres;
+--datos del carnet
+
+CREATE OR REPLACE FUNCTION public.datos_carnet(
+	codigo_tipo character varying)
+    RETURNS TABLE(cedula text, rif text, nombre text, apellido text, razon_social text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+declare parte1 text;
+declare parte2 text;
+declare parte3 varchar;
+declare parte4 varchar;
+begin
+codigo_tipo:= '_'  || codigo_tipo;
+parte1 := split_part(codigo_tipo, '_', 2);
+parte2 := split_part(codigo_tipo, '_', 3);
+parte3 := split_part(codigo_tipo, '_', 4);
+parte4 := split_part(codigo_tipo, '_', 5);
+  
+RAISE NOTICE 'El id del  es: ==> %',parte1;
+RAISE NOTICE 'El id del  es: ==> %', parte2;
+RAISE NOTICE 'El id del  es: ==> %', parte3;
+RAISE NOTICE 'El id del  es: ==> %', parte4;
+if parte4='Natural' then
+RAISE NOTICE 'El id del  es: ==> %', parte1;
+return query  select cast(per_nat_ci as text),'',(per_nat_p_nombre ||' '|| per_nat_p_nombre) as nombres,
+(per_nat_p_apellido  ||' '||per_nat_s_apellido) as apellidos,''
+ from "Cliente_Natural" where per_nat_ci=parte2;
+else
+return query select '',Cast(per_jur_rif as text),'','',cast(per_jur_razon_social as text) from "Cliente_Juridico" where parte2=per_jur_rif;
+
+end if;
+end;
+$BODY$;
+
+ALTER FUNCTION public.datos_carnet(character varying)
+    OWNER TO postgres;
+
+--afiliacion
+--afiliarse
+CREATE OR REPLACE FUNCTION public.afiliarse(
+	cedula character varying,
+	rif character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare codigo varchar;
+declare aux int;
+begin 
+codigo:=public.generar_secuencia();
+	if  cedula= '' then
+	INSERT INTO public."Afiliado"(
+	afi_fecha_afiliacion, "afi_QR", 
+	afi_codigo_iden, fk_fisica, fk_virtual, fk_cliente_natural, fk_cliente_natural_2, 
+	fk_estatus, fk_cliente_juridico, fk_proveedor)
+	VALUES (current_timestamp at time zone 'VET', rif,codigo, 1, 1, null, null,11 , rif, null);
+	
+	else
+		select per_nat_id 
+		into aux
+		from "Cliente_Natural" where per_nat_ci=cedula;
+		INSERT INTO public."Afiliado"(
+	    afi_fecha_afiliacion, "afi_QR", 
+	    afi_codigo_iden, fk_fisica, fk_virtual, fk_cliente_natural, fk_cliente_natural_2, 
+		fk_estatus, fk_cliente_juridico, fk_proveedor)
+		VALUES (current_timestamp at time zone 'VET', cedula,codigo, 1,1,aux, cedula,11 , null, null);
+		
+	end if;
+end;
+$BODY$;
+
+ALTER FUNCTION public.afiliarse(character varying, character varying)
+    OWNER TO postgres;
+--busca el codigo qr y el de identificacion del ailiado y llama a la funcion afiliacion	
+
+CREATE OR REPLACE FUNCTION public.datos_afiliado(
+	cedula character varying,
+	rif character varying)
+    RETURNS TABLE(codigo character varying, qr character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+declare encontrado_1 int;
+declare encontrado_2 int;
+DECLARE AUX VARCHAR;
+begin
+    SELECT afi_id
+	into encontrado_1
+	FROM public."Afiliado"
+	where fk_cliente_natural_2=cedula;
+	SELECT afi_id
+	into encontrado_2
+	FROM public."Afiliado"
+	where fk_cliente_juridico=rif;
+ 	if cedula <> '' and encontrado_1>0   then 
+  		return  query SELECT afi_codigo_iden, "afi_QR" from "Afiliado" where afi_id=encontrado_1;
+ 	else 
+   		if cedula <> '' and  then 
+     	SELECT INTO AUX public.afiliarse(cedula, rif);
+	 	return  query SELECT afi_codigo_iden, "afi_QR" from "Afiliado" where fk_cliente_natural_2=cedula;
+		end if;
+	end if;	
+	if rif <> '' and encontrado_2>0  then 
+  		return  query SELECT afi_codigo_iden, "afi_QR" from "Afiliado" where afi_id=encontrado_2;
+ 	else 
+   		if rif <> '' then 
+     	SELECT INTO AUX public.afiliarse(cedula, rif);
+	 	return  query SELECT afi_codigo_iden, "afi_QR" from "Afiliado" where fk_cliente_juridico=rif;
+		end if;
+	end if;	
+	
+end;
+$BODY$;
+
+ALTER FUNCTION public.datos_afiliado(character varying, character varying)
+    OWNER TO postgres;
+--pagar afiliacion
+--busca si ya pago el mes
+CREATE OR REPLACE FUNCTION public.buscar_pago(
+	codigo_afiliado character varying)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare codigo int;
+declare fecha timestamp;
+begin
+fecha:=current_timestamp at time zone 'VET';
+RAISE NOTICE 'Valor de la variable aux1 es %', fecha;
+SELECT pa_af_cuo_id
+	FROM public."Pago_Afiliacion_Cuota","Afiliado"
+	INTO CODIGO
+	where fk_afiliado=afi_id and afi_codigo_iden=codigo_afiliado and 
+	extract( year from pa_af_cuo_fecha)=extract(year from  fecha) and 
+	extract( month from pa_af_cuo_fecha)=extract(month from  fecha);
+RETURN CODIGO;
+end;
+=======
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+
+CREATE OR REPLACE FUNCTION seleccionar_eventos()
+RETURNS table (codigo int,nombre varchar,descripcion varchar,num_entradas numeric,
+			   fecha_hora_inicial timestamp,fecha_hora_final timestamp, direccion varchar,
+			  parroquia int)
+AS
+$$
+BEGIN
+   return query SELECT eve_id, eve_nombre, eve_descripcion, eve_cantidad_entradas, eve_fecha_hora_inicial, eve_fecha_hora_final, eve_direccion, fk_lugar
+				FROM public."Evento";
+END;
+$$
+LANGUAGE plpgsql;
+
+-- FUNCTION: public.eliminar_un_cliente_natural(integer, character varying)
+
+-- DROP FUNCTION IF EXISTS public.eliminar_un_cliente_natural(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.eliminar_un_cliente_natural(
+	cod1 integer,
+	cod2 character varying)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin
+DELETE FROM public."Cliente_Natural"
+	WHERE per_nat_id=cod1 and per_nat_ci=cod2;
+return 'Cliente eliminado';
+end;
+$BODY$;
+
+<<<<<<< HEAD
+ALTER FUNCTION public.buscar_pago(character varying)
+    OWNER TO postgres;
+-- comprobar si los montos parciales dan el total
+CREATE OR REPLACE FUNCTION public.comprobar_montos_total(
+	montos character varying[],
+	codigos character varying[],
+	total character varying)
+    RETURNS boolean
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare i varchar;
+declare suma numeric;
+begin
+suma:=0;
+FOREACH i IN ARRAY montos
+  	LOOP
+		suma:=suma+ cast(i as numeric);
+		RAISE NOTICE 'Palaba encontrada ==> %', suma;
+  	END LOOP;
+	RAISE NOTICE 'total ==> %', suma;
+	return cast (suma as varchar)= total;
+end;
+
+$BODY$;
+
+ALTER FUNCTION public.comprobar_montos_total(character varying[], character varying[], character varying)
+    OWNER TO postgres;
+	-- inserta el pago
+	CREATE OR REPLACE FUNCTION public.verificar_pago_afiliacion(
+	codigo_afiliado character varying,
+	montos character varying[],
+	codigos_tarjeta character varying[],
+	total character varying)
+=======
+ALTER FUNCTION public.eliminar_un_cliente_natural(integer, character varying)
+    OWNER TO postgres;
+
+-- FUNCTION: public.insertar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.insertar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.insertar_cliente_juridico(
+	rif character varying,
+	denominacion_comer character varying,
+	razon_soc character varying,
+	pagina_web character varying,
+	direccion_fisica character varying,
+	direccion_fiscal character varying,
+	capital numeric)
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+<<<<<<< HEAD
+declare codigo int;
+declare total_pago boolean;
+declare id_afiliado int;
+declare mensaje varchar;
+begin
+
+select afi_id into id_afiliado from "Afiliado" where afi_codigo_iden=codigo_afiliado;
+codigo:=public.buscar_pago(codigo_afiliado);
+total_pago:=public.comprobar_montos_total(montos, codigos_tarjeta, total);
+	if codigo is null and total_pago=true then
+		INSERT INTO public."Pago_Afiliacion_Cuota"(
+		pa_af_cuo_total, pa_af_cuo_fecha, pa_af_cuo_mes_can, fk_afiliado)
+		VALUES ( cast (total as numeric), current_timestamp at time zone 'VET',
+				to_char(now() AT TIME ZONE 'VET', 'TMMonth'), id_afiliado);
+		mensaje:='Cuota pagada exitosamente';
+	else 
+		if codigo>0 then
+			mensaje:='Usted ya cancelo este mes';
+		else
+			mensaje:='El monto a cancelar no coincide con la cuota de afiliacion';
+		end if;
+
+  end if;
+
+RETURN mensaje;
+end;
+
+$BODY$;
+
+ALTER FUNCTION public.verificar_pago_afiliacion(character varying, character varying[], character varying[], character varying)
+    OWNER TO postgres;
+-- convierta la cadena en arrays
+CREATE OR REPLACE FUNCTION public.pagar(
+	codigo_identificador_afiliado character varying,
+	montos character varying,
+	id_tarjetas character varying,
+	total character varying,
+	cant_tarjetas character varying)
+=======
+declare aux boolean;
+declare aux2 boolean;
+declare mensaje varchar;
+begin
+aux:=(REPLACE(rif, ' ', '') !~ '[^0-9JG]');
+aux2:=(REPLACE(denominacion_comer, ' ', '') !~ '[^a-zA-z]') and (REPLACE(razon_soc, ' ', '') !~ '[^a-zA-z]') ;
+	if (REPLACE(rif, ' ', '')='' or REPLACE(denominacion_comer, ' ', '')=''or 
+	    REPLACE(razon_soc, ' ', '')='' or REPLACE(pagina_web, ' ', '')=''or REPLACE(direccion_fiscal, ' ', '')=''
+   		or REPLACE(direccion_fisica, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else 
+		if not aux then
+			mensaje:='Formato de rif invalido';
+		else
+			if length(rif)<10 then
+				mensaje:='El rif debe tener minimo 10 numeros';
+			else
+				if  not aux2 then
+					mensaje:='La denominacion comercial y la razon social no acepta numeros ni caracteres especiales';
+				else
+					mensaje:='Registro exitoso';
+					INSERT INTO public."Cliente_Juridico"(
+					per_jur_rif, per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital)
+					VALUES (rif, denominacion_comer , razon_soc , pagina_web, direccion_fiscal, direccion_fisica , capital);
+				end if;
+			end if;
+		end if;
+	end if;
+return mensaje;
+end;
+$BODY$;
+
+ALTER FUNCTION public.insertar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric)
+    OWNER TO postgres;
+
+-- FUNCTION: public.seleccionar_todos_cliente_juridico()
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_todos_cliente_juridico();
+
+CREATE OR REPLACE FUNCTION public.seleccionar_todos_cliente_juridico(
+	)
+    RETURNS TABLE(rif character varying, denominacion_comercial character varying, razon_social character varying, pagina_web character varying, direccion_fiscal character varying, direccion_fisica character varying, capital numeric) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT per_jur_rif, per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital
+				FROM public."Cliente_Juridico";
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_todos_cliente_juridico()
+    OWNER TO postgres;
+
+
+-- FUNCTION: public.seleccionar_un_cliente_natural(integer, character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_un_cliente_natural(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_natural(
+	cod1 integer,
+	cod2 character varying)
+    RETURNS TABLE(rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, puntos_acumulados numeric, parroquia integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, per_nat_punto,fk_lugar
+				FROM public."Cliente_Natural"
+				where per_nat_id=cod1 and per_nat_ci=cod2;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_natural(integer, character varying)
+    OWNER TO postgres;
+
+-- FUNCTION: public.seleccionar_un_cliente_juridico(character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_un_cliente_juridico(character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_juridico(
+	rif character varying)
+    RETURNS TABLE(denominacion_comercial character varying, razon_social character varying, pagina_web character varying, direccion_fiscal character varying, direccion_fisica character varying, capital numeric) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT  per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital
+				FROM public."Cliente_Juridico"
+				where per_jur_rif=rif;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_juridico(character varying)
+    OWNER TO postgres;
+
+
+
+CREATE OR REPLACE FUNCTION public.seleccionar_todos_clientes()
+    RETURNS TABLE(doc character varying, 
+				  nombre character varying, 
+				  apellido character varying, 
+				  puntos_acumulados character varying,
+                  tipo text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+        SELECT 
+            per_jur_rif AS doc, 
+            per_jur_denominacion_comercial AS nombre, 
+            per_jur_razon_social AS apellido, 
+            per_jur_pagina_web AS puntos_acumulados,
+            'juridico' AS tipo
+        FROM public."Cliente_Juridico"
+        UNION ALL
+        SELECT 
+            per_nat_ci AS doc, 
+            per_nat_p_nombre AS denominacion_comercial, 
+            per_nat_p_apellido AS razon_social, 
+            CAST(per_nat_punto AS VARCHAR(255)) AS puntos_acumulados,
+            'natural' AS tipo
+        FROM public."Cliente_Natural";
+END;
+$BODY$;
+ALTER FUNCTION public.seleccionar_todos_clientes()
+    OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_natural_por_ci(
+	cod2 character varying)
+    RETURNS TABLE(rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, puntos_acumulados numeric, parroquia integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, per_nat_punto,fk_lugar
+				FROM public."Cliente_Natural"
+				where per_nat_ci=cod2;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_natural_por_ci( character varying)
+    OWNER TO postgres;
+
+
+
+
+-- FUNCTION: public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.registro_cliente_natural(
+	ced character varying,
+	rif character varying,
+	p_nombre character varying,
+	s_nombre character varying,
+	p_apellido character varying,
+	s_apellido character varying,
+	direccion character varying,
+	parroquia integer)
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+<<<<<<< HEAD
+
+declare aux1 varchar;
+declare montos_array varchar[];
+declare tarjetas_array varchar[];
+declare aux2 varchar;
+declare mensaje varchar;
+declare aux boolean;
+
+declare i int;
+begin
+aux:=(montos !~ '[^0-9 $]');
+i:=LENGTH(cant_tarjetas);
+if aux=true then
+ FOR i IN 1..i
+	LOOP
+		aux1:=split_part(montos, '$', i);
+		RAISE NOTICE 'Valor de la variable aux1 es %', aux1;
+		select into montos_array  array_append(montos_array, aux1 );
+		
+		aux2:=split_part(id_tarjetas, '$', i);
+		select into tarjetas_array array_append(tarjetas_array,aux2);
+	END LOOP;
+ 
+
+RAISE NOTICE 'Valor del array montos  es %',montos_array ;
+RAISE NOTICE 'Valor del array tarjetas  es %',tarjetas_array ;
+   mensaje:=public.verificar_pago_afiliacion(codigo_identificador_afiliado,montos_array,tarjetas_array, total) ;  
+  else
+  	mensaje:='Los montos ingresados no son numeros validos';
+	end if;
+ 
+  return mensaje;
+end;
+$BODY$;
+
+ALTER FUNCTION public.pagar(character varying, character varying, character varying, character varying, character varying)
+    OWNER TO postgres;
+--factura afiliacion
+
+CREATE OR REPLACE FUNCTION public.datos_factura(
+	codigo_identificador_afiliado character varying)
+    RETURNS TABLE(num_factura character varying, total character varying, mes character varying, fecha character varying) 
+=======
+declare mensaje varchar;
+declare ValCedRif boolean;
+declare ValnombApell boolean;
+begin
+ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9VE]' )and (REPLACE(rif, ' ', '') !~ '[^0-9N]');
+ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
+(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
+	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
+	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else
+			if  not ValCedRif then
+			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
+			else
+				if not ValnombApell then
+					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
+				else
+					if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
+						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
+					else 
+						mensaje:='Registro exitoso';
+						INSERT INTO public."Cliente_Natural"(
+						per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion,per_nat_punto,fk_cliente_juridico, fk_proveedor, fk_lugar)
+						VALUES ( ced, rif, p_nombre, s_nombre, p_apellido, s_apellido, direccion,0,null, null,parroquia);
+					end if;
+				end if;
+			end if; 
+	end if;
+    
+    RETURN mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.registro_cliente_natural(character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION obtener_eventos_activos()
+    RETURNS TABLE(
+        
+        evento_id  int,
+        nombre_evento varchar,
+        fecha_hora_inicial timestamp,
+        fecha_hora_final timestamp
+    )
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+<<<<<<< HEAD
+
+AS $BODY$
+declare fecha timestamp;
+begin
+fecha:=current_timestamp at time zone 'VET';
+return query
+SELECT cast(pa_af_cuo_id as varchar), cast(pa_af_cuo_total as varchar),pa_af_cuo_mes_can,cast(subString(cast (pa_af_cuo_fecha as varchar),1,10) as varchar) 
+	FROM public."Pago_Afiliacion_Cuota","Afiliado"
+	where (fk_afiliado=afi_id and afi_codigo_iden=codigo_identificador_afiliado and 
+	extract( year from pa_af_cuo_fecha)=extract(year from  fecha) and 
+	extract( month from pa_af_cuo_fecha)=extract(month from  fecha));
+end;
+$BODY$;
+
+ALTER FUNCTION public.datos_factura(character varying)
+    OWNER TO postgres;
+--datos afiliado
+CREATE OR REPLACE FUNCTION public.obtener_datos_afiliado_factura(
+	cod_iden_afiliacion character varying)
+    RETURNS TABLE(nombre text, cedula character varying, direccion text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+ declare  cod1 int;
+ declare  cod2 varchar;
+ declare  cod3 varchar;
+ begin
+ select fk_cliente_natural
+ into cod1 
+ from "Afiliado"
+ where afi_codigo_iden=cod_iden_afiliacion;
+ 
+ select fk_cliente_natural_2
+ into cod2 
+ from "Afiliado"
+ where afi_codigo_iden=cod_iden_afiliacion;
+ 
+ select fk_cliente_juridico
+ into cod3
+ from "Afiliado"
+ where afi_codigo_iden=cod_iden_afiliacion;
+ RAISE NOTICE 'Valor de la variable aux1 es %', cod3;
+ if (cod1>0 and cod2 is not null) then
+ return query select (c.per_nat_p_nombre ||' '||c.per_nat_s_nombre ||' '||
+					  c.per_nat_p_apellido ||' '|| c.per_nat_s_apellido  ) as nombres,c.per_nat_ci,
+					  c.per_nat_direccion ||' ' || e.lug_nombre ||' ' ||m.lug_nombre||' ' ||p.lug_nombre as Ubicacion
+ 	from "Cliente_Natural" as c ,"Lugar" as p,"Lugar" as m,"Lugar" as e
+	where c.per_nat_id=cod1  and c.per_nat_ci=cod2 and c.fk_lugar=p.lug_id and p.fk_lugar=m.lug_id and m.fk_lugar=e.lug_id;
+ else
+ 	if cod3 is not null then
+		return query select cast(c.per_jur_razon_social as text), c.per_jur_rif, c.per_jur_direccion_fisica ||' ' || e.lug_nombre ||' ' ||m.lug_nombre||' ' ||p.lug_nombre as Ubicacion
+		from "Cliente_Juridico" as c ,"Lugar" as p,"Lugar" as m,"Lugar" as e, "Lugar_Persona" as l
+		where c.per_jur_rif=cod3 and  l.fk_cliente_juridico=cod3 and l.fk_lugar=p.lug_id and p.fk_lugar=m.lug_id and m.fk_lugar=e.lug_id;
+ 	end if;
+end if;
+ end;
+ 
+$BODY$;
+
+ALTER FUNCTION public.obtener_datos_afiliado_factura(character varying)
+    OWNER TO postgres;
+--datos asoron
+CREATE OR REPLACE FUNCTION public.obtener_datos_asoron_factura(
+	)
+    RETURNS TABLE(rif character varying, direccion text) 
+=======
+AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            eve_id as id,
+            eve_nombre as nombre,
+            eve_fecha_hora_inicial as hora_inicio,
+            eve_fecha_hora_final as hora_fin
+        FROM public."Evento"
+        WHERE CURRENT_TIMESTAMP BETWEEN eve_fecha_hora_inicial AND eve_fecha_hora_final;
+END;
+$$;
+
+
+
+
+
+CREATE OR REPLACE FUNCTION obtener_presentaciones_por_proveedor(rif_proveedor VARCHAR)
+RETURNS TABLE (
+    producto_id INT,
+    nombre_producto VARCHAR,
+    presentacion_id INT,
+    nombre_presentacion VARCHAR
+)
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
+ROWS 1000
+AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            p.pro_codigo as producto_id,
+            p.pro_nombre as nombre_producto,
+            pr.pre_id as presentacion_id,
+            pr.pre_nombre as nombre_presentacion
+        FROM
+            public."Producto" p
+        JOIN
+            public."Presentacion" pr ON p.pro_codigo = pr.fk_producto
+        WHERE
+            p.fk_proveedor = rif_proveedor;
+END;
+$$;
+
+
+-- FUNCTION: public.seleccionar_roles()
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_roles();
+
+CREATE OR REPLACE FUNCTION public.seleccionar_roles(
+	)
+    RETURNS TABLE(codigo integer, nombre character varying, descripcion character varying) 
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+<<<<<<< HEAD
+
+ begin
+ 
+ 
+ return query select f.aso_rif,
+					  f.aso_direccion ||' ' || e.lug_nombre ||' ' ||m.lug_nombre||' ' ||p.lug_nombre as Ubicacion
+ 	from "Fisica" f,"Lugar" as p,"Lugar" as m,"Lugar" as e
+	where aso_id=1 and f.fk_lugar=p.lug_id and p.fk_lugar=m.lug_id and m.fk_lugar=e.lug_id;
+
+ end;
+ 
+$BODY$;
+
+ALTER FUNCTION public.obtener_datos_asoron_factura()
+    OWNER TO postgres;
+
+--roles
+CREATE OR REPLACE FUNCTION public.insertar_rol(
+	nombre character varying,
+	descripcion text)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE mensaje varchar;
+declare aux boolean;
+BEGIN
+aux:=REPLACE(nombre, ' ', '') !~ '[^a-zA-z]';
+	if (REPLACE(nombre, ' ', '')='' or REPLACE(descripcion, ' ', '')='') then
+		mensaje:='Hay campos vacios';
+	else
+		if not aux then
+			mensaje:='El nombre no acepta ni numeros ni caracteres especiales';
+		else
+			mensaje:='Registro exitoso';
+			INSERT INTO public."Rol"(
+			rol_nombre, rol_descripcion)
+			VALUES (nombre, descripcion);
+		end if;
+	end if;
+return mensaje;
+END;
+$BODY$;
+---rol
+--insertar permisos
+CREATE OR REPLACE FUNCTION public.insertar_permiso_rol(
+	codigo_permiso character varying,
+	codigo_rol character varying)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare rol_permiso int;
+begin
+select rol_per_id  
+into rol_permiso
+from "Rol_Permiso" where fk_rol= cast(codigo_rol as int)
+and fk_permiso= cast(codigo_permiso as int);
+
+if rol_permiso is  null then
+INSERT INTO public."Rol_Permiso"(
+	fk_rol, fk_permiso)
+	VALUES ( cast(codigo_rol as int), cast(codigo_permiso as int));
+end if;
+return 'Permisos Asignados';
+end;
+$BODY$;
+
+ALTER FUNCTION public.insertar_permiso_rol(character varying, character varying)
+    OWNER TO postgres;
+--insertar rol
+CREATE OR REPLACE FUNCTION public.insertar_rol(
+	nombre character varying,
+	descripcion text)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE mensaje varchar;
+declare aux boolean;
+BEGIN
+aux:=REPLACE(nombre, ' ', '') !~ '[^a-zA-z]';
+	if (REPLACE(nombre, ' ', '')='' or REPLACE(descripcion, ' ', '')='') then
+		mensaje:='Hay campos vacios';
+	else
+		if not aux then
+			mensaje:='El nombre no acepta ni numeros ni caracteres especiales';
+		else
+			mensaje:='Registro exitoso';
+			INSERT INTO public."Rol"(
+			rol_nombre, rol_descripcion)
+			VALUES (nombre, descripcion);
+		end if;
+	end if;
+return mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.insertar_rol(character varying, text)
+    OWNER TO postgres;
+--modificar rol
+CREATE OR REPLACE FUNCTION public.modificar_rol(
+	codigo character varying,
+	nombre character varying,
+	descripcion text)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE mensaje varchar;
+declare aux boolean;
+BEGIN
+aux:=REPLACE(nombre, ' ', '') !~ '[^a-zA-z]';
+	if (REPLACE(nombre, ' ', '')='' or REPLACE(descripcion, ' ', '')='') then
+		mensaje:='Hay campos vacios';
+	else
+		if not aux then
+			mensaje:='El nombre no acepta ni numeros ni caracteres especiales';
+		else
+			mensaje:='Modificacion exitosa';
+			UPDATE public."Rol"
+			SET rol_nombre=nombre, rol_descripcion=cast (descripcion as varchar)
+			WHERE rol_id=cast(codigo as int);
+		end if;
+	end if;
+return mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.modificar_rol(character varying, character varying, text)
+    OWNER TO postgres;
+--seleccionar un rol para verlo en el modificar
+CREATE OR REPLACE FUNCTION public.seleccionar_un_rol(
+	codigo_rol character varying)
+    RETURNS TABLE(nombre character varying, descripcion text) 
+=======
+BEGIN
+   return query 	SELECT rol_id, rol_nombre, rol_descripcion
+					FROM public."Rol";
+END;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_roles()
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE PROCEDURE insertar_presentacion_evento(
+  IN p_pre_eve_cantidad NUMERIC(10, 0),
+  IN p_pre_eve_precio_venta NUMERIC(12, 3),
+  IN p_fk_presentacion INT,
+  IN p_fk_evento INT,
+  IN p_fk_premio INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  INSERT INTO "Presentacion_Evento"(
+	  pre_eve_cantidad, 
+	  pre_eve_precio_venta, 
+	  fk_presentacion, 
+	  fk_evento, 
+	  fk_premio)
+  VALUES (
+	  p_pre_eve_cantidad, 
+	  p_pre_eve_precio_venta,
+	  p_fk_presentacion, 
+	  p_fk_evento, 
+	  p_fk_premio);
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION ultimo_id(
+	)
+    RETURNS TABLE(codigo integer) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+BEGIN
+   return query 	SELECT MAX(eve_id)
+					FROM public."Evento";
+END;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION verificar_presentacion(cod_pre integer, cod_eve integer)
+    RETURNS TABLE(precio numeric, cantidad numeric) 
+    LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+    SELECT pre_eve_precio_venta, pre_eve_cantidad
+    FROM public."Presentacion_Evento"
+    WHERE cod_pre = fk_presentacion AND cod_eve = fk_evento;
+END;
+$BODY$;
+
+
+CREATE OR REPLACE FUNCTION presentacion_particular(cod_pre integer)
+    RETURNS TABLE(nombre varchar) 
+    LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+    SELECT pre_nombre 
+    FROM public."Presentacion"
+    WHERE cod_pre = pre_id;
+END;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION seleccionar_un_evento(codigo int)
+RETURNS table (nombre varchar,descripcion varchar,num_entradas numeric,
+			   fecha_hora_inicial timestamp,fecha_hora_final timestamp, direccion varchar,
+			  parroquia int)
+AS
+$$
+BEGIN
+   return query SELECT  eve_nombre, eve_descripcion, eve_cantidad_entradas, eve_fecha_hora_inicial, eve_fecha_hora_final, eve_direccion, fk_lugar
+				FROM public."Evento"
+				where eve_id=codigo;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_un_lugar(codigo int)
+RETURNS table (nombre varchar)
+AS
+$$
+BEGIN
+   return query SELECT  lug_nombre
+				FROM public."Lugar"
+				where codigo = lug_id;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_una_presentacion1(codigo int)
+RETURNS table (cod int)
+AS
+$$
+BEGIN
+   return query SELECT  fk_presentacion
+				FROM public."Presentacion_Evento"
+				where codigo = fk_evento;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_una_presentacion2(codigo int)
+RETURNS table (cod varchar)
+AS
+$$
+BEGIN
+   return query SELECT  pre_nombre
+				FROM public."Presentacion"
+				where codigo = pre_id;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+-- FUNCTION: public.seleccionar_empleado(integer, character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_empleado(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_empleado(
+	codigo integer,
+	ced character varying)
+    RETURNS TABLE(cedula character varying, rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, sueldo numeric, fecha_ing timestamp without time zone, parroquia integer) 
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+<<<<<<< HEAD
+ return query SELECT  rol_nombre, cast (rol_descripcion as text)
+	FROM public."Rol"
+	where rol_id = cast (codigo_rol as int);
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_rol(character varying)
+    OWNER TO postgres;
+--eliminar Rol
+
+CREATE OR REPLACE FUNCTION public.eliminar_rol(
+	codigo character varying)
+=======
+return query SELECT per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, emp_sueldo, emp_fecha_ingreso, fk_lugar
+	FROM public."Empleado"
+	where per_nat_id=codigo and per_nat_ci=ced;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_empleado(integer, character varying)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION seleccionar_un_usuario(codigo int, doc varchar)
+RETURNS table (contrasena varchar, rol integer)
+AS
+$$
+BEGIN
+   return query SELECT  usu_contraseña, fk_rol
+				FROM public."Usuario"
+				where fk_empleado_1=codigo
+				AND fk_empleado_2 =doc;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+-- FUNCTION: public.modificar_usuario_password(character varying, integer, character varying, integer, character varying, character varying)
+
+-- DROP FUNCTION IF EXISTS public.modificar_usuario_password(character varying, integer, character varying, integer, character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.modificar_usuario_password(
+	"contraseña" character varying,
+	cod1_cliente_natural integer,
+	cod2_cliente_natural character varying,
+	cod1_empleado integer,
+	cod2_empleado character varying,
+	cod_cliente_juridico character varying,
+    rol integer)
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+<<<<<<< HEAD
+BEGIN
+    DELETE FROM public."Rol"
+	WHERE rol_id=cast(codigo as int);
+END;
+$BODY$;
+
+ALTER FUNCTION public.eliminar_rol(character varying)
+    OWNER TO postgres;
+--buscar todos los permisos
+
+CREATE OR REPLACE FUNCTION public.obtener_permisos(
+	)
+    RETURNS TABLE(codigo character varying, nombre text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query SELECT cast(per_id as varchar), per_accion||'-'|| per_tabla as nombre_permiso
+	FROM public."Permiso";
+end;
+$BODY$;
+
+ALTER FUNCTION public.obtener_permisos()
+    OWNER TO postgres;
+-- inserta permiso rol
+CREATE OR REPLACE FUNCTION public.insertar_permiso_rol(
+	codigo_permiso character varying,
+	codigo_rol character varying)
+=======
+begin 
+	if  not "contraseña"='' then
+		if (cod1_empleado=0 and cod2_empleado='' and cod_cliente_juridico='') then
+			UPDATE public."Usuario"
+			SET "usu_contraseña"="contraseña", fk_rol=rol
+			where fk_cliente_natural_1=cod1_cliente_natural and fk_cliente_natural_2=cod2_cliente_natural;
+		else
+			if cod1_empleado=0 and cod2_empleado='' and cod1_cliente_natural=0 and cod2_cliente_natural=''then
+				UPDATE public."Usuario"
+				SET "usu_contraseña"="contraseña",fk_rol=rol	
+				where fk_cliente_juridico=cod_cliente_juridico;
+			else 
+				if cod1_cliente_natural=0 and cod2_cliente_natural='' and cod_cliente_juridico='' then
+					UPDATE public."Usuario"
+					SET "usu_contraseña"="contraseña", fk_rol=rol
+					where fk_empleado_1=cod1_empleado and fk_empleado_2=cod2_empleado;
+				end if;
+			end if;
+		end if;
+	end if;
+end;
+$BODY$;
+
+ALTER FUNCTION public.modificar_usuario_password(character varying, integer, character varying, integer, character varying, character varying, integer)
+    OWNER TO postgres;
+
+-- FUNCTION: public.modificar_empleado(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, numeric, timestamp without time zone, integer)
+
+-- DROP FUNCTION IF EXISTS public.modificar_empleado(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, numeric, timestamp without time zone, integer);
+
+CREATE OR REPLACE FUNCTION public.modificar_empleado(
+	codigo integer,
+	ced character varying,
+	rif character varying,
+	p_nombre character varying,
+	s_nombre character varying,
+	p_apellido character varying,
+	s_apellido character varying,
+	direccion character varying,
+	sueldo numeric,
+	parroquia integer)
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+<<<<<<< HEAD
+declare rol_permiso int;
+begin
+select rol_per_id  
+into rol_permiso
+from "Rol_Permiso" where fk_rol= cast(codigo_rol as int)
+and fk_permiso= cast(codigo_permiso as int);
+
+if rol_permiso is  null then
+INSERT INTO public."Rol_Permiso"(
+	fk_rol, fk_permiso)
+	VALUES ( cast(codigo_rol as int), cast(codigo_permiso as int));
+end if;
+return 'Permisos Asignados';
+end;
+$BODY$;
+
+ALTER FUNCTION public.insertar_permiso_rol(character varying, character varying)
+    OWNER TO postgres;
+--codigos de permisos por rol
+CREATE OR REPLACE FUNCTION public.seleccionar_codigos_permisos_rol(
+	id_rol character varying)
+    RETURNS TABLE(codigo_permiso character varying) 
+=======
+declare mensaje varchar;
+declare ValCedRif boolean;
+declare ValnombApell boolean;
+BEGIN
+ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9]' )and (REPLACE(rif, ' ', '') !~ '[^0-9]');
+ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
+(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
+	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
+	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else
+			if  not ValCedRif then
+			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
+			else
+				if not ValnombApell then
+					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
+				else
+					if sueldo=0 then
+					mensaje:='El sueldo no puede ser 0bs';
+					else
+						if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
+						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
+						else
+						mensaje:='Modificacion exitosa';
+						UPDATE public."Empleado"
+						SET  per_nat_ci=ced, per_nat_rif=rif, per_nat_p_nombre=p_nombre, per_nat_s_nombre=s_nombre, per_nat_p_apellido=p_apellido, per_nat_s_apellido=s_apellido, per_nat_direccion=direccion, emp_sueldo=sueldo, fk_lugar=parroquia
+						WHERE per_nat_ci=ced and per_nat_id=codigo;
+						end if;
+					end if;
+				end if;
+			end if; 
+	end if;
+    RETURN mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.modificar_empleado(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, numeric, integer)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION insertar_telefono_empleado( numero VARCHAR, cod1_empleado INT,
+	                                            cod2_empleado VARCHAR)
+RETURNS VARCHAR AS $$
+    declare mensaje varchar;
+    declare aux boolean;
+BEGIN
+    aux:=numero ~ '^[0-9]+$';
+	    if not aux then 
+	        mensaje:='Formato de numero invalido';
+	    else
+			INSERT INTO "Telefono"(
+			    tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+			    VALUES (numero,null,null,null,null, cod1_empleado, cod2_empleado);
+			mensaje:='Registro exitoso';
+	    end if;	
+    return mensaje;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION seleccionar_telefonos_empleado(codigo int, doc varchar)
+RETURNS table (telefono varchar, telf_id integer)
+AS
+$$
+BEGIN
+   return query SELECT  tel_numero, tel_id
+				FROM public."Telefono"
+				where fk_empleado_1=codigo
+				AND fk_empleado_2 =doc;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+-- FUNCTION: public.eliminar_un_cliente_juridico(character varying)
+
+-- DROP FUNCTION IF EXISTS public.eliminar_un_cliente_juridico(character varying);
+
+CREATE OR REPLACE FUNCTION public.eliminar_un_cliente_juridico(
+	rif character varying)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin
+DELETE FROM public."Cliente_Juridico"
+	WHERE per_jur_rif=rif;
+return 'Cliente eliminado';
+end;
+$BODY$;
+
+ALTER FUNCTION public.eliminar_un_cliente_juridico(character varying)
+    OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION "insertar_telefono_clienteN"( "numero" VARCHAR, "cod1_cliente" INT,
+	                                            "cod2_cliente" VARCHAR)
+RETURNS VARCHAR AS $$
+    declare mensaje varchar;
+    declare aux boolean;
+BEGIN
+    aux:=numero ~ '^[0-9]+$';
+	    if not aux then 
+	        mensaje:='Formato de numero invalido';
+	    else
+			INSERT INTO "Telefono"(
+			    tel_tipo, tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+			    VALUES ('hola',numero, cod1_cliente, cod2_cliente, null,null,null, null);
+			mensaje:='Registro exitoso';
+	    end if;	
+    return mensaje;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- FUNCTION: public.modificar_cliente_natural(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION IF EXISTS public.modificar_cliente_natural(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.modificar_cliente_natural(
+	codigo integer,
+	ced character varying,
+	rif character varying,
+	p_nombre character varying,
+	s_nombre character varying,
+	p_apellido character varying,
+	s_apellido character varying,
+	direccion character varying,
+	parroquia integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare mensaje varchar;
+declare ValCedRif boolean;
+declare ValnombApell boolean;
+begin
+ValCedRif:=(REPLACE(ced, ' ', '') !~ '[^0-9VE]' )and (REPLACE(rif, ' ', '') !~ '[^0-9N]');
+ValnombApell:=(REPLACE(p_nombre, ' ', '') !~ '[^a-zA-z]') and (REPLACE(s_nombre, ' ', '') !~ '[^a-zA-z]')and 
+(REPLACE(p_apellido, ' ', '') !~ '[^a-zA-z]')  and (REPLACE(s_apellido, ' ', '') !~ '[^a-zA-z]');
+	if (REPLACE(ced, ' ', '')='' or REPLACE(p_nombre, ' ', '')=''or 
+	    REPLACE(p_apellido, ' ', '')='' or REPLACE(direccion, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else
+			if  not ValCedRif then
+			mensaje:='El formato de cedula/rif es invalido solo se aceptan numeros';
+			else
+				if not ValnombApell then
+					mensaje:='Los nombres y los apellidos no pueden tener ni numeros ni caracteres especiales';
+				else
+					if length(ced)<7 or (length(REPLACE(rif, ' ', ''))>0 and length(REPLACE(rif, ' ', ''))<10) then
+						mensaje:='La cedula debe tener minimo 7 numeros y el rif 10';
+					else 
+						mensaje:='Modificacion exitosa';
+						UPDATE public."Cliente_Natural"
+						SET  per_nat_ci=ced, per_nat_rif=rif, per_nat_p_nombre=p_nombre, per_nat_s_nombre=s_nombre, per_nat_p_apellido=p_apellido, per_nat_s_apellido=s_apellido, per_nat_direccion=direccion, fk_lugar=parroquia
+						WHERE per_nat_ci=ced and per_nat_id=codigo;
+					end if;
+				end if;
+			end if; 
+	end if;
+    RETURN mensaje;
+END;
+$BODY$;
+
+ALTER FUNCTION public.modificar_cliente_natural(integer, character varying, character varying, character varying, character varying, character varying, character varying, character varying, integer)
+    OWNER TO postgres;
+
+
+-- FUNCTION: public.seleccionar_un_cliente_juridico(character varying)
+
+-- DROP FUNCTION IF EXISTS public.seleccionar_un_cliente_juridico(character varying);
+
+CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_juridico(
+	rif character varying)
+    RETURNS TABLE(denominacion_comercial character varying, razon_social character varying, pagina_web character varying, direccion_fiscal character varying, direccion_fisica character varying, capital numeric) 
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+<<<<<<< HEAD
+RETURN query select cast(per_id as varchar) 
+	from public."Permiso", public."Rol_Permiso"
+	where fk_rol=cast(id_rol as int )and fk_permiso=per_id;
+
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_codigos_permisos_rol(character varying)
+    OWNER TO postgres;
+--eliminar permisos  por rol
+CREATE OR REPLACE FUNCTION public.eliminar_permisos_rol(
+	cod_rol character varying)
+=======
+return query  SELECT  per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital
+				FROM public."Cliente_Juridico"
+				where per_jur_rif=rif;
+end;
+$BODY$;
+
+ALTER FUNCTION public.seleccionar_un_cliente_juridico(character varying)
+    OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION public.consultar_correo_empleado(
+	rif character varying, cod integer)
+    RETURNS TABLE(correo character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT cor_direccion
+				FROM public."Correo"
+				where fk_empleado_1=rif
+				And fk_empleado=cod;
+end;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION eliminar_telefonos_por_codigo(codigo INTEGER, cedula varchar)
+RETURNS VOID
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    DELETE FROM public."Telefono"
+    WHERE codigo = fk_empleado_1
+	And fk_empleado_2 = cedula;
+END;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION public.modificar_empleado_correo(
+	correo character varying, codEmpleado integer, cedula character varying )
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+<<<<<<< HEAD
+DECLARE
+	
+ begin
+ DELETE FROM public."Rol_Permiso"
+	WHERE fk_rol=cast(cod_rol as int);
+	
+END;
+$BODY$;
+
+ALTER FUNCTION public.eliminar_permisos_rol(character varying)
+    OWNER TO postgres;
+--hasta ahora gaby
+
+
+
+=======
+begin 
+	if  not correo='' then
+		UPDATE public."Correo"
+		SET cor_direccion=correo
+		where fk_empleado=codEmpleado
+		And fk_empleado_1=cedula;
+	end if;
+end;
+$BODY$;
+
+--Insertar un usuario que es cliente
+CREATE OR REPLACE FUNCTION insertar_usuario_cliente(
+    clave varchar, 
+	cod1_cliente int, cod2_cliente varchar
+    )
+RETURNS VOID
+AS $$
+BEGIN
+	INSERT INTO public."Usuario"(
+		"usu_contraseña", fk_rol, fk_cliente_juridico, fk_proveedor, fk_cliente_natural_1, fk_cliente_natural_2, fk_empleado_1, fk_empleado_2)
+	VALUES (clave, 9, NULL, NULL, cod1_cliente, cod2_cliente, NULL, NULL );	
+END;
+$$ language plpgsql;
+
+CREATE OR REPLACE PROCEDURE agregar_cliente(
+    p_nombre VARCHAR,
+    s_nombre VARCHAR,
+    p_apellido VARCHAR,
+    s_apellido VARCHAR,
+    cedula VARCHAR,
+    rif VARCHAR,
+    email VARCHAR,
+    clave VARCHAR,
+    parroquia INT,
+    direccion VARCHAR
+) AS $$
+DECLARE
+    mens_1 VARCHAR;
+    mens_2 VARCHAR;
+    cod_cliente INT;
+BEGIN
+    -- Llamar a la función registro_cliente_natural
+    mens_1 := registro_cliente_natural(
+        cedula,
+		rif,
+        p_nombre,
+        s_nombre,
+        p_apellido,
+        s_apellido,
+        direccion,
+        parroquia
+    );
+    RAISE NOTICE '%', mens_1;
+
+    -- Obtener el ID del cliente recién insertado
+    SELECT "per_nat_id" INTO cod_cliente
+    FROM "Cliente_Natural"
+    WHERE "per_nat_ci" = cedula;
+
+    -- Llamar a la función regusuario
+    mens_2 := insertar_usuario_cliente(clave, cod_cliente, cedula);
+    RAISE NOTICE '%', mens_2;
+
+    -- Llamar a la función insertar_correo
+    PERFORM insertar_correo(email, NULL, NULL, cod_cliente, cedula, NULL);
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION public.consultar_correo_cliente(
+	cedula character varying, cod integer)
+    RETURNS TABLE(correo character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query  SELECT cor_direccion
+				FROM public."Correo"
+				where fk_cliente_natural=cod
+				And fk_cliente_natural_1=cedula;
+end;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION seleccionar_un_usuario_clienteN(codigo int, doc varchar)
+RETURNS table (contrasena varchar)
+AS
+$$
+BEGIN
+   return query SELECT  usu_contraseña
+				FROM public."Usuario"
+				where fk_cliente_natural_1=codigo
+				AND fk_cliente_natural_2 =doc;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION public.modificar_clienteN_correo(
+	correo character varying, codCliente integer, cedula character varying )
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin 
+	if  not correo='' then
+		UPDATE public."Correo"
+		SET cor_direccion=correo
+		where fk_cliente_natural=codCliente
+		And fk_cliente_natural_1=cedula;
+	end if;
+end;
+$BODY$;
+
+
+CREATE OR REPLACE FUNCTION eliminar_telefonos_cliente(codigo INTEGER, cedula varchar)
+RETURNS VOID
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    DELETE FROM public."Telefono"
+    WHERE codigo = fk_cliente_natural_1
+	And fk_cliente_natural_2 = cedula;
+END;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION insertar_lugar_persona(
+  IN tipo character varying,
+  IN lugarfisico INT,
+  IN clientejuridico character varying
+)
+RETURNS VOID
+AS $$
+BEGIN
+  INSERT INTO "Lugar_Persona"(
+	  "Lug_per_tipo", 
+	  "fk_lugar", 
+	  "fk_cliente_juridico")
+  VALUES (
+	  tipo, 
+	  lugarfisico,
+	  clientejuridico);
+END;
+
+$$ language plpgsql;
+
+CREATE OR REPLACE FUNCTION insertar_usuario_clienteJ(
+    clave varchar,  cod1_cliente varchar
+    )
+RETURNS VOID
+AS $$
+BEGIN
+	INSERT INTO public."Usuario"(
+		"usu_contraseña", fk_rol, fk_cliente_juridico, fk_proveedor, fk_cliente_natural_1, fk_cliente_natural_2, fk_empleado_1, fk_empleado_2)
+	VALUES (clave, 9, cod1_cliente, NULL, NULL, NULL, NULL, NULL );	
+END;
+$$ language plpgsql;
+
+CREATE OR REPLACE PROCEDURE agregar_juridico(
+    denominacion_comercial VARCHAR,
+    razon_social VARCHAR,
+    pagina_web VARCHAR,
+    capital_disponible NUMERIC(12, 3),
+    rif VARCHAR,
+    clave VARCHAR,
+    parroquia_fisica INT,
+    direccion_fisica VARCHAR,
+    parroquia_fiscal INT,
+    direccion_fiscal VARCHAR,
+	tipo_fisica character varying,
+	tipo_fiscal character varying
+) AS $$
+DECLARE
+    mens_1 VARCHAR;
+    fecha_ing TIMESTAMP;
+    cod_juridico INT;
+BEGIN
+
+    -- Llamar a la función ingresar_cliente_juridico
+    mens_1 := insertar_cliente_juridico(
+		rif,
+        denominacion_comercial,
+        razon_social,
+        pagina_web,
+        direccion_fisica,
+        direccion_fiscal,
+		capital_disponible
+    );
+    RAISE NOTICE '%', mens_1;
+
+
+
+    -- Llamar a la función ingresar_lugar_persona
+    PERFORM insertar_lugar_persona(
+		tipo_fisica,
+        parroquia_fisica,
+        rif
+    );
+	
+	PERFORM insertar_lugar_persona(
+        tipo_fiscal,
+        parroquia_fiscal,
+        rif
+    );
+
+    -- Llamar a la función usuario_juridico
+    PERFORM insertar_usuario_clienteJ(clave, rif);
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-----Insertar Producto
+CREATE OR REPLACE FUNCTION public.registrar_producto(
+	nombre character varying,
+	descripcion character varying,
+	gradosa numeric,
+	tipo character varying,
+	anejamiento integer,
+	proveedor integer,
+	parroquia integer,
+	categoria integer,
+	variedad integer)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE mensaje varchar;
+declare aux boolean;
+BEGIN 
+aux:=REPLACE(nombre, ' ', '') !~ '[^a-zA-z]';
+	if  (REPLACE(nombre, ' ', '')='' or REPLACE(descripcion, ' ', '')='' or REPLACE(tipo, ' ', '')='')then
+		mensaje:='Hay campos obligatorios vacios en el registro';
+	else
+		if not aux then
+			mensaje:='El nombre del producto no acepta numeros ni caracteres especiales';
+		else
+			INSERT INTO public."Producto"(
+			 pro_nombre, pro_grados_alcohol, pro_descripcion, pro_tipo, "fk_añejamiento", fk_proveedor, fk_lugar, fk_categoria, fk_variedad)
+			 VALUES (nombre, gradosA,descripcion ,tipo, anejamiento, proveedor, parroquia, categoria, variedad);
+			 mensaje:='Registro exitoso';
+		end if;
+	end if;
+    RETURN mensaje ;
+END;
+$BODY$;
+
+--Seleccionar Producto
+CREATE OR REPLACE FUNCTION public.seleccionar_productos()
+RETURNS TABLE(
+    codigo integer,
+    nombre character varying,
+    grados_alcohol numeric,
+    descripcion character varying,
+    tipo character varying,
+    parroquia integer,
+    categoria integer,
+    variedad integer,
+    url varchar,
+    capacidad numeric,
+	precio numeric
+)
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
+ROWS 1000
+AS $BODY$
+BEGIN
+    RETURN QUERY 
+    SELECT 
+        pr.pro_codigo, 
+        pr.pro_nombre, 
+        pr.pro_grados_alcohol, 
+        pr.pro_descripcion, 
+        pr.pro_tipo, 
+        pr.fk_lugar, 
+        pr.fk_categoria, 
+        pr.fk_variedad,
+        i.ima_url,
+        b.bot_capacidad,
+		inv.inv_vir_precio
+    FROM "Producto" as pr
+    JOIN "Imagen" as i ON i."fk_producto" = pr."pro_codigo"
+    JOIN "Presentacion" as pre ON pre."fk_producto" = pr."pro_codigo"
+    JOIN "Botella" as b ON b."bot_id" = pre."fk_material_botella_3"
+    JOIN "Inventario_Virtual_Presentacion" as inv ON  "fk_presentacion" = "pre_id";
+END;
+$BODY$;
+
+-- Eliminar Producto
+CREATE OR REPLACE FUNCTION public.eliminar_producto(
+	codigo integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin
+	UPDATE public."Imagen"
+	SET  fk_producto=null
+	WHERE fk_producto=codigo;
+	DELETE FROM public."Producto"
+	WHERE pro_codigo=codigo;
+end;
+$BODY$;
+
+ALTER FUNCTION public.eliminar_producto(integer)
+    OWNER TO postgres;
+
+
+CREATE OR REPLACE FUNCTION seleccionar_un_lugar_personaJ(tipo varchar, doc varchar)
+RETURNS table (lugar integer)
+AS
+$$
+BEGIN
+   return query SELECT  fk_lugar
+				FROM public."Lugar_Persona"
+				where fk_cliente_juridico=doc
+				AND "Lug_per_tipo" =tipo;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_usuarioJ( doc varchar)
+RETURNS table (clave varchar)
+AS
+$$
+BEGIN
+   return query SELECT  "usu_contraseña"
+				FROM public."Usuario"
+				where fk_cliente_juridico=doc;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insertar_telefono_clienteJ(numero1 VARCHAR, numero2 VARCHAR, codigo varchar)
+RETURNS VARCHAR AS $$
+DECLARE
+    mensaje VARCHAR;
+    aux1 BOOLEAN;
+    aux2 BOOLEAN;
+BEGIN
+
+    aux2 := numero2 ~ '^[0-9]+$';
+
+    IF NOT aux2 THEN 
+        mensaje := 'Formato de número invalido';
+    ELSE
+        -- Verificar si el registro ya existe
+        IF EXISTS (
+            SELECT 1
+            FROM "Telefono"
+            WHERE fk_cliente_juridico = codigo
+              AND tel_numero = numero1
+        ) THEN
+            -- Realizar la actualización
+            UPDATE "Telefono"
+            SET tel_numero = numero2
+            WHERE fk_cliente_juridico= codigo
+              AND tel_numero = numero1;
+            mensaje := 'Actualización exitosa';
+        ELSE
+            -- Realizar la inserción
+            INSERT INTO "Telefono"(
+                tel_tipo, tel_numero, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_proveedor, fk_empleado_1, fk_empleado_2)
+                VALUES ('hola', numero2, NULL, NULL, codigo, NULL, NULL, NULL);
+            mensaje := 'Registro exitoso';
+        END IF;
+    END IF;
+
+    RETURN mensaje;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION seleccionar_telefonos_juridico(codigo varchar)
+RETURNS table (telefono varchar)
+AS
+$$
+BEGIN
+   return query SELECT  tel_numero
+				FROM public."Telefono"
+				where fk_cliente_juridico=codigo;
+END;
+$$
+LANGUAGE plpgsql;
+
+-- FUNCTION: public.modificar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric)
+
+-- DROP FUNCTION IF EXISTS public.modificar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric);
+
+CREATE OR REPLACE FUNCTION public.modificar_cliente_juridico(
+	rif character varying,
+	denominacion_comer character varying,
+	razon_soc character varying,
+	pagina_web character varying,
+	direccion_fiscal character varying,
+	direccion_fisica character varying,
+	capital numeric)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare aux boolean;
+declare aux2 boolean;
+declare mensaje varchar;
+begin
+aux:=(REPLACE(rif, ' ', '') !~ '[^0-9JG]');
+aux2:=(REPLACE(denominacion_Comer, ' ', '') !~ '[^a-zA-z]') and (REPLACE(razon_Soc, ' ', '') !~ '[^a-zA-z]') ;
+	if (REPLACE(rif, ' ', '')='' or REPLACE(denominacion_Comer, ' ', '')=''or 
+	    REPLACE(razon_Soc, ' ', '')='' or REPLACE(pagina_Web, ' ', '')=''or REPLACE(direccion_fiscal, ' ', '')=''
+   		or REPLACE(direccion_fisica, ' ', '')='') then
+	   		mensaje:='Hay datos obligatorios sin llenar en su registro';
+	else 
+		if not aux then
+			mensaje:='Formato de rif invalido';
+		else
+			if length(rif)<10 then
+			mensaje:='El rif debe tener minimo 10 numeros';
+			else
+				if  not aux2 then
+					mensaje:='La denominacion comercial y la razon social no acepta numeros ni caracteres especiales';
+				else
+					mensaje:='Registro exitoso';
+					UPDATE public."Cliente_Juridico"
+					SET per_jur_rif=rif, per_jur_denominacion_comercial=denominacion_Comer, per_jur_razon_social=razon_Soc, per_jur_pagina_web=pagina_Web, 
+					per_jur_direccion_fiscal=direccion_fiscal, per_jur_direccion_fisica=direccion_fisica, per_jur_capital=capital
+					WHERE  per_jur_rif=rif;
+				end if;
+			end if;
+		end if;
+	end if;
+return mensaje;
+end;
+$BODY$;
+
+ALTER FUNCTION public.modificar_cliente_juridico(character varying, character varying, character varying, character varying, character varying, character varying, numeric)
+    OWNER TO postgres;
+
+-- CREATE OR REPLACE FUNCTION public.modificar_clienteJ_correo(
+-- 	correo character varying, codClienteJ character varying )
+--     RETURNS void
+--     LANGUAGE 'plpgsql'
+--     COST 100
+--     VOLATILE PARALLEL UNSAFE
+-- AS $BODY$
+-- begin 
+-- 	if  not correo='' then
+-- 		UPDATE public."Correo"
+-- 		SET cor_direccion=correo
+-- 		where fk_empleado=codEmpleado
+-- 		And fk_cliente_juridico=codClienteJ;
+-- 	end if;
+-- end;
+-- $BODY$;
+
+CREATE OR REPLACE PROCEDURE modificar_juridico(
+    denominacion_comercial VARCHAR,
+    razon_social VARCHAR,
+    pagina_web VARCHAR,
+    capital_disponible NUMERIC(12, 3),
+    rif VARCHAR,
+    clave VARCHAR,
+    parroquia_fisica INT,
+    direccion_fisica VARCHAR,
+    parroquia_fiscal INT,
+    direccion_fiscal VARCHAR,
+	paraNull CHARACTER VARYING,
+    tipoFa CHARACTER VARYING,
+    tipoFl CHARACTER VARYING
+
+) AS $$
+DECLARE
+    mens_1 VARCHAR;
+    mens_2 VARCHAR;
+    mens_3 VARCHAR;
+    mens_4 VARCHAR;
+BEGIN
+
+    
+    mens_1 := public.modificar_lugar_persona(
+        tipoFa,
+        parroquia_fisica,
+        rif
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_1;
+
+
+    mens_4 := public.modificar_lugar_persona(
+        tipoFl,
+        parroquia_fiscal,
+        rif
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_4;
+
+
+     -- Llamar a la función modificar_clienteJ
+    mens_2 := modificar_cliente_juridico(
+        rif,
+        denominacion_comercial,
+        razon_social,
+		pagina_web,
+		direccion_fisica,
+		direccion_fiscal,
+        capital_disponible
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_2;
+    
+
+    -- Llamar a la función modificar_clienteJ
+    mens_2 := modificar_cliente_juridico(
+        rif,
+        denominacion_comercial,
+        razon_social,
+		pagina_web,
+		direccion_fisica,
+		direccion_fiscal,
+        capital_disponible
+        -- Agrega otros parámetros según los requerimientos de modificar_clienteJ
+    );
+    RAISE NOTICE '%', mens_2;
+
+    -- Llamar a la función modificar_usuario_clave
+    mens_3 := public.modificar_usuario_password(
+        clave,0 , paraNull, 0, paraNull, rif, 9
+        -- Agrega otros parámetros según los requerimientos de modificar_usuario_clave
+    );
+    RAISE NOTICE '%', mens_3;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION public.modificar_lugar_persona(
+	tipo character varying, lugar int,
+	cod_cliente character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin 
+			UPDATE public."Lugar_Persona"
+			SET fk_lugar=lugar
+			where fk_cliente_juridico=cod_cliente and "Lug_per_tipo"=tipo;
+	
+end;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION insertar_empleado_horario(
+    codigo_empleado_1 int,
+    codigo_empleado_2 VARCHAR
+)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Empleado_Horario" (fk_empleado, fk_empleado_2, fk_horario)
+    VALUES (codigo_empleado_1, codigo_empleado_2, 1);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insertar_entrada(
+    codigo int,
+    fecha_inicial DATE,
+    fecha_final DATE,
+    precio numeric
+)
+RETURNS VOID AS $$
+DECLARE
+    fecha_actual DATE := fecha_inicial;
+    i INT := 1;
+BEGIN
+    -- Iniciar el bucle
+    WHILE fecha_actual <= fecha_final LOOP
+        -- Realizar la inserción en la tabla "Entrada"
+        INSERT INTO "Entrada" (ent_fecha_hora, ent_precio, fk_evento)
+        VALUES (fecha_actual, precio, codigo);
+
+        -- Incrementar la fecha y el índice
+        fecha_actual := fecha_actual + INTERVAL '1 day';
+        i := i + 1;
+        
+       
+        EXIT WHEN fecha_actual > fecha_final;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_cantidad_entrada(
+    codigo int
+)
+RETURNS INT AS $$
+
+BEGIN
+    -- Obtener la suma de la cantidad de entradas para el código dado
+    SELECT ent_precio
+    FROM "Entrada"
+    WHERE fk_evento = codigo;
+
+    RETURN ent_precio;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION actualizar_precio_entradas(
+    codigo INT,
+    precio numeric
+)
+RETURNS VOID AS $$
+BEGIN
+
+    UPDATE "Entrada"
+    SET ent_precio =precio
+    WHERE fk_evento = codigo;
+
+END;
+$$ LANGUAGE plpgsql;
+>>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03

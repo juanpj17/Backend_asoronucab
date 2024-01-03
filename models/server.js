@@ -1,15 +1,23 @@
 import express from 'express';
 import cors from 'cors';
-import { routerTiendaFisica } from '../routes/tienda-fisica.js';
-import { routerProducto } from '../routes/producto.js';
+
 import { routerEmpleado } from '../routes/empleado.js';
 import { routerCliente } from '../routes/cliente.js';
 import { routerEvento } from '../routes/eventos.js';
 import { routerParroquia } from '../routes/parroquia.js';
 import { routerProveedor } from '../routes/proveedor.js';
 import { routerRoles } from '../routes/roles.js';
+import { routerProducto } from '../routes/producto.js';
+import {routerTasa} from '../routes/tasa.js';
+import { routerPunto } from '../routes/punto.js';
+import { routerUsuario } from '../routes/usuario.js';
+import {routerAfiliado} from '../routes/afiliado.js';
+import { routerAfiliarse } from '../routes/afiliarse.js';
+import { routerFacturaAfiliado } from '../routes/facturaAfiliado.js';
 import { routerTelefono } from '../routes/telefono.js';
 import { routerEntrada } from '../routes/entrada.js';
+import { routerTiendaFisica } from '../routes/tienda-fisica.js';
+
 
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -37,6 +45,12 @@ class Server {
             proveedorPath: '/api/proveedor',
             rolesPath: '/api/roles',
             productoPath: '/api/producto',
+            tasaPath:'/api/tasa',
+            puntoPath:'/api/punto',
+            usuarioPath:'/api/usuario',
+            afiliadoPath:'/api/afiliado',
+            afiliarsePath:'/api/afiliarse',
+            facturaAfiliado:'/api/facturaAfiliado',
             telefonoPath:'/api/telefono',
             entradaPath:'/api/entrada'
         };
@@ -74,6 +88,13 @@ class Server {
         this.app.use(this.path.eventoPath, routerEvento);
         this.app.use(this.path.clientePath, routerCliente);
         this.app.use(this.path.empleadoPath, routerEmpleado);
+        this.app.use(this.path.tasaPath,routerTasa);
+        this.app.use(this.path.puntoPath,routerPunto);
+        this.app.use(this.path.usuarioPath,routerUsuario);
+        this.app.use(this.path.afiliadoPath,routerAfiliado);
+        this.app.use(this.path.afiliarsePath,routerAfiliarse);
+        this.app.use(this.path.facturaAfiliado,routerFacturaAfiliado);
+        
     }
 }
 
