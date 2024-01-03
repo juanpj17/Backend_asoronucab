@@ -49,6 +49,136 @@ const productoProveedorGet = async(req = request, res = response) => {
     
 };
 
+const productoAñejamientoGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_añejamiento()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoCategoriaGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_categoria()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoVariedadGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_variedad()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoSaborGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_sabor()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoColorGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_color()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoMateriaGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_materia()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoImagenGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_imagen()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+const productoPresentacionGet = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_presentacion()');
+        res.json(productos.rows);   
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+    
+};
+
+
+
 const productoByProveedor = async(req = request, res = response) => {
     try {
         const { proveedor } = req.query;
@@ -157,5 +287,13 @@ export{
     productoByProveedor,
     presentacionByProveedor,
     productoParroquiasGet,
-    productoProveedorGet
+    productoProveedorGet,
+    productoAñejamientoGet,
+    productoCategoriaGet,
+    productoVariedadGet,
+    productoSaborGet,
+    productoColorGet,
+    productoMateriaGet,
+    productoImagenGet,
+    productoPresentacionGet
 }

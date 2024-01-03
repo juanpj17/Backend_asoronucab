@@ -476,11 +476,11 @@ CREATE TABLE IF NOT EXISTS "Detalle_Venta_Fisica_Presentacion" (
     NUMERIC(12,3) NOT NULL CHECK ("det_ven_fis_pre_precio_venta" > 0),
     "fk_venta_fisica" INT,
     "fk_presentacion" INT,
-    PRIMARY KEY("det_ven_fis_pre_id", "fk_venta_fisica", "fk_presentacion"),
-    CONSTRAINT "fk_venta_fisica" FOREIGN KEY ("fk_venta_fisica")
-    REFERENCES "Venta_Fisica" ("ven_fis_id") ON DELETE CASCADE,
+    PRIMARY KEY("det_ven_fis_pre_id", "fk_presentacion"),
     CONSTRAINT "fk_presentacion" FOREIGN KEY ("fk_presentacion")
-    REFERENCES "Presentacion" ("pre_id") ON DELETE CASCADE
+    REFERENCES "Presentacion" ("pre_id") ON DELETE CASCADE,
+    CONSTRAINT "fk_venta_fisica" FOREIGN KEY ("fk_venta_fisica")
+    REFERENCES "Venta_Fisica" ("ven_fis_id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "Detalle_Venta_Fisica_Presentacion_Evento" (
@@ -493,11 +493,11 @@ CREATE TABLE IF NOT EXISTS "Detalle_Venta_Fisica_Presentacion_Evento" (
     "fk_presentacion_evento" INT,
     "fk_presentacion_evento_1" INT,
     "fk_presentacion_evento_2" INT,
-    PRIMARY KEY("det_ven_fis_pre_eve_id", "fk_venta_fisica", "fk_presentacion_evento", "fk_presentacion_evento_1", "fk_presentacion_evento_2"),
-    CONSTRAINT "fk_venta_fisica" FOREIGN KEY ("fk_venta_fisica")
-    REFERENCES "Venta_Fisica" ("ven_fis_id") ON DELETE CASCADE,
+    PRIMARY KEY("det_ven_fis_pre_eve_id", "fk_presentacion_evento", "fk_presentacion_evento_1", "fk_presentacion_evento_2"),
     CONSTRAINT "fk_presentacion_evento" FOREIGN KEY ("fk_presentacion_evento", "fk_presentacion_evento_1", "fk_presentacion_evento_2")
-    REFERENCES "Presentacion_Evento" ("pre_eve_id","fk_presentacion", "fk_evento" ) ON DELETE CASCADE
+    REFERENCES "Presentacion_Evento" ("pre_eve_id","fk_presentacion", "fk_evento" ) ON DELETE CASCADE,
+        CONSTRAINT "fk_venta_fisica" FOREIGN KEY ("fk_venta_fisica")
+    REFERENCES "Venta_Fisica" ("ven_fis_id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "Detalle_Venta_Virtual_Entrada_Entrada" (
@@ -572,7 +572,7 @@ CREATE TABLE IF NOT EXISTS "Empleado_Horario" (
 CREATE TABLE IF NOT EXISTS "Inventario_Fisico_Presentacion" (
     "inv_fis_pre_id" SERIAL,
     "inv_fis_cantidad" NUMERIC(10,0) NOT NULL CHECK ("inv_fis_cantidad" > 0),
-    "inv_fis_precio" NUMERIC(10,0) NOT NULL CHECK ("inv_fis_precio_unitario" > 0),
+    "inv_fis_precio" NUMERIC(10,0) NOT NULL CHECK ("inv_fis_precio" > 0),
     "fk_fisica" INT,
     "fk_presentacion" INT,
     PRIMARY KEY("inv_fis_pre_id", "fk_fisica", "fk_presentacion"),
@@ -585,7 +585,7 @@ CREATE TABLE IF NOT EXISTS "Inventario_Fisico_Presentacion" (
 CREATE TABLE IF NOT EXISTS "Inventario_Virtual_Presentacion" (
     "inv_vir_pre_id" SERIAL,
     "inv_vir_pre_cantidad" NUMERIC(10,0) NOT NULL CHECK ("inv_vir_pre_cantidad" > 0),
-    "inv_vir_pre_precio" NUMERIC(10,0) NOT NULL CHECK ("inv_vir_pre_precio_unitario" > 0),
+    "inv_vir_precio" NUMERIC(10,0) NOT NULL CHECK ("inv_vir_precio" > 0),
     "fk_virtual" INT,
     "fk_presentacion" INT,
     PRIMARY KEY ("inv_vir_pre_id", "fk_virtual", "fk_presentacion"),
@@ -640,7 +640,7 @@ CREATE TABLE IF NOT EXISTS "Pago_Afiliacion_Cuota_Metodo_Pago" (
     "fk_pago_afiliacion_cuota" INT,
     PRIMARY KEY ("pa_af_me_pa_id", "fk_pago_afiliacion_cuota"),
     CONSTRAINT "fk_pago_afiliacion_cuota" FOREIGN KEY ("fk_pago_afiliacion_cuota")
-    REFERENCES "Pago_Afiliacion_Cuota" ("pa_af_cuo_id") ON DELETE CASCADE,
+    REFERENCES "Pago_Afiliacion_Cuota" ("pa_af_cuo_id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "Pago_Entrada_Metodo_Pago" (
@@ -1314,7 +1314,7 @@ BEGIN
             eve_fecha_hora_inicial as hora_inicio,
             eve_fecha_hora_final as hora_fin
         FROM public."Evento"
-        WHERE CURRENT_TIMESTAMP BETWEEN (eve_fecha_hora_inicial AND eve_fecha_hora_final);
+        WHERE CURRENT_TIMESTAMP BETWEEN eve_fecha_hora_inicial AND eve_fecha_hora_final;
 END;
 $$;
 
