@@ -21,7 +21,7 @@ const productoParroquiasGet = async(req = request, res = response) => {
 
     try {
 
-        const productos = await pool.query('SELECT * FROM parroquias()');
+        const productos = await pool.query('SELECT * FROM seleccionar_parroquias()');
         res.json(productos.rows);   
 
     } catch (error) {
@@ -206,7 +206,12 @@ const productoPost = async (req = request, res = response) => {
         proveedor,
         parroquia,
         categoria,
-        variedad
+        variedad,
+        sabor,
+        color,
+        materia,
+        imagen,
+        presentacion
     } = req.body
     console.log(req.body)
     try {

@@ -2131,9 +2131,159 @@ begin
 end;
 $BODY$;
 
-ALTER FUNCTION public.eliminar_producto(integer)
-    OWNER TO postgres;
+--Seleccionar_proveedor
+CREATE OR REPLACE FUNCTION "seleccionar_proveedor"()
+RETURNS TABLE
+(
+	RIF VARCHAR(16),
+	nombre VARCHAR
+)
+AS $$
+BEGIN
 
+	RETURN QUERY
+	SELECT "per_jur_rif", "per_jur_razon_social"
+	FROM "Proveedor";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar parroquias
+CREATE OR REPLACE FUNCTION "seleccionar_parroquias"()
+RETURNS TABLE
+(
+	id INT,
+	nombre VARCHAR(255)
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "lug_id", "lug_nombre"
+	FROM "Lugar"
+	WHERE "lug_tipo" = 'parroquia';
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar_categoria
+CREATE OR REPLACE FUNCTION "seleccionar_categoria"()
+RETURNS TABLE
+(
+	id INT,
+	nombre VARCHAR(255)
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "cat_id", "cat_nombre"
+	FROM "Categoria";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar_variedad
+CREATE OR REPLACE FUNCTION "seleccionar_variedad"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "var_id", "var_nombre"
+	FROM "Variedad";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--seleccionar sabor
+CREATE OR REPLACE FUNCTION "seleccionar_sabor"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "sab_id", "sab_nombre"
+	FROM "Sabor";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar Color
+CREATE OR REPLACE FUNCTION "seleccionar_color"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "col_id", "col_nombre"
+	FROM "Color";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar materia
+CREATE OR REPLACE FUNCTION "seleccionar_materia"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "mat_id", "mat_nombre"
+	FROM "Materia";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar imagen
+CREATE OR REPLACE FUNCTION "seleccionar_imagen"()
+RETURNS TABLE
+(
+	codigo INT,
+	url VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "ima_id", "ima_url"
+	FROM "Imagen";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar presentacion
+CREATE OR REPLACE FUNCTION "seleccionar_presentacion"()
+RETURNS TABLE
+(
+	codigo INT,
+	capacidad NUMERIC
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "bot_id", "bot_capacidad"
+	FROM "Botella";
+
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION seleccionar_un_lugar_personaJ(tipo varchar, doc varchar)
 RETURNS table (lugar integer)
