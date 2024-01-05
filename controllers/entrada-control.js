@@ -67,7 +67,7 @@ const entradasPost = async(req, res = response) => {
         const { cod} = req.body;
         // console.log(req.body)
         const result = await pool.query(
-            'SELECT * from obtener_cantidad_entrada($1)',
+            'SELECT obtener_cantidad_entrada($1)',
             [cod]
           );
           

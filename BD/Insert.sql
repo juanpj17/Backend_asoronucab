@@ -845,12 +845,18 @@ VALUES
 
 INSERT INTO "Afiliado" ("afi_id", "afi_fecha_afiliacion", "afi_QR", "fk_fisica", "fk_virtual", "fk_cliente_natural", "fk_cliente_natural_2", "fk_estatus", "fk_cliente_juridico", "fk_proveedor")
 VALUES 
-    (1, '2023-01-01', 'QR001', 1, 2, NULL, NULL, 4, NULL, 'J123456789'),
-    (2, '2023-02-15', 'QR002', 2, 3, NULL, NULL, 3, NULL, 'J987654321'),
-	(3, '2023-01-01', 'QR003', 1, 2, NULL, NULL, 1, 'J123456789', NULL),
-    (4, '2023-02-15', 'QR004', 2, 3, NULL, NULL, 2, 'J987654321', NULL),
-	(5, '2023-01-01', 'QR005', 1, 2, 1, '9876143', 2, NULL, NULL),
-    (6, '2023-02-15', 'QR006', 2, 3, 5, '6666566', 1, NULL, NULL);
+    (1, '2023-01-01', 'J123456789', 1, 2, NULL, NULL, 4,'J123456789',NULL),
+    (2, '2023-02-15', 'J987654321', 2, 3, NULL, NULL, 3,'J987654321',NULL),
+	(3, '2023-01-01', 'J568790123', 1, 2, NULL, NULL, 1, 'J568790123', NULL),
+    (4, '2023-02-15', 'J234567890', 2, 3, NULL, NULL, 2, 'J234567890', NULL),
+	(5, '2023-02-15', 'J876543210', 2, 3, NULL, NULL, 2, 'J876543210', NULL),
+	(6, '2023-01-01', '9876143', 1, 2, 1, '9876143', 2, NULL, NULL),
+	(7, '2023-01-01', '5555535', 1, 2, 3, '5555535', 2, NULL, NULL),
+	(8, '2023-01-01', '9999989', 1, 2, 8, '9999989', 2, NULL, NULL),
+    (9, '2023-02-15', '6666566', 2, 3, 5, '6666566', 1, NULL, NULL),
+	(10, '2023-01-01', '4441444', 1, 2, 10, '4441444', 2, NULL, NULL);
+	
+
 
 INSERT INTO "Usuario"("usu_id", "usu_contraseña", "fk_rol",
 					 "fk_cliente_juridico", "fk_proveedor",
