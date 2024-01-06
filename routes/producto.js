@@ -22,7 +22,7 @@ export const routerProducto = Router();
 routerProducto.get('/', productoGet);
 routerProducto.get('/parroquias', productoParroquiasGet);
 routerProducto.get('/proveedor', productoProveedorGet);
-routerProducto.get('/añejamiento', productoAñejamientoGet);
+routerProducto.get('/anejamiento', productoAñejamientoGet);
 routerProducto.get('/categoria', productoCategoriaGet);
 routerProducto.get('/variedad', productoVariedadGet);
 routerProducto.get('/sabor', productoSaborGet);
