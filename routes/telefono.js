@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { telefonoGet, telefonoPost,telefonoPut, telefonoDelete,
-    eliminarNumerosEmpleado, eliminarNumerosCliente
+    eliminarNumerosEmpleado, eliminarNumerosCliente, obtenerNumerosCliente
  } from '../controllers/telefono-control.js';
 
 export const routerTelefono = Router();
@@ -16,3 +16,5 @@ routerTelefono.delete('/', telefonoDelete)
 routerTelefono.delete('/empleado', eliminarNumerosEmpleado)
 
 routerTelefono.delete('/clienteN', eliminarNumerosCliente)
+
+routerTelefono.post('/obtenerClienteN', obtenerNumerosCliente)

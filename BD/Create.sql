@@ -149,7 +149,8 @@ CREATE TABLE IF NOT EXISTS "Destilacion" (
 
 CREATE TABLE IF NOT EXISTS "Efectivo" (
     "met_pag_id" SERIAL,
-    "ef_denominacion" VARCHAR(48) NOT NULL CHECK ("ef_denominacion" IN ('€','$', 'Bs.S')),
+    "met_pag_cantidad" INTEGER NOT NULL, 
+    "ef_moneda" VARCHAR(48) NOT NULL CHECK ("ef_moneda" IN ('€','$', 'Bs.S')),
     PRIMARY KEY ("met_pag_id")
 );
 
@@ -830,11 +831,7 @@ AS $$
 DECLARE 
 	mens_1 VARCHAR;
 	mens_2 VARCHAR;
-<<<<<<< HEAD
     mens_3 VARCHAR;
-=======
-    mens_ VARCHAR;
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
 	fecha_ing TIMESTAMP;
 	cod1_empleado INT;
 	cod2_empleado VARCHAR;
@@ -1027,7 +1024,6 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-<<<<<<< HEAD
 
 CREATE OR REPLACE FUNCTION seleccionar_eventos()
 RETURNS table (codigo int,nombre varchar,descripcion varchar,num_entradas numeric,
@@ -2718,8 +2714,6 @@ SELECT pa_af_cuo_id
 	extract( month from pa_af_cuo_fecha)=extract(month from  fecha);
 RETURN CODIGO;
 end;
-=======
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
 
 CREATE OR REPLACE FUNCTION seleccionar_eventos()
 RETURNS table (codigo int,nombre varchar,descripcion varchar,num_entradas numeric,
@@ -2753,7 +2747,6 @@ return 'Cliente eliminado';
 end;
 $BODY$;
 
-<<<<<<< HEAD
 ALTER FUNCTION public.buscar_pago(character varying)
     OWNER TO postgres;
 -- comprobar si los montos parciales dan el total
@@ -2789,7 +2782,6 @@ ALTER FUNCTION public.comprobar_montos_total(character varying[], character vary
 	montos character varying[],
 	codigos_tarjeta character varying[],
 	total character varying)
-=======
 ALTER FUNCTION public.eliminar_un_cliente_natural(integer, character varying)
     OWNER TO postgres;
 
@@ -2805,13 +2797,11 @@ CREATE OR REPLACE FUNCTION public.insertar_cliente_juridico(
 	direccion_fisica character varying,
 	direccion_fiscal character varying,
 	capital numeric)
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     RETURNS character varying
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-<<<<<<< HEAD
 declare codigo int;
 declare total_pago boolean;
 declare id_afiliado int;
@@ -2850,7 +2840,6 @@ CREATE OR REPLACE FUNCTION public.pagar(
 	id_tarjetas character varying,
 	total character varying,
 	cant_tarjetas character varying)
-=======
 declare aux boolean;
 declare aux2 boolean;
 declare mensaje varchar;
@@ -3027,13 +3016,11 @@ CREATE OR REPLACE FUNCTION public.registro_cliente_natural(
 	s_apellido character varying,
 	direccion character varying,
 	parroquia integer)
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     RETURNS character varying
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-<<<<<<< HEAD
 
 declare aux1 varchar;
 declare montos_array varchar[];
@@ -3076,7 +3063,6 @@ ALTER FUNCTION public.pagar(character varying, character varying, character vary
 CREATE OR REPLACE FUNCTION public.datos_factura(
 	codigo_identificador_afiliado character varying)
     RETURNS TABLE(num_factura character varying, total character varying, mes character varying, fecha character varying) 
-=======
 declare mensaje varchar;
 declare ValCedRif boolean;
 declare ValnombApell boolean;
@@ -3122,12 +3108,10 @@ CREATE OR REPLACE FUNCTION obtener_eventos_activos()
         fecha_hora_inicial timestamp,
         fecha_hora_final timestamp
     )
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
     ROWS 1000
-<<<<<<< HEAD
 
 AS $BODY$
 declare fecha timestamp;
@@ -3196,7 +3180,6 @@ ALTER FUNCTION public.obtener_datos_afiliado_factura(character varying)
 CREATE OR REPLACE FUNCTION public.obtener_datos_asoron_factura(
 	)
     RETURNS TABLE(rif character varying, direccion text) 
-=======
 AS $$
 BEGIN
     RETURN QUERY
@@ -3250,14 +3233,12 @@ $$;
 CREATE OR REPLACE FUNCTION public.seleccionar_roles(
 	)
     RETURNS TABLE(codigo integer, nombre character varying, descripcion character varying) 
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
     ROWS 1000
 
 AS $BODY$
-<<<<<<< HEAD
 
  begin
  
@@ -3397,7 +3378,6 @@ ALTER FUNCTION public.modificar_rol(character varying, character varying, text)
 CREATE OR REPLACE FUNCTION public.seleccionar_un_rol(
 	codigo_rol character varying)
     RETURNS TABLE(nombre character varying, descripcion text) 
-=======
 BEGIN
    return query 	SELECT rol_id, rol_nombre, rol_descripcion
 					FROM public."Rol";
@@ -3533,7 +3513,6 @@ CREATE OR REPLACE FUNCTION public.seleccionar_empleado(
 	codigo integer,
 	ced character varying)
     RETURNS TABLE(cedula character varying, rif character varying, p_nombre character varying, s_nombre character varying, p_apellido character varying, s_apellido character varying, direccion character varying, sueldo numeric, fecha_ing timestamp without time zone, parroquia integer) 
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
@@ -3541,7 +3520,6 @@ CREATE OR REPLACE FUNCTION public.seleccionar_empleado(
 
 AS $BODY$
 begin
-<<<<<<< HEAD
  return query SELECT  rol_nombre, cast (rol_descripcion as text)
 	FROM public."Rol"
 	where rol_id = cast (codigo_rol as int);
@@ -3554,7 +3532,6 @@ ALTER FUNCTION public.seleccionar_un_rol(character varying)
 
 CREATE OR REPLACE FUNCTION public.eliminar_rol(
 	codigo character varying)
-=======
 return query SELECT per_nat_ci, per_nat_rif, per_nat_p_nombre, per_nat_s_nombre, per_nat_p_apellido, per_nat_s_apellido, per_nat_direccion, emp_sueldo, emp_fecha_ingreso, fk_lugar
 	FROM public."Empleado"
 	where per_nat_id=codigo and per_nat_ci=ced;
@@ -3591,13 +3568,11 @@ CREATE OR REPLACE FUNCTION public.modificar_usuario_password(
 	cod2_empleado character varying,
 	cod_cliente_juridico character varying,
     rol integer)
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     RETURNS void
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-<<<<<<< HEAD
 BEGIN
     DELETE FROM public."Rol"
 	WHERE rol_id=cast(codigo as int);
@@ -3629,7 +3604,6 @@ ALTER FUNCTION public.obtener_permisos()
 CREATE OR REPLACE FUNCTION public.insertar_permiso_rol(
 	codigo_permiso character varying,
 	codigo_rol character varying)
-=======
 begin 
 	if  not "contraseña"='' then
 		if (cod1_empleado=0 and cod2_empleado='' and cod_cliente_juridico='') then
@@ -3671,13 +3645,11 @@ CREATE OR REPLACE FUNCTION public.modificar_empleado(
 	direccion character varying,
 	sueldo numeric,
 	parroquia integer)
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     RETURNS character varying
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-<<<<<<< HEAD
 declare rol_permiso int;
 begin
 select rol_per_id  
@@ -3700,7 +3672,6 @@ ALTER FUNCTION public.insertar_permiso_rol(character varying, character varying)
 CREATE OR REPLACE FUNCTION public.seleccionar_codigos_permisos_rol(
 	id_rol character varying)
     RETURNS TABLE(codigo_permiso character varying) 
-=======
 declare mensaje varchar;
 declare ValCedRif boolean;
 declare ValnombApell boolean;
@@ -3878,7 +3849,6 @@ ALTER FUNCTION public.modificar_cliente_natural(integer, character varying, char
 CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_juridico(
 	rif character varying)
     RETURNS TABLE(denominacion_comercial character varying, razon_social character varying, pagina_web character varying, direccion_fiscal character varying, direccion_fisica character varying, capital numeric) 
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
@@ -3886,7 +3856,6 @@ CREATE OR REPLACE FUNCTION public.seleccionar_un_cliente_juridico(
 
 AS $BODY$
 begin
-<<<<<<< HEAD
 RETURN query select cast(per_id as varchar) 
 	from public."Permiso", public."Rol_Permiso"
 	where fk_rol=cast(id_rol as int )and fk_permiso=per_id;
@@ -3899,7 +3868,6 @@ ALTER FUNCTION public.seleccionar_codigos_permisos_rol(character varying)
 --eliminar permisos  por rol
 CREATE OR REPLACE FUNCTION public.eliminar_permisos_rol(
 	cod_rol character varying)
-=======
 return query  SELECT  per_jur_denominacion_comercial, per_jur_razon_social, per_jur_pagina_web, per_jur_direccion_fiscal, per_jur_direccion_fisica, per_jur_capital
 				FROM public."Cliente_Juridico"
 				where per_jur_rif=rif;
@@ -3939,13 +3907,11 @@ $BODY$;
 
 CREATE OR REPLACE FUNCTION public.modificar_empleado_correo(
 	correo character varying, codEmpleado integer, cedula character varying )
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03
     RETURNS void
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-<<<<<<< HEAD
 DECLARE
 	
  begin
@@ -3961,7 +3927,6 @@ ALTER FUNCTION public.eliminar_permisos_rol(character varying)
 
 
 
-=======
 begin 
 	if  not correo='' then
 		UPDATE public."Correo"
@@ -4581,4 +4546,3 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
->>>>>>> 2a2604577ba3fa1a2920e77c53278670c09d5e03

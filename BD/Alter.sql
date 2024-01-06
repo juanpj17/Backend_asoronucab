@@ -344,8 +344,8 @@ ADD CHECK(
 --Pago_Metodo_Pago
 -- Variables
 ALTER TABLE "Pago_Metodo_Pago"
-ADD COLUMN "fk_venta_fisica" INT NOT NULL,
-ADD COLUMN "fk_venta_virtual" INT NOT NULL,
+ADD COLUMN "fk_venta_fisica" INT,
+ADD COLUMN "fk_venta_virtual" INT,
 ADD COLUMN "fk_tarjeta" INT,
 ADD COLUMN "fk_efectivo" INT,
 ADD COLUMN "fk_cheque" INT,
@@ -592,7 +592,7 @@ ALTER TABLE "Venta_Fisica"
 ADD COLUMN "fk_fisica" INT NOT NULL,
 ADD COLUMN "fk_cliente_natural_1" INT NOT NULL,
 ADD COLUMN "fk_cliente_natural_2" VARCHAR(16) NOT NULL,
-ADD COLUMN "fk_cliente_juridico" VARCHAR(16) NOT NULL,
+ADD COLUMN "fk_cliente_juridico" VARCHAR(16) ,
 ADD COLUMN "fk_empleado_1" INT NOT NULL,
 ADD COLUMN "fk_empleado_2" VARCHAR(16) NOT NULL,
 ADD COLUMN "fk_infp_1" INT NOT NULL,
@@ -630,9 +630,9 @@ ADD CHECK(
 -- Venta_Fisica_Entrada
 -- Variables
 ALTER TABLE "Venta_Fisica_Entrada"
-ADD COLUMN "fk_cliente_natural_1" INT NOT NULL,
-ADD COLUMN "fk_cliente_juridico" VARCHAR(16) NOT NULL,
-ADD COLUMN "fk_cliente_natural_2" VARCHAR(16) NOT NULL,
+ADD COLUMN "fk_cliente_natural_1" INT,
+ADD COLUMN "fk_cliente_juridico" VARCHAR(16),
+ADD COLUMN "fk_cliente_natural_2" VARCHAR(16),
 ADD COLUMN "fk_fisica" INT NOT NULL;
 
 -- Foraneas
