@@ -2,11 +2,13 @@ import { pool } from '../models/server.js';
 import { response, request } from 'express';
 
 const productoGet = async(req = request, res = response) => {
-
+    console.log('producto')
     try {
 
         const productos = await pool.query('SELECT * FROM seleccionar_productos()');
+        console.log(productos)
         res.json(productos.rows);   
+        
 
     } catch (error) {
 
