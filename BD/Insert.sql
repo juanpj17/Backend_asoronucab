@@ -600,6 +600,16 @@ VALUES
 
 INSERT INTO "Sabor" ( "sab_nombre", "sab_descripcion")
 VALUES
+    (1, 'Roble', 'Notas de roble ahumado y vainilla'),
+  (2, 'Canela', 'Toques cálidos de canela especiada'),
+  (3, 'Coco', 'Sabor tropical y cremoso de coco'),
+  (4, 'Tabaco', 'Aromas terrosos y ricos como el tabaco'),
+  (5, 'Jengibre', 'Picante y fresco sabor de jengibre'),
+  (6, 'Pimienta Negra', 'Especias intensas de pimienta negra'),
+  (7, 'Anís', 'Sabor distintivo de anís'),
+  (8, 'Naranja', 'Dulce y cítrico sabor a naranja'),
+  (9, 'Mango', 'Fragancia exótica y jugosa del mango'),
+  (10, 'Madera Ahumada', 'Toques ahumados de madera robusta');
   ( 'Roble', 'Notas de roble ahumado y vainilla'),
   ( 'Canela', 'Toques cálidos de canela especiada'),
   ( 'Coco', 'Sabor tropical y cremoso de coco'),
@@ -610,6 +620,8 @@ VALUES
   ( 'Naranja', 'Dulce y cítrico sabor a naranja'),
   ( 'Mango', 'Fragancia exótica y jugosa del mango'),
   ( 'Madera Ahumada', 'Toques ahumados de madera robusta');
+
+
 
 INSERT INTO "Producto_Sabor" ( "fk_producto", "fk_sabor")
 VALUES
@@ -752,12 +764,12 @@ VALUES
     -- Insertar dos presentaciones para cada producto
 INSERT INTO "Presentacion" (pre_nombre, pre_descripcion, fk_caja, fk_producto, fk_material_tapa_1, fk_material_tapa_2, fk_material_tapa_3, fk_material_botella_1, fk_material_botella_2,fk_material_botella_3)
 VALUES
-    ('Botella Estándar 0,75ml', 'Presentación estándar en botella',1, 21,1,3,1,1,3,1),
-    ('Botella Premium 1l', 'Presentación premium en botella',2, 23,1,3,1,1,3,1),
-    ('Edición Especial 0,80ml', 'Presentación especial para coleccionistas', 1,27,1,3,1,1,3,1),
-    ('Botella Grande 1,2l', 'Presentación en botella grande',3, 28,1,3,1,1,3,1),
-    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 30,1,3,1,1,3,1),
-    ('Botella Pequeña 0,45l', 'Presentación en botella pequeña',1,  31,1,3,1,1,3,1);
+    ('Botella Estándar 0,75ml', 'Presentación estándar en botella',1, 1,1,3,1,1,3,1),
+    ('Botella Premium 1l', 'Presentación premium en botella',2, 3,1,3,1,1,3,1),
+    ('Edición Especial 0,80ml', 'Presentación especial para coleccionistas', 1,7,1,3,1,1,3,1),
+    ('Botella Grande 1,2l', 'Presentación en botella grande',3, 8,1,3,1,1,3,1),
+    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 0,1,3,1,1,3,1),
+    ('Botella Pequeña 0,45l', 'Presentación en botella pequeña',1,  1,1,3,1,1,3,1);
 
 
 INSERT INTO "Lugar_Persona" ( "Lug_per_tipo", "fk_lugar", "fk_cliente_juridico", "fk_proveedor")

@@ -193,7 +193,51 @@ const nombreEvento = async(req, res = response) => {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
-}
+};
+const insertarNotaCata = async (req=request, res = response) => {
+ 
+    try {
+      console.log(req.body)
+      const usuario = await pool.query('SELECT public.insertar_nota_cata($1,$2,$3)', [req.body.nota,req.body.evento,req.body.presentacion]);
+      res.json(usuario.rows);
+    } catch (error) {
+      console.error('Error al buscar el usuario:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
+  const obtenerPremios = async (req=request, res = response) => {
+ 
+    try {
+      const premios = await pool.query('SELECT (public.obtener_premios()).*');
+      res.json(premios.rows);
+    } catch (error) {
+      console.error('Error al buscar el usuario:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
+  const obtenerPresentaciones = async (req=request, res = response) => {
+    console.log(req.body)
+    try {
+      const presentacion = await pool.query('SELECT (public.obtener_presentaciones_producto($1)).*',[req.body.cod_producto]);
+      res.json(presentacion.rows);
+    } catch (error) {
+      console.error('Error al buscar el usuario:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
+  const insertarPremio = async (req=request, res = response) => {
+ 
+    try {
+      console.log(req.body)
+      const usuario = await pool.query('SELECT public.insertar_premio_evento($1,$2,$3)', [req.body.evento,req.body.presentacion,req.body.premio]);
+      res.json(usuario.rows);
+    } catch (error) {
+      console.error('Error al buscar el usuario:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
+  
+
 
 
 export{
@@ -207,5 +251,9 @@ export{
     consultarEvento,
     lugarEvento,
     fk_presentacionEvento,
-    nombreEvento
+    nombreEvento,
+    insertarNotaCata,
+    obtenerPremios,
+    obtenerPresentaciones,
+    insertarPremio
 }

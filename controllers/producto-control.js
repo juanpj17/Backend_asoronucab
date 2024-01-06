@@ -2,11 +2,13 @@ import { pool } from '../models/server.js';
 import { response, request } from 'express';
 
 const productoGet = async(req = request, res = response) => {
-
+    console.log('producto')
     try {
 
         const productos = await pool.query('SELECT * FROM seleccionar_productos()');
+        console.log(productos)
         res.json(productos.rows);   
+        
 
     } catch (error) {
 
@@ -21,7 +23,7 @@ const productoParroquiasGet = async(req = request, res = response) => {
 
     try {
 
-        const productos = await pool.query('SELECT * FROM parroquias()');
+        const productos = await pool.query('SELECT * FROM seleccionar_parroquias()');
         res.json(productos.rows);   
 
     } catch (error) {
@@ -37,7 +39,7 @@ const productoProveedorGet = async(req = request, res = response) => {
 
     try {
 
-        const productos = await pool.query('SELECT * FROM obtener_proveedores()');
+        const productos = await pool.query('SELECT * FROM seleccionar_proveedor()');
         res.json(productos.rows);   
 
     } catch (error) {
@@ -196,7 +198,6 @@ const productoByProveedor = async(req = request, res = response) => {
 
 
 const productoPost = async (req = request, res = response) => {
-    
     const {
         nombre,
         descripcion,
@@ -206,33 +207,69 @@ const productoPost = async (req = request, res = response) => {
         proveedor,
         parroquia,
         categoria,
-        variedad
-    } = req.body
-    console.log(req.body)
+        variedad,
+        sabor,
+        color,
+        materia,
+        imagen,
+        presentacion
+    } = req.body;
+
+    console.log(req.body);
+
     try {
         
-        const dbresponse = await pool.query('SELECT public.registrar_producto($1, $2, $3, $4, $5, $6, $7, $8, $9)', 
-        [
-            nombre, 
-            descripcion, 
-            gradosa, 
-            tipo, 
-            anejamiento, 
-            proveedor, 
-            parroquia, 
-            categoria, 
+        const dbresponse = await pool.query('SELECT public.registrar_producto($1, $2, $3, $4, $5, $6, $7, $8, $9)', [
+            nombre,
+            descripcion,
+            gradosa,
+            tipo,
+            anejamiento,
+            proveedor,
+            parroquia,
+            categoria,
             variedad
         ]);
+        
+        // Obtener el ID del producto registrado
+        const productId = await buscarElUltimoProducto();
+        console.log(productId);
 
-        res.json(dbresponse.rows[0]);
+        
+        await pool.query('SELECT public.insertar_sabores($1, $2)', [productId, sabor.map(str => parseInt(str, 10))]);
 
+        await pool.query('SELECT public.insertar_colores($1, $2)', [productId, color.map(str => parseInt(str, 10))]);
+
+        await pool.query('SELECT public.insertar_materia($1, $2)', [productId, materia.map(str => parseInt(str, 10))]);
+
+        await pool.query('SELECT public.insertar_imagen($1, $2)', [productId, imagen]);
+
+        await pool.query('SELECT public.insertar_presentacion($1, $2)', [productId, presentacion.map(str => parseInt(str, 10))]);
+
+        // Confirmar la transacción
+        await pool.query('COMMIT');
+
+        res.json({ id: productId });
     } catch (error) {
-
+        // Revertir la transacción en caso de error
+        await pool.query('ROLLBACK');
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+    } 
+};
 
+const buscarElUltimoProducto = async (req, res = response) => {
+    try {
+        const result = await pool.query('SELECT MAX(pro_codigo) FROM "Producto"');
+        // Obtener el valor máximo de la respuesta
+        const maxCodigo = result.rows[0].max;
+        return maxCodigo;
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+
 
 const productoPut = (req, res = response) => {
 

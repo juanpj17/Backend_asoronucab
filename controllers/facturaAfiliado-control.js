@@ -45,5 +45,18 @@ const DatosFactura = async (req=request, res = response) => {
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
+  const tarjetasAfiliado = async (req=request, res = response) => {
+    try {
+      const factura =await pool.query('SELECT (public.tarjetas_afiliado($1)).*',[req.body.codigo_identificador]);
+      res.json(factura.rows);
+     
+    
+     
+    } catch (error) {
+      console.error('Error al obtener datos de la factura afiliacion:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
 
-  export{DatosFactura,DatosAfiliado,DatosAsoron}
+
+  export{DatosFactura,DatosAfiliado,DatosAsoron,tarjetasAfiliado}

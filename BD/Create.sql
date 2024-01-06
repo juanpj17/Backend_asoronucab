@@ -2132,8 +2132,284 @@ begin
 end;
 $BODY$;
 
-ALTER FUNCTION public.eliminar_producto(integer)
-    OWNER TO postgres;
+--Seleccionar_proveedor
+CREATE OR REPLACE FUNCTION "seleccionar_proveedor"()
+RETURNS TABLE
+(
+	RIF VARCHAR(16),
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "per_jur_rif", "per_jur_razon_social"
+	FROM "Proveedor";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar parroquias
+CREATE OR REPLACE FUNCTION "seleccionar_parroquias"()
+RETURNS TABLE
+(
+	id INT,
+	nombre VARCHAR(255)
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "lug_id", "lug_nombre"
+	FROM "Lugar"
+	WHERE "lug_tipo" = 'parroquia';
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar_añejamiento
+CREATE OR REPLACE FUNCTION "seleccionar_añejamiento"()
+RETURNS TABLE
+(
+	id INT,
+	nombre VARCHAR(255)
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "añe_id", "añe_nombre"
+	FROM "Añejamiento";
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+--Seleccionar_categoria
+CREATE OR REPLACE FUNCTION "seleccionar_categoria"()
+RETURNS TABLE
+(
+	id INT,
+	nombre VARCHAR(255)
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "cat_id", "cat_nombre"
+	FROM "Categoria";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar_variedad
+CREATE OR REPLACE FUNCTION "seleccionar_variedad"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "var_id", "var_nombre"
+	FROM "Variedad";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--seleccionar sabor
+CREATE OR REPLACE FUNCTION "seleccionar_sabor"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "sab_id", "sab_nombre"
+	FROM "Sabor";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar Color
+CREATE OR REPLACE FUNCTION "seleccionar_color"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "col_id", "col_nombre"
+	FROM "Color";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar materia
+CREATE OR REPLACE FUNCTION "seleccionar_materia"()
+RETURNS TABLE
+(
+	codigo INT,
+	nombre VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "mat_id", "mat_nombre"
+	FROM "Materia";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar imagen
+CREATE OR REPLACE FUNCTION "seleccionar_imagen"()
+RETURNS TABLE
+(
+	codigo INT,
+	url VARCHAR
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "ima_id", "ima_url"
+	FROM "Imagen";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Seleccionar presentacion
+CREATE OR REPLACE FUNCTION "seleccionar_presentacion"()
+RETURNS TABLE
+(
+	codigo INT,
+	capacidad NUMERIC
+)
+AS $$
+BEGIN
+
+	RETURN QUERY
+	SELECT "bot_id", "bot_capacidad"
+	FROM "Botella";
+
+END;
+$$ LANGUAGE plpgsql;
+
+--Insertar Sabores
+CREATE OR REPLACE FUNCTION public.insertar_sabores(
+	id_producto integer,
+	sabores integer[])
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare id_sabor int;
+begin
+FOREACH id_sabor IN ARRAY sabores
+  	LOOP
+		RAISE NOTICE 'id del sabor ==> %', id_sabor;
+		INSERT INTO public."Producto_Sabor"(
+		 fk_producto, fk_sabor)
+		VALUES (id_producto, id_sabor);
+  	END LOOP;
+end;
+$BODY$;
+
+--Insertar Colores
+-- FUNCTION: public.insertar_colores(integer, integer[])
+
+-- DROP FUNCTION IF EXISTS public.insertar_colores(integer, integer[]);
+
+CREATE OR REPLACE FUNCTION public.insertar_colores(
+	id_producto integer,
+	colores integer[])
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare id_color int;
+begin
+FOREACH id_color IN ARRAY colores
+  	LOOP
+		RAISE NOTICE 'id del sabor ==> %', id_color;
+		INSERT INTO public."Producto_Color"(
+		 fk_producto, fk_color)
+		VALUES (id_producto, id_color);
+  	END LOOP;
+end;
+$BODY$;
+
+--Insertar Materia
+CREATE OR REPLACE FUNCTION public.insertar_materia(
+	id_producto integer,
+	materias_primas integer[])
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare id_materia int;
+begin
+FOREACH id_materia IN ARRAY materias_primas
+  	LOOP
+		RAISE NOTICE 'id de la materia prima ==> %', id_materia;
+		INSERT INTO public."Producto_Materia"(
+		 fk_producto, fk_materia)
+		VALUES (id_producto, id_materia);
+  	END LOOP;
+end;
+$BODY$;
+
+--Insertar Imagen
+CREATE OR REPLACE FUNCTION public.insertar_imagen(
+	id_producto integer,
+	id_imagen integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+begin
+	UPDATE public."Imagen"
+	SET fk_producto=id_producto
+	WHERE ima_id=id_imagen;
+end;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION public.insertar_presentacion(
+    id_producto integer,
+    presentaciones integer[]
+)
+RETURNS void
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+    id_presentacion int;
+BEGIN
+    FOREACH id_presentacion IN ARRAY presentaciones
+    LOOP
+        RAISE NOTICE 'id de la presentacion ==> %', id_presentacion;
+        
+        -- Actualizar la tabla "Presentacion" con el nuevo fk_producto
+        UPDATE public."Presentacion"
+        SET "fk_producto" = id_producto
+        WHERE "pre_id" = id_presentacion;
+    END LOOP;
+END;
+$BODY$;
 
 
 CREATE OR REPLACE FUNCTION seleccionar_un_lugar_personaJ(tipo varchar, doc varchar)
