@@ -6,7 +6,7 @@ const productoGet = async(req = request, res = response) => {
     try {
 
         const productos = await pool.query('SELECT * FROM seleccionar_productos()');
-        console.log(productos)
+      
         res.json(productos.rows);   
         
 

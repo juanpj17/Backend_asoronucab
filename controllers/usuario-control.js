@@ -9,7 +9,9 @@ const buscarUsuario = async (req=request, res = response) => {
     try {
       
       const usuario = await pool.query('SELECT( public.obtener_codigo_rif_cliente($1,$2)).*', [correo, contrase]);
+      console.log(usuario)
       res.json(usuario.rows);
+
     } catch (error) {
       console.error('Error al buscar el usuario:', error);
       res.status(500).json({ error: 'Error interno del servidor' });
@@ -29,7 +31,6 @@ const insertarAuditoria = async (req=request, res = response) => {
 const buscarAuditoria = async (req=request, res = response) => {
  
   try {
-    console.log(req.body)
     const usuario = await pool.query('SELECT( public.obtener_auditoria()).*');
     res.json(usuario.rows);
   } catch (error) {
@@ -37,5 +38,17 @@ const buscarAuditoria = async (req=request, res = response) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+const buscarNombreRol = async (req=request, res = response) => {
+ 
+  try {
+    console.log(req.body)
+    const usuario = await pool.query('SELECT (public.nombre_rol($1)).*',[req.body.cod_usuario]);
+    console.log(usuario[0])
+    res.json(usuario.rows);
+  } catch (error) {
+    console.error('Error al buscar el usuario:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
 
-export{buscarUsuario,insertarAuditoria,buscarAuditoria}
+export{buscarUsuario,insertarAuditoria,buscarAuditoria,buscarNombreRol}

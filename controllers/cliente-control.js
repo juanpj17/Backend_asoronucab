@@ -152,8 +152,7 @@ const modificarPostJ = async (req, res = response) => {
             [denominacion_comercial, razon_social, pagina_web, capital_disponible, rif, clave, parroquia_fisica, direccion_fisica, parroquia_fiscal, direccion_fiscal, paraNull, tipoFa, tipoFl]
           );
           
-
-
+        console.log('aqui')
         res.json(result.rows[0]);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);

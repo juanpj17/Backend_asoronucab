@@ -17,6 +17,7 @@ import { routerFacturaAfiliado } from '../routes/facturaAfiliado.js';
 import { routerTelefono } from '../routes/telefono.js';
 import { routerEntrada } from '../routes/entrada.js';
 import { routerTiendaFisica } from '../routes/tienda-fisica.js';
+import {routerOrdenReposicion} from '../routes/orderReposicion.js'
 
 
 import pkg from 'pg';
@@ -52,7 +53,8 @@ class Server {
             afiliarsePath:'/api/afiliarse',
             facturaAfiliado:'/api/facturaAfiliado',
             telefonoPath:'/api/telefono',
-            entradaPath:'/api/entrada'
+            entradaPath:'/api/entrada',
+            ordenReposicion:'/api/orderReposicion'
         };
         this.pool = pool;
 
@@ -94,6 +96,8 @@ class Server {
         this.app.use(this.path.afiliadoPath,routerAfiliado);
         this.app.use(this.path.afiliarsePath,routerAfiliarse);
         this.app.use(this.path.facturaAfiliado,routerFacturaAfiliado);
+        this.app.use(this.path.ordenReposicion,routerOrdenReposicion);
+        
         
     }
 }
