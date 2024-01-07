@@ -3,7 +3,7 @@ import { response, request } from 'express';
 
 const tasaGet = async (req = request, res = response) => {
     try {
-        const tasa = await pool.query('SELECT (public.obtener_historico_tasa()).*');
+        const tasa = await pool.query('SELECT (obtener_historico_tasa()).*');
         res.json(tasa.rows);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);

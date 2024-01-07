@@ -1,23 +1,24 @@
 import express from 'express';
 import cors from 'cors';
 
-import { routerEmpleado } from '../routes/empleado.js';
-import { routerCliente } from '../routes/cliente.js';
-import { routerEvento } from '../routes/eventos.js';
-import { routerParroquia } from '../routes/parroquia.js';
-import { routerProveedor } from '../routes/proveedor.js';
-import { routerRoles } from '../routes/roles.js';
-import { routerProducto } from '../routes/producto.js';
-import {routerTasa} from '../routes/tasa.js';
-import { routerPunto } from '../routes/punto.js';
-import { routerUsuario } from '../routes/usuario.js';
-import {routerAfiliado} from '../routes/afiliado.js';
 import { routerAfiliarse } from '../routes/afiliarse.js';
-import { routerFacturaAfiliado } from '../routes/facturaAfiliado.js';
-import { routerTelefono } from '../routes/telefono.js';
+import { routerCliente } from '../routes/cliente.js';
+import { routerEmpleado } from '../routes/empleado.js';
 import { routerEntrada } from '../routes/entrada.js';
+import { routerEvento } from '../routes/eventos.js';
+import { routerFacturaAfiliado } from '../routes/facturaAfiliado.js';
+import { routerParroquia } from '../routes/parroquia.js';
+import { routerProducto } from '../routes/producto.js';
+import { routerProveedor } from '../routes/proveedor.js';
+import { routerPunto } from '../routes/punto.js';
+import { routerRoles } from '../routes/roles.js';
+import { routerTelefono } from '../routes/telefono.js';
 import { routerTiendaFisica } from '../routes/tienda-fisica.js';
-import {routerOrdenReposicion} from '../routes/orderReposicion.js'
+import { routerUsuario } from '../routes/usuario.js';
+import { routerVentaFisica } from '../routes/ventaF.js';
+import {routerAfiliado} from '../routes/afiliado.js';
+import {routerTasa} from '../routes/tasa.js';
+import {routerOrdenReposicion} from '../routes/orderReposicion.js';
 
 
 import pkg from 'pg';
@@ -38,23 +39,24 @@ class Server {
         this.port = process.env.SERVER_PORT || 3000;
         this.app = express();
         this.path = {
-            tiendafisicaPath: '/api/tiendafisica',
-            empleadoPath: '/api/empleado',
-            clientePath: '/api/cliente',
-            eventoPath: '/api/evento',
-            parroquiaPath: '/api/parroquia',
-            proveedorPath: '/api/proveedor',
-            rolesPath: '/api/roles',
-            productoPath: '/api/producto',
-            tasaPath:'/api/tasa',
-            puntoPath:'/api/punto',
-            usuarioPath:'/api/usuario',
             afiliadoPath:'/api/afiliado',
             afiliarsePath:'/api/afiliarse',
-            facturaAfiliado:'/api/facturaAfiliado',
-            telefonoPath:'/api/telefono',
+            clientePath: '/api/cliente',
+            empleadoPath: '/api/empleado',
             entradaPath:'/api/entrada',
-            ordenReposicion:'/api/orderReposicion'
+            eventoPath: '/api/evento',
+            facturaAfiliado:'/api/facturaAfiliado',
+            parroquiaPath: '/api/parroquia',
+            productoPath: '/api/producto',
+            proveedorPath: '/api/proveedor',
+            puntoPath:'/api/punto',
+            rolesPath: '/api/roles',
+            tasaPath:'/api/tasa',
+            telefonoPath:'/api/telefono',
+            ordenReposicion:'/api/orderReposicion',
+            tiendafisicaPath: '/api/tiendafisica',
+            usuarioPath:'/api/usuario',
+            ventaFPath:'/api/ventaF'
         };
         this.pool = pool;
 
@@ -80,24 +82,24 @@ class Server {
     }
 
     routes(){
-        this.app.use(this.path.entradaPath, routerEntrada);
-        this.app.use(this.path.telefonoPath, routerTelefono);
-        this.app.use(this.path.tiendafisicaPath, routerTiendaFisica);
-        this.app.use(this.path.productoPath, routerProducto);
-        this.app.use(this.path.rolesPath, routerRoles);
-        this.app.use(this.path.proveedorPath, routerProveedor);
-        this.app.use(this.path.parroquiaPath, routerParroquia);
-        this.app.use(this.path.eventoPath, routerEvento);
-        this.app.use(this.path.clientePath, routerCliente);
-        this.app.use(this.path.empleadoPath, routerEmpleado);
-        this.app.use(this.path.tasaPath,routerTasa);
-        this.app.use(this.path.puntoPath,routerPunto);
-        this.app.use(this.path.usuarioPath,routerUsuario);
         this.app.use(this.path.afiliadoPath,routerAfiliado);
         this.app.use(this.path.afiliarsePath,routerAfiliarse);
+        this.app.use(this.path.clientePath, routerCliente);
+        this.app.use(this.path.empleadoPath, routerEmpleado);
+        this.app.use(this.path.entradaPath, routerEntrada);
+        this.app.use(this.path.eventoPath, routerEvento);
         this.app.use(this.path.facturaAfiliado,routerFacturaAfiliado);
+        this.app.use(this.path.parroquiaPath, routerParroquia);
+        this.app.use(this.path.productoPath, routerProducto);
+        this.app.use(this.path.proveedorPath, routerProveedor);
+        this.app.use(this.path.puntoPath,routerPunto);
+        this.app.use(this.path.rolesPath, routerRoles);
+        this.app.use(this.path.tasaPath,routerTasa);
+        this.app.use(this.path.telefonoPath, routerTelefono);
+        this.app.use(this.path.tiendafisicaPath, routerTiendaFisica);
+        this.app.use(this.path.usuarioPath,routerUsuario);
+        this.app.use(this.path.ventaFPath, routerVentaFisica);
         this.app.use(this.path.ordenReposicion,routerOrdenReposicion);
-        
         
     }
 }

@@ -8,4 +8,5 @@ routerOrdenReposicion.post('/',datosOrdenCompra);
 routerOrdenReposicion.post('/proveedor',direccionProveedor);
 routerOrdenReposicion.post('/fecha',fechaOrden);
 routerOrdenReposicion.post('/actualizar',actualizar);
+
 routerOrdenReposicion.get('/orden',ordenes);

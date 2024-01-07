@@ -79,6 +79,27 @@ const eliminarNumerosEmpleado = async(req, res = response) => {
 }
 
 
+const obtenerNumerosCliente = async(req, res = response) => {
+ 
+  try {
+      const { cedula } = req.body;
+      console.log('necesito: ')
+      console.log(req.body)
+      const idCliente = await buscarIdClienteNPorCedula(cedula);
+      const result = await pool.query(
+          'SELECT * from obtener_telefonos_cliente_n($1, $2)',
+          [idCliente, cedula]
+        );
+        
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error al ejecutar la consulta:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+
+
 const eliminarNumerosCliente = async(req, res = response) => {
  
   try {
@@ -104,5 +125,6 @@ export{
     telefonoPut,
     telefonoDelete,
     eliminarNumerosEmpleado,
-    eliminarNumerosCliente
+    eliminarNumerosCliente,
+    obtenerNumerosCliente
 }
