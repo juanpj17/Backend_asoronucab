@@ -18,6 +18,7 @@ import { routerUsuario } from '../routes/usuario.js';
 import { routerVentaFisica } from '../routes/ventaF.js';
 import {routerAfiliado} from '../routes/afiliado.js';
 import {routerTasa} from '../routes/tasa.js';
+import {routerOrdenReposicion} from '../routes/orderReposicion.js';
 
 
 import pkg from 'pg';
@@ -52,6 +53,7 @@ class Server {
             rolesPath: '/api/roles',
             tasaPath:'/api/tasa',
             telefonoPath:'/api/telefono',
+            ordenReposicion:'/api/orderReposicion',
             tiendafisicaPath: '/api/tiendafisica',
             usuarioPath:'/api/usuario',
             ventaFPath:'/api/ventaF'
@@ -97,6 +99,7 @@ class Server {
         this.app.use(this.path.tiendafisicaPath, routerTiendaFisica);
         this.app.use(this.path.usuarioPath,routerUsuario);
         this.app.use(this.path.ventaFPath, routerVentaFisica);
+        this.app.use(this.path.ordenReposicion,routerOrdenReposicion);
         
     }
 }

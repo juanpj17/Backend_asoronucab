@@ -5,6 +5,7 @@ const empleadoGet = async (req = request, res = response) => {
     try {
         const empleado = await pool.query('SELECT * FROM public.mostrar_empleados()');
         res.json(empleado.rows);
+        
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });

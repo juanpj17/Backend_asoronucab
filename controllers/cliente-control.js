@@ -155,8 +155,7 @@ const modificarPostJ = async (req, res = response) => {
             [denominacion_comercial, razon_social, pagina_web, capital_disponible, rif, clave, parroquia_fisica, direccion_fisica, parroquia_fiscal, direccion_fiscal, paraNull, tipoFa, tipoFl]
           );
           
-
-
+        console.log('aqui')
         res.json(result.rows[0]);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
@@ -432,6 +431,39 @@ const consultarClienteJ = async(req, res = response) => {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
+};
+const insertarCorreoJ = async(req, res = response) => {
+ 
+    try {
+        console.log('correo')
+        console.log(req.body)
+        const result = await pool.query(
+            'SELECT public.insertar_correo($1,$2,$3,$4,$5,$6)',
+            [req.body.correo, null,null,null,null,req.body.rif]
+          );
+          
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+const seleccionarCorreoJ = async(req, res = response) => {
+ 
+    try {
+        console.log('selecconar')
+        console.log(req.body)
+        const result = await pool.query(
+           'SELECT (public.selecccionar_correos($1)).*',
+            ['J987654321']
+          );
+         console.log(result.rows)
+          
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 }
 
 
@@ -462,5 +494,7 @@ export{
     consultarUsuarioJ,
     consultarTelefonoJ,
     insertarTelefonoJ,
-    modificarPostJ
+    modificarPostJ,
+    insertarCorreoJ,
+    seleccionarCorreoJ
 }

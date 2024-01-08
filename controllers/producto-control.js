@@ -6,7 +6,7 @@ const productoGet = async(req = request, res = response) => {
     try {
 
         const productos = await pool.query('SELECT * FROM seleccionar_productos()');
-        console.log(productos)
+      
         res.json(productos.rows);   
         
 
@@ -312,6 +312,95 @@ const presentacionByProveedor = async(req = request, res = response) => {
       }
     
 };
+const productoGetById = async(req = request, res = response) => {
+
+    try {
+
+        const productos = await pool.query('SELECT * FROM seleccionar_productos_por_id($1)', [req.body.id]);
+        console.log(productos.rows)
+        res.json(productos.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+const detalleGetById = async(req = request, res = response) => {
+console.log(req.body)
+    try {
+
+        const productos = await pool.query('SELECT(public.detalleproducto($1)).*', [req.body.id]);
+        console.log(productos.rows)
+        res.json(productos.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+
+const pagar = async(req = request, res = response) => {
+    console.log(req.body)
+    try {
+        console.log(req.body)
+        const productos = await pool.query('SELECT public.pagar_venta_virtual($1,$2,$3,$4,$5,$6,$7)',[req.body.cod1,req.body.cod2, req.body.montos, req.body.tarjetas,req.body.cant_elementos,req.body.cuota,req.body.cod_venta]);
+        console.log(productos.rows)
+        res.json(productos.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+const crearOrden = async(req = request, res = response) => {
+    console.log(req.body)
+    try {
+        console.log(req.body)
+        const orden = await pool.query('CALL public.crear_orden($1, $2,$3, $4)',[req.body.cod1,req.body.cod2, req.body.presentacion,req.body.cantidad]);
+        console.log(orden.rows)
+        res.json(orden.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+const mostrarCarrito = async(req = request, res = response) => {
+    console.log(req.body)
+    try {
+        console.log(req.body)
+        const carrito = await pool.query('SELECT (public.carrito($1,$2)).*',[req.body.cod1,req.body.cod2]);
+        console.log(carrito.rows)
+        res.json(carrito.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+
+
+
 
 
 
@@ -332,5 +421,10 @@ export{
     productoColorGet,
     productoMateriaGet,
     productoImagenGet,
-    productoPresentacionGet
+    productoPresentacionGet,
+    productoGetById,
+    detalleGetById,
+    pagar,
+    crearOrden,
+    mostrarCarrito
 }
