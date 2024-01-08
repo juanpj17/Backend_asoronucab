@@ -14,7 +14,12 @@ import { productoGet,
         productoColorGet,
         productoMateriaGet,
         productoImagenGet,
-        productoPresentacionGet
+        productoPresentacionGet,
+        productoGetById,
+        detalleGetById,
+        pagar,
+        crearOrden,
+        mostrarCarrito
     } from '../controllers/producto-control.js';
 
 export const routerProducto = Router();
@@ -41,3 +46,8 @@ routerProducto.delete('/:codigo', productoDelete)
 routerProducto.get('/proveedor', productoByProveedor)
 
 routerProducto.get('/proveedor/presentacion', presentacionByProveedor)
+routerProducto.post('/productoId', productoGetById)
+routerProducto.post('/detalle', detalleGetById )
+routerProducto.post('/pagar', pagar )
+routerProducto.post('/crearOrden', crearOrden )
+routerProducto.post('/carrito', mostrarCarrito )
