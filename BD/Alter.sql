@@ -715,13 +715,34 @@ FOREIGN KEY ("fk_invp_1", "fk_invp_2","fk_invp_3") REFERENCES "Inventario_Virtua
 ON DELETE CASCADE;
 
 
+alter  table "Afiliado"
+add column afi_codigo_iden varchar unique not null;
 
 
 
+ALTER TABLE "Mi_Punto"
+ADD COLUMN mi_pun_cantidad INT NOT NULL;
+
+ALTER TABLE "Pago_Entrada_Metodo_Pago"
+ALTER COLUMN "fk_venta_fisica_entrada" DROP NOT NULL,
+ALTER COLUMN "fk_venta_virtual_entrada" DROP NOT NULL;
+
+ALTER TABLE "Detalle_Venta_Fisica_Presentacion"
+ADD COLUMN fk_infp_1 INT,
+ADD COLUMN fk_infp_2 INT;
 
 
+ALTER TABLE "Venta_Fisica"
+DROP COLUMN "fk_infp_1",
+DROP COLUMN "fk_infp_2",
+DROP COLUMN "fk_infp_3";
 
+ALTER TABLE "Venta_Virtual"
+ALTER COLUMN "fk_cliente_juridico" DROP NOT NULL,
+ALTER COLUMN "fk_cliente_natural_2" DROP NOT NULL,
+ALTER COLUMN "fk_cliente_natural_1" DROP NOT NULL;
 
-
-
-
+ALTER TABLE "Venta_Virtual_Entrada"
+ALTER COLUMN "fk_cliente_natural_1" DROP NOT NULL,
+ALTER COLUMN "fk_cliente_juridico" DROP NOT NULL,
+ALTER COLUMN "fk_cliente_natural_2" DROP NOT NULL;
