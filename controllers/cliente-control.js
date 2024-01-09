@@ -453,7 +453,22 @@ const seleccionarCorreoJ = async(req, res = response) => {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
-}
+};
+const datosFactura = async(req, res = response) => {
+ 
+    try {
+        console.log('selecconar')
+        console.log(req.body)
+        const result = await pool.query('SELECT( public.datos_factura_venta_virtual($1,$2)).*',[req.body.cod1,req.body.cod2]);
+         console.log(result.rows)
+          
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
 
 
 
@@ -485,5 +500,6 @@ export{
     insertarTelefonoJ,
     modificarPostJ,
     insertarCorreoJ,
-    seleccionarCorreoJ
+    seleccionarCorreoJ,
+    datosFactura
 }

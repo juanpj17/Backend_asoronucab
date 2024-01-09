@@ -3,7 +3,7 @@ import { clienteGet, clientePost, clientePut, clienteDelete, clienteGetN ,client
     clienteDeleteN , clienteGetJ ,clientePutJ, clientePostJ, clienteDeleteJ , telefonoClienteN, 
     modificarClienteN, modificarUsuario, consultarClienteJ, buscarCorreoN, consultarUsuario,
     modificarCorreo, consultarLugar, consultarUsuarioJ, consultarTelefonoJ, insertarTelefonoJ,
-    modificarPostJ,insertarCorreoJ,seleccionarCorreoJ
+    modificarPostJ,insertarCorreoJ,seleccionarCorreoJ,datosFactura
 } from '../controllers/cliente-control.js';
 
 export const routerCliente = Router();
@@ -59,3 +59,4 @@ routerCliente.post('/insertarTelefonoJ', insertarTelefonoJ)
 routerCliente.post('/modificarPostJ', modificarPostJ)
 routerCliente.post('/insertarCorreoJ', insertarCorreoJ)
 routerCliente.post('/seleccionarCorreoJ', seleccionarCorreoJ)
+routerCliente.post('/factura', datosFactura)
