@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { eventoGet, eventoPost, eventoPut, eventoDelete, eventoHora, presentacionEvento, ultimoEventoGet, consultarEvento, lugarEvento, fk_presentacionEvento, nombreEvento,insertarNotaCata,obtenerPremios,obtenerPresentaciones,insertarPremio } from '../controllers/evento-control.js';
+import { eventoGet, eventoPost, eventoPut, eventoDelete, 
+    eventoHora, presentacionEvento, ultimoEventoGet, consultarEvento, lugarEvento, 
+    fk_presentacionEvento, nombreEvento,insertarNotaCata,obtenerPremios,obtenerPresentaciones,
+    insertarPremio, presentacionesxProveedor } from '../controllers/evento-control.js';
 
 export const routerEvento = Router();
 
@@ -28,3 +31,5 @@ routerEvento.post('/nombre', nombreEvento)
 routerEvento.post('/notaCata', insertarNotaCata)
 routerEvento.post('/presentacionesProducto',obtenerPresentaciones)
 routerEvento.post('/premio',insertarPremio)
+
+routerEvento.post('/productoPxP',presentacionesxProveedor)
