@@ -153,6 +153,30 @@ const actualizarPuntos = async(req = request, res = response) => {
     
 };
 
+const sumarPuntos = async(req = request, res = response) => {
+    try {
+        const { codC , puntos_a_sumar } = req.body;
+        const idCliente = await buscarIdClienteNPorCedula(codC)
+        const punto = await pool.query('SELECT * FROM sumar_puntos_cliente_natural($1, $2, $3)', [idCliente, codC, puntos_a_sumar]);
+        res.json(punto.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+    
+};
+
+const sumarPuntosJ = async(req = request, res = response) => {
+    try {
+        const { codC , puntos_a_sumar } = req.body;
+        const punto = await pool.query('SELECT * FROM sumar_puntos_cliente_juridico($1, $2)', [codC, puntos_a_sumar]);
+        res.json(punto.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+    
+};
 
 const actualizarPuntosJ = async(req = request, res = response) => {
     try {
@@ -235,6 +259,8 @@ export{
     ocultarNumeros,
     actualizarPuntos,
     tarjetaObtenerJ,
-    actualizarPuntosJ
+    actualizarPuntosJ,
+    sumarPuntosJ,
+    sumarPuntos
 
 }

@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { ventaFGet, ventaFPost,ventaFPut, ventaFDelete,
         ventaFInsertar, entradaInserta, tarjetaObtener,
-        ocultarNumeros, actualizarPuntos, tarjetaObtenerJ, actualizarPuntosJ
+        ocultarNumeros, actualizarPuntos, tarjetaObtenerJ, actualizarPuntosJ,
+        sumarPuntosJ, sumarPuntos
  } from '../controllers/ventaF-control.js';
 
 export const routerVentaFisica = Router();
@@ -27,3 +28,7 @@ routerVentaFisica.post('/actualizarPuntos', actualizarPuntos)
 routerVentaFisica.post('/tarjetasObtenerJ', tarjetaObtenerJ)
 
 routerVentaFisica.post('/actualizarPuntosJ', actualizarPuntosJ)
+
+routerVentaFisica.post('/sumarPuntosJ', sumarPuntosJ)
+
+routerVentaFisica.post('/sumarPuntos', sumarPuntos)

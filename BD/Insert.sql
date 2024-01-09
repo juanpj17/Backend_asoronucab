@@ -17,14 +17,14 @@ INSERT INTO "Botella" (bot_nombre, bot_altura, bot_ancho, bot_capacidad) VALUES
   ( 'Ámbar', 26, 8, 700),
   ( 'Negra', 32, 7.5, 650);
 
-INSERT INTO "Categoria" ( cat_nombre) VALUES
-  ( 'Rhum Ambré'),
-  ('Rhum Vieux'),
-  ('Prestige'),
-  ('Ultra-Premium'),
-  ('Premium'),
-  ('Súper Premium'),
-  ('Estándar');
+INSERT INTO "Categoria" ("cat_id", cat_nombre) VALUES
+  (1, 'Rhum Ambré'),
+  (2,'Rhum Vieux'),
+  (3,'Prestige'),
+  (4,'Ultra-Premium'),
+  (5,'Premium'),
+  (6,'Súper Premium'),
+  (7,'Estándar');
   
   
 INSERT INTO "Color" ( col_nombre, col_descripcion) VALUES
@@ -40,12 +40,16 @@ INSERT INTO "Color" ( col_nombre, col_descripcion) VALUES
   ( 'Ámbar Oscuro', 'Ámbar de tonalidad oscura'),
   ('Ámbar Claro', 'Ámbar de tonalidad clara');
   
- INSERT INTO "Fermentacion" VALUES
-  ( 'Alta', 'Fermentación a alta temperatura, que resulta en sabores más intensos y aromas complejos.'),
-  ( 'Baja', 'Fermentación a baja temperatura, que preserva los sabores delicados y aromas florales.'),
-  ( 'Espontánea', 'Fermentación espontánea mediante levaduras y bacterias presentes en el ambiente.'),
-  ( 'Mixta', 'Fermentación mixta utilizando diferentes cepas de levaduras y bacterias.'),
-  ( 'Tradicional', 'Fermentación tradicional siguiendo métodos históricos y regionales para desarrollar perfiles únicos.');
+ 
+
+
+
+ INSERT INTO "Fermentacion" ("fer_Id" ,fer_nombre, fer_descripcion)VALUES
+  (1, 'Alta', 'Fermentación a alta temperatura, que resulta en sabores más intensos y aromas complejos.'),
+  (2, 'Baja', 'Fermentación a baja temperatura, que preserva los sabores delicados y aromas florales.'),
+  (3, 'Espontánea', 'Fermentación espontánea mediante levaduras y bacterias presentes en el ambiente.'),
+  (4, 'Mixta', 'Fermentación mixta utilizando diferentes cepas de levaduras y bacterias.'),
+  (5, 'Tradicional', 'Fermentación tradicional siguiendo métodos históricos y regionales para desarrollar perfiles únicos.');
 
 INSERT INTO "Variedad" ( var_nombre) VALUES
   ('Ron blanco'),
@@ -54,12 +58,12 @@ INSERT INTO "Variedad" ( var_nombre) VALUES
   ('Ron envejecido'),
   ('Ron oscuro');
   
-INSERT INTO "Tapa" ( tap_descripcion, tap_largo, tap_ancho, tap_radio) VALUES
-  ( 'Tapa estándar', 10, 10, 1),
-  ( 'Tapa especial', 12, 12, 2),
-  ('Tapa grande', 15, 15, 3),
-  ( 'Tapa pequeña', 8, 8, 1),
-  ( 'Tapa redonda', 10, 10, 5);
+INSERT INTO "Tapa" ("tap_id" ,tap_descripcion, tap_largo, tap_ancho, tap_radio) VALUES
+  (1, 'Tapa estándar', 10, 10, 1),
+  (2, 'Tapa especial', 12, 12, 2),
+  (3,'Tapa grande', 15, 15, 3),
+  (4, 'Tapa pequeña', 8, 8, 1),
+  (5, 'Tapa redonda', 10, 10, 5);
 
 INSERT INTO "Tasa" ("tas_valor", "tas_fecha_inicial", "tas_fecha_final")
 VALUES
@@ -227,6 +231,11 @@ VALUES
 	VALUES ('Festival de Ron Avila', 'El Festival del Ron del Avila se presenta  como un espacio singular para el intercambio sobre las novedades y tendencias de la industria ronera, con una experiencia en las alturas',230,'23/05/2024','23/05/2024','Hotel Humboldt',136);
 	 
 
+
+
+
+
+
 INSERT INTO "Empleado" ("per_nat_ci", "per_nat_rif", "per_nat_p_nombre", "per_nat_s_nombre", "per_nat_p_apellido", "per_nat_s_apellido", "per_nat_direccion", "emp_sueldo", "emp_fecha_ingreso","fk_lugar")
 VALUES
 ('1234567', 'J149456789', 'Juan', 'Carlos', 'Pérez', 'González', 'Calle 123, Ciudad X', 2500.00, '2023-01-01 08:00:00',100),
@@ -255,81 +264,86 @@ VALUES
 
 INSERT INTO "Cliente_Natural" ("per_nat_id","per_nat_ci", "per_nat_rif", "per_nat_p_nombre", "per_nat_s_nombre", "per_nat_p_apellido", "per_nat_s_apellido", "per_nat_direccion", "per_nat_punto", "fk_lugar")
 VALUES
-('9876143', 'J123456789', 'Eduardo', 'Alejandro', 'Hernández', 'Gómez', 'Calle 456, Ciudad X', 150,100),
-('1111211', 'J123456589', 'Fabiola', NULL, 'Ramírez', 'Martínez', 'Avenida XYZ, Ciudad Y', 200,200),
-('5555535', 'J123456719', 'Sandra', 'Isabel', 'Gutiérrez', 'Fernández', 'Carrera ABC, Ciudad Z', 180,300),
-('2224222', 'J123453789', 'Roberto', 'Miguel', 'Pérez', 'Sánchez', 'Calle Principal, Ciudad A', 160,400),
-('6666566', 'J123454789', 'Javier', NULL, 'Gómez', 'Ramírez', 'Calle Secundaria, Ciudad B', 220,500),
-('3333633', 'J123256789', 'Laura', 'Victoria', 'Martínez', 'Gómez', 'Avenida 123, Ciudad C', 190,600),
-('8888788', 'J123416789', 'Cristian', 'Alberto', 'Fernández', 'Pérez', 'Calle Alegre, Ciudad D', 170,700),
-('9999989', 'J123496789', 'Renata', 'Valentina', 'López', 'García', 'Avenida Tranquila, Ciudad E', 210,800),
-('7777797', 'J123756789', 'Felipe', 'Cecilia', 'Hernández', 'Fernández', 'Calle Hermosa, Ciudad F', 180,900),
-('4441444', 'J129456789', 'Andrea', 'Javier', 'Ramírez', 'Martínez', 'Avenida Florida, Ciudad G', 200,100),
-('1222121', 'J123756788', 'Carlos', 'Cristina', 'García', 'Pérez', 'Calle Bella, Ciudad H', 160,110),
-('1013101', 'J123456989', 'Ricardo', 'Manuel', 'Alvarez', 'Fernández', 'Avenida Nueva, Ciudad I', 180,120),
-('7774778', 'J123426789', 'Susana', NULL, 'Soto', 'Ramírez', 'Calle Naranja, Ciudad J', 190,130),
-('1212522', 'J124456789', 'Mateo', 'Javier', 'Mendoza', 'Gómez', 'Avenida Tranquilidad, Ciudad K', 220,140),
-('1363132', 'J121456789', 'Valentina', 'Luisa', 'Gutierrez', 'Fernández', 'Calle Sol, Ciudad L', 200,150),
-('1474142', 'J123045789', 'Fernando', 'Andrés', 'Díaz', 'Martínez', 'Avenida Estrella, Ciudad M', 170,160),
-('1585152', 'J123455789', 'Adriana', 'Valentina', 'García', 'Hernández', 'Calle Luna, Ciudad N', 210,170),
-('1616962', 'J123459989', 'Antonio', 'Rafael', 'Ramírez', 'Pérez', 'Avenida Primavera, Ciudad O', 180,180),
-('1717572', 'J123116789', 'Gabriela', 'Carolina', 'Gómez', 'Fernández', 'Calle Mar, Ciudad P', 200,190),
-('1818182', 'J333456789', 'Fernando', 'Mariana', 'Hernández', 'García', 'Avenida Río, Ciudad Q', 210,200),
-('1919142', 'J144456789', 'Mónica', 'Javier', 'Pérez', 'Gómez', 'Calle Playa, Ciudad R', 230,210),
-('2120202', 'J199456789', 'Héctor', 'Enrique', 'Martínez', 'Fernández', 'Avenida Montaña, Ciudad S', 190,220);
+(1,'9876143', 'J987614300', 'Eduardo', 'Alejandro', 'Hernández', 'Gómez', 'Calle 456, Ciudad X', 150,100),
+(2,'1111211', 'J111121100', 'Fabiola', NULL, 'Ramírez', 'Martínez', 'Avenida XYZ, Ciudad Y', 200,200),
+(3,'5555535', 'J555553500', 'Sandra', 'Isabel', 'Gutiérrez', 'Fernández', 'Carrera ABC, Ciudad Z', 180,300),
+(4,'2224222', 'J222422200', 'Roberto', 'Miguel', 'Pérez', 'Sánchez', 'Calle Principal, Ciudad A', 160,400),
+(5,'6666566', 'J666656600', 'Javier', NULL, 'Gómez', 'Ramírez', 'Calle Secundaria, Ciudad B', 220,500),
+
+(6,'3333633', 'J333363300', 'Laura', 'Victoria', 'Martínez', 'Gómez', 'Avenida 123, Ciudad C', 190,600),
+(7,'8888788', 'J888878800', 'Cristian', 'Alberto', 'Fernández', 'Pérez', 'Calle Alegre, Ciudad D', 170,700),
+(8,'9999989', 'J999998900', 'Renata', 'Valentina', 'López', 'García', 'Avenida Tranquila, Ciudad E', 210,800),
+(9,'7777797', 'J777779700', 'Felipe', 'Cecilia', 'Hernández', 'Fernández', 'Calle Hermosa, Ciudad F', 180,900),
+(10,'4441444', 'J444144400', 'Andrea', 'Javier', 'Ramírez', 'Martínez', 'Avenida Florida, Ciudad G', 200,100),
+
+(11,'1222121', 'J122212100', 'Carlos', 'Cristina', 'García', 'Pérez', 'Calle Bella, Ciudad H', 160,110),
+(12,'1013101', 'J101310100', 'Ricardo', 'Manuel', 'Alvarez', 'Fernández', 'Avenida Nueva, Ciudad I', 180,120),
+(13,'7774778', 'J777477800', 'Susana', NULL, 'Soto', 'Ramírez', 'Calle Naranja, Ciudad J', 190,130),
+(14,'1212522', 'J121252200', 'Mateo', 'Javier', 'Mendoza', 'Gómez', 'Avenida Tranquilidad, Ciudad K', 220,140),
+(15,'1363132', 'J136313200', 'Valentina', 'Luisa', 'Gutierrez', 'Fernández', 'Calle Sol, Ciudad L', 200,150),
+
+(16,'1474142', 'J147414200', 'Fernando', 'Andrés', 'Díaz', 'Martínez', 'Avenida Estrella, Ciudad M', 170,160),
+(17,'1585152', 'J158515200', 'Adriana', 'Valentina', 'García', 'Hernández', 'Calle Luna, Ciudad N', 210,170),
+(18,'1616962', 'J161696200', 'Antonio', 'Rafael', 'Ramírez', 'Pérez', 'Avenida Primavera, Ciudad O', 180,180),
+(19,'1717572', 'J171757200', 'Gabriela', 'Carolina', 'Gómez', 'Fernández', 'Calle Mar, Ciudad P', 200,190),
+(20,'1818182', 'J181818200', 'Fernando', 'Mariana', 'Hernández', 'García', 'Avenida Río, Ciudad Q', 210,200),
+
+(21,'1919142', 'J191914200', 'Mónica', 'Javier', 'Pérez', 'Gómez', 'Calle Playa, Ciudad R', 230,210),
+(22,'2120202', 'J212020200', 'Héctor', 'Enrique', 'Martínez', 'Fernández', 'Avenida Montaña, Ciudad S', 190,220);
 
 
-INSERT INTO "Cliente_Juridico" ("per_jur_rif", "per_jur_denominacion_comercial", "per_jur_razon_social", "per_jur_pagina_web", "per_jur_direccion_fiscal", "per_jur_direccion_fisica", "per_jur_capital")
+INSERT INTO "Cliente_Juridico" ("per_jur_rif", "per_jur_denominacion_comercial", "per_jur_razon_social", "per_jur_pagina_web", "per_jur_direccion_fiscal", "per_jur_direccion_fisica", "per_jur_capital", "per_jur_punto")
 VALUES
-('J123456789', 'Empresa A', 'Razón Social A', 'www.empresa-a.com', 'Avenida Principal, Ciudad X', 'Calle Principal, Ciudad X', 100000.00),
-('J987654321', 'Empresa B', 'Razón Social B', 'www.empresa-b.com', 'Avenida Secundaria, Ciudad Y', 'Calle Secundaria, Ciudad Y', 150000.50),
-('J568790123', 'Empresa C', 'Razón Social C', 'www.empresa-c.com', 'Avenida Terciaria, Ciudad Z', 'Calle Terciaria, Ciudad Z', 200000.75),
-('J234567890', 'Empresa D', 'Razón Social D', 'www.empresa-d.com', 'Avenida Cuaternaria, Ciudad A', 'Calle Cuaternaria, Ciudad A', 120000.25),
-('J876543210', 'Empresa E', 'Razón Social E', 'www.empresa-e.com', 'Avenida Quintenaria, Ciudad B', 'Calle Quintenaria, Ciudad B', 180000.00),
-('J345678901', 'Empresa F', 'Razón Social F', 'www.empresa-f.com', 'Avenida Sextenaria, Ciudad C', 'Calle Sextenaria, Ciudad C', 220000.50),
-('J901234567', 'Empresa G', 'Razón Social G', 'www.empresa-g.com', 'Avenida Septenaria, Ciudad D', 'Calle Septenaria, Ciudad D', 130000.75),
-('J109876543', 'Empresa H', 'Razón Social H', 'www.empresa-h.com', 'Avenida Octenaria, Ciudad E', 'Calle Octenaria, Ciudad E', 160000.25),
-('J765432109', 'Empresa I', 'Razón Social I', 'www.empresa-i.com', 'Avenida Novenaria, Ciudad F', 'Calle Novenaria, Ciudad F', 190000.00),
-('J432109876', 'Empresa J', 'Razón Social J', 'www.empresa-j.com', 'Avenida Decenaria, Ciudad G', 'Calle Decenaria, Ciudad G', 210000.50),
-('J121212121', 'Empresa K', 'Razón Social K', 'www.empresa-k.com', 'Avenida Oncenaria, Ciudad H', 'Calle Oncenaria, Ciudad H', 140000.75),
-('J343434343', 'Empresa L', 'Razón Social L', 'www.empresa-l.com', 'Avenida Docenaria, Ciudad I', 'Calle Docenaria, Ciudad I', 170000.25),
-('J565656565', 'Empresa M', 'Razón Social M', 'www.empresa-m.com', 'Avenida Trecearia, Ciudad J', 'Calle Trecearia, Ciudad J', 200000.00),
-('J787878787', 'Empresa N', 'Razón Social N', 'www.empresa-n.com', 'Avenida Catorcenaria, Ciudad K', 'Calle Catorcenaria, Ciudad K', 230000.50),
-('J989898989', 'Empresa O', 'Razón Social O', 'www.empresa-o.com', 'Avenida Quindecenaria, Ciudad L', 'Calle Quindecenaria, Ciudad L', 250000.75),
-('J232323232', 'Empresa P', 'Razón Social P', 'www.empresa-p.com', 'Avenida Dieciséisaria, Ciudad M', 'Calle Dieciséisaria, Ciudad M', 170000.25),
-('J454545454', 'Empresa Q', 'Razón Social Q', 'www.empresa-q.com', 'Avenida Diecisiete, Ciudad N', 'Calle Diecisiete, Ciudad N', 200000.00),
-('J676767676', 'Empresa R', 'Razón Social R', 'www.empresa-r.com', 'Avenida Dieciocho, Ciudad O', 'Calle Dieciocho, Ciudad O', 220000.50),
-('J898989898', 'Empresa S', 'Razón Social S', 'www.empresa-s.com', 'Avenida Diecinueve, Ciudad P', 'Calle Diecinueve, Ciudad P', 190000.75),
-('J121212122', 'Empresa T', 'Razón Social T', 'www.empresa-t.com', 'Avenida Veinte, Ciudad Q', 'Calle Veinte, Ciudad Q', 210000.25);
+('J123456789', 'Empresa A', 'Razon Social A', 'www.empresa-a.com', 'Avenida Principal, Ciudad X', 'Calle Principal, Ciudad X', 100000.00, 25),
+('J987654321', 'Empresa B', 'Razon Social B', 'www.empresa-b.com', 'Avenida Secundaria, Ciudad Y', 'Calle Secundaria, Ciudad Y', 150000.50, 86),
+('J568790123', 'Empresa C', 'Razon Social C', 'www.empresa-c.com', 'Avenida Terciaria, Ciudad Z', 'Calle Terciaria, Ciudad Z', 200000.75, 86),
+('J234567890', 'Empresa D', 'Razon Social D', 'www.empresa-d.com', 'Avenida Cuaternaria, Ciudad A', 'Calle Cuaternaria, Ciudad A', 120000.25, 86),
+('J876543210', 'Empresa E', 'Razon Social E', 'www.empresa-e.com', 'Avenida Quintenaria, Ciudad B', 'Calle Quintenaria, Ciudad B', 180000.00, 86),
+('J345678901', 'Empresa F', 'Razon Social F', 'www.empresa-f.com', 'Avenida Sextenaria, Ciudad C', 'Calle Sextenaria, Ciudad C', 220000.50, 86),
+('J901234567', 'Empresa G', 'Razon Social G', 'www.empresa-g.com', 'Avenida Septenaria, Ciudad D', 'Calle Septenaria, Ciudad D', 130000.75, 86),
+('J109876543', 'Empresa H', 'Razon Social H', 'www.empresa-h.com', 'Avenida Octenaria, Ciudad E', 'Calle Octenaria, Ciudad E', 160000.25, 128),
+('J765432109', 'Empresa I', 'Razon Social I', 'www.empresa-i.com', 'Avenida Novenaria, Ciudad F', 'Calle Novenaria, Ciudad F', 190000.00, 128),
+
+('J432109876', 'Empresa J', 'Razon Social J', 'www.empresa-j.com', 'Avenida Decenaria, Ciudad G', 'Calle Decenaria, Ciudad G', 210000.50, 128),
+('J121212121', 'Empresa K', 'Razon Social K', 'www.empresa-k.com', 'Avenida Oncenaria, Ciudad H', 'Calle Oncenaria, Ciudad H', 140000.75, 128),
+('J343434343', 'Empresa L', 'Razon Social L', 'www.empresa-l.com', 'Avenida Docenaria, Ciudad I', 'Calle Docenaria, Ciudad I', 170000.25, 128),
+('J565656565', 'Empresa M', 'Razon Social M', 'www.empresa-m.com', 'Avenida Trecearia, Ciudad J', 'Calle Trecearia, Ciudad J', 200000.00, 128),
+('J787878787', 'Empresa N', 'Razon Social N', 'www.empresa-n.com', 'Avenida Catorcenaria, Ciudad K', 'Calle Catorcenaria, Ciudad K', 230000.50, 46),
+('J989898989', 'Empresa O', 'Razon Social O', 'www.empresa-o.com', 'Avenida Quindecenaria, Ciudad L', 'Calle Quindecenaria, Ciudad L', 250000.75, 46),
+('J232323232', 'Empresa P', 'Razon Social P', 'www.empresa-p.com', 'Avenida Dieciséisaria, Ciudad M', 'Calle Dieciséisaria, Ciudad M', 170000.25, 46),
+('J454545454', 'Empresa Q', 'Razon Social Q', 'www.empresa-q.com', 'Avenida Diecisiete, Ciudad N', 'Calle Diecisiete, Ciudad N', 200000.00, 46),
+('J676767676', 'Empresa R', 'Razon Social R', 'www.empresa-r.com', 'Avenida Dieciocho, Ciudad O', 'Calle Dieciocho, Ciudad O', 220000.50, 163),
+('J898989898', 'Empresa S', 'Razon Social S', 'www.empresa-s.com', 'Avenida Diecinueve, Ciudad P', 'Calle Diecinueve, Ciudad P', 190000.75, 163),
+('J121212122', 'Empresa T', 'Razon Social T', 'www.empresa-t.com', 'Avenida Veinte, Ciudad Q', 'Calle Veinte, Ciudad Q', 210000.25, 163);
 
 
-INSERT INTO "Beneficio" ( "ben_nombre", "ben_descripcion", "ben_fecha_inicial", "ben_fecha_fin")
+INSERT INTO "Beneficio" ("ben_id", "ben_nombre", "ben_descripcion", "ben_fecha_inicial", "ben_fecha_fin")
 VALUES
-  ('Vacaciones Anuales', 'Período anual de vacaciones remuneradas', '2023-01-01', '2023-02-01'),
-  ('Licencia por Reposo', 'Licencia remunerada por razones de salud', '2023-02-15', '2023-03-15'),
-  ('Permiso de Maternidad', 'Permiso remunerado para nuevas madres', '2023-03-10', '2023-04-10'),
-  ('Incentivo por Puntualidad', 'Bono adicional por llegar puntualmente', '2023-04-20', '2023-05-20'),
-  ('Bonificación por Producción', 'Recompensa por alcanzar metas de producción', '2023-05-05', '2023-06-05'),
-  ('Días Adicionales de Vacaciones', 'Días extra de vacaciones acumulables', '2023-06-15', '2023-07-15'),
-  ('Bono de Desempeño', 'Bono adicional por excelente desempeño', '2023-07-01', '2023-08-01'),
-  ('Día Libre por Cumpleaños', 'Día libre remunerado en el cumpleaños del empleado', '2023-08-10', '2023-09-10'),
-  ('Promoción de Salud', 'Programa de bienestar con beneficios de salud', '2023-09-15', '2023-10-15'),
-  ( 'Reconocimiento de Antigüedad', 'Recompensa por años de servicio en la empresa', '2023-10-05', '2023-11-05');
+  (1,'Vacaciones Anuales', 'Período anual de vacaciones remuneradas', '2023-01-01', '2023-02-01'),
+  (2,'Licencia por Reposo', 'Licencia remunerada por razones de salud', '2023-02-15', '2023-03-15'),
+  (3,'Permiso de Maternidad', 'Permiso remunerado para nuevas madres', '2023-03-10', '2023-04-10'),
+  (4,'Incentivo por Puntualidad', 'Bono adicional por llegar puntualmente', '2023-04-20', '2023-05-20'),
+  (5,'Bonificación por Producción', 'Recompensa por alcanzar metas de producción', '2023-05-05', '2023-06-05'),
+  (6,'Días Adicionales de Vacaciones', 'Días extra de vacaciones acumulables', '2023-06-15', '2023-07-15'),
+  (7,'Bono de Desempeño', 'Bono adicional por excelente desempeño', '2023-07-01', '2023-08-01'),
+  (8,'Día Libre por Cumpleaños', 'Día libre remunerado en el cumpleaños del empleado', '2023-08-10', '2023-09-10'),
+  (9,'Promoción de Salud', 'Programa de bienestar con beneficios de salud', '2023-09-15', '2023-10-15'),
+  (10, 'Reconocimiento de Antigüedad', 'Recompensa por años de servicio en la empresa', '2023-10-05', '2023-11-05');
 
-INSERT INTO "Caja" ("caj_capacidad", "caj_descripcion", "fk_caja")
+INSERT INTO "Caja" ("caj_id" ,"caj_capacidad", "caj_descripcion", "fk_caja")
 VALUES
-  (10, 'Caja pequeña para transacciones diarias', 1),
-  (20, 'Caja mediana para manejar un volumen moderado de efectivo', 2),
-  (15, 'Caja para eventos especiales y transacciones temporales',3),
-  (30, 'Caja grande para el manejo de grandes cantidades de efectivo', 4),
-  (12, 'Caja portátil para ventas en exteriores', 5),
-  (25, 'Caja de seguridad para almacenar objetos de valor', 6),
-  (18, 'Caja especializada para monedas y cambio', 7),
-  (16, 'Caja con sistema de registro electrónico', 8),
-  (22, 'Caja con compartimientos para una organización eficiente', 9),
-  ( 28, 'Caja blindada para la protección máxima', 1);
+  (1,10, 'Caja pequeña para transacciones diarias', 1),
+  (2,20, 'Caja mediana para manejar un volumen moderado de efectivo', 2),
+  (3,15, 'Caja para eventos especiales y transacciones temporales',3),
+  (4,30, 'Caja grande para el manejo de grandes cantidades de efectivo', 4),
+  (5,12, 'Caja portátil para ventas en exteriores', 5),
+  (6,25, 'Caja de seguridad para almacenar objetos de valor', 6),
+  (7,18, 'Caja especializada para monedas y cambio', 7),
+  (8,16, 'Caja con sistema de registro electrónico', 8),
+  (9,22, 'Caja con compartimientos para una organización eficiente', 9),
+  (10,28, 'Caja blindada para la protección máxima', 1);
 
-INSERT INTO "Cheque" "che_banco", "che_numero")
+INSERT INTO "Cheque" ("che_banco", "che_numero")
 VALUES
   ( 'Banco de Venezuela', '123456789'),
   ( 'Banco Nacional de Crédito', '987654321'),
@@ -342,35 +356,35 @@ VALUES
   ( 'Banco del Tesoro', '888777666'),
   ( 'Banco Industrial de Venezuela', '222111000');
 
-INSERT INTO "Destilacion" ("des_nombre", "des_descripcion", "fk_fermentacion")
+INSERT INTO "Destilacion" ("des_Id", "des_nombre", "des_descripcion", "fk_fermentacion")
 VALUES
-  ('Destilación de Agave', 'Proceso de destilación de agave para tequila', 1),
-  ('Destilación de Uva', 'Proceso de destilación de uva para brandy',1),
-  ('Destilación de Malta', 'Proceso de destilación de malta para whisky', 2),
-  ('Destilación de Caña de Azúcar', 'Proceso de destilación de caña de azúcar para ron', 2),
-  ('Destilación de Manzana', 'Proceso de destilación de manzana para brandy de manzana', 3),
-  ('Destilación de Centeno', 'Proceso de destilación de centeno para whisky de centeno', 3),
-  ('Destilación de Maíz', 'Proceso de destilación de maíz para bourbon', 4),
-  ('Destilación de Vino', 'Proceso de destilación de vino para brandy de vino', 4),
-  ('Destilación de Cebada', 'Proceso de destilación de cebada para whisky de cebada', 5),
-  ( 'Destilación de Frutas Tropicales', 'Proceso de destilación de frutas tropicales para licor', 5);
+  (1,'Destilación de Agave', 'Proceso de destilación de agave para tequila', 1),
+  (2,'Destilación de Uva', 'Proceso de destilación de uva para brandy',1),
+  (3,'Destilación de Malta', 'Proceso de destilación de malta para whisky', 2),
+  (4,'Destilación de Caña de Azúcar', 'Proceso de destilación de caña de azúcar para ron', 2),
+  (5,'Destilación de Manzana', 'Proceso de destilación de manzana para brandy de manzana', 3),
+  (6,'Destilación de Centeno', 'Proceso de destilación de centeno para whisky de centeno', 3),
+  (7,'Destilación de Maíz', 'Proceso de destilación de maíz para bourbon', 4),
+  (8,'Destilación de Vino', 'Proceso de destilación de vino para brandy de vino', 4),
+  (9,'Destilación de Cebada', 'Proceso de destilación de cebada para whisky de cebada', 5),
+  (10, 'Destilación de Frutas Tropicales', 'Proceso de destilación de frutas tropicales para licor', 5);
 
-INSERT INTO "Detalle_Fisica_Evento" ( "detalle_cantidad", "detalle_precio_venta")
-VALUES
-  ( 150, 45.00),
-  ( 120, 55.00),
-  ( 100, 35.00),
-  ( 50, 75.00),
-  ( 180, 50.00);
+-- INSERT INTO "Detalle_Fisica_Evento" ( "detalle_cantidad", "detalle_precio_venta")
+-- VALUES
+--   ( 150, 45.00),
+--   ( 120, 55.00),
+--   ( 100, 35.00),
+--   ( 50, 75.00),
+--   ( 180, 50.00);
 
 
-INSERT INTO "Detalle_Fisica" ( "detallef_cantidad", "detallef_precio_venta")
-VALUES
-  ( 150, 45.00),
-  ( 120, 55.00),
-  ( 100, 35.00),
-  ( 50, 75.00),
-  ( 180, 50.00);
+-- INSERT INTO "Detalle_Fisica" ( "detallef_cantidad", "detallef_precio_venta")
+-- VALUES
+--   ( 150, 45.00),
+--   ( 120, 55.00),
+--   ( 100, 35.00),
+--   ( 50, 75.00),
+--   ( 180, 50.00);
 
 INSERT INTO "Empleado_Beneficio" ( "fk_empleado", "fk_empleado_2", "fk_beneficio")
 VALUES
@@ -379,6 +393,42 @@ VALUES
   ( 3, '9876543', 3),
   ( 4, '1111111', 4),
   ( 5, '2222222', 5);
+
+
+
+-- Empleados
+INSERT INTO "Correo" ("cor_direccion", "fk_empleado", "fk_empleado_1")
+VALUES
+('empleado2@gmail.com', 2, '7654321'),
+('empleado3@gmail.com', 3, '9876543'),
+('empleado4@gmail.com', 4, '1111111'),
+('empleado5@gmail.com', 5, '2222222'),
+('empleado1@gmail.com', 1, '1234567'),
+('empleado6@gmail.com', 6, '9999999'),
+('empleado7@gmail.com', 7, '4444444'),
+('empleado8@gmail.com', 8, '5555555'),
+('empleado9@gmail.com', 9, '7777777'),
+('empleado10@gmail.com', 10, '8888888'),
+('empleado11@gmail.com', 11, '6666666'),
+('empleado12@gmail.com', 12, '3333333'),
+('empleado13@gmail.com', 13, '1010101'),
+('empleado14@gmail.com', 14, '1212121'),
+('empleado15@gmail.com', 15, '1313131'),
+('empleado16@gmail.com', 16, '1414141'),
+('empleado17@gmail.com', 17, '1515151'),
+('empleado18@gmail.com', 18, '1616161'),
+('empleado19@gmail.com', 19, '1717171'),
+('empleado20@gmail.com', 20, '1818181');
+
+
+
+
+
+
+
+
+
+
 
 INSERT INTO "Estatus" ( "est_nombre")
 VALUES
@@ -395,18 +445,19 @@ VALUES
   ( 'Activo'),
   ( 'Inactivo');
 
-INSERT INTO "Fisica" ( "aso_rif", "aso_direccion", "fk_lugar", "fk_tasa")
+
+INSERT INTO "Fisica" ("aso_id", "aso_rif", "aso_direccion", "fk_lugar", "fk_tasa")
 VALUES
-  ('2531343012', 'Dirección 1', 110, 1),
-  ('2531343012', 'Dirección 2', 200, 2),
-  ('2531343012', 'Dirección 3', 300, 3),
-  ('2531343012', 'Dirección 4', 400, 4),
-  ('2531343012', 'Dirección 5', 500, 5),
-  ('2531343012', 'Dirección 6', 600, 6),
-  ('2531343012', 'Dirección 7', 700, 7),
-  ('2531343012', 'Dirección 8', 800, 8),
-  ('2531343012', 'Dirección 9', 900, 9),
-  ( '2531343012', 'Dirección 10', 100, 10);
+  (1,'2531343012', 'Dirección 1', 110, 1),
+  (2,'2531343012', 'Dirección 2', 200, 2),
+  (3,'2531343012', 'Dirección 3', 300, 3),
+  (4,'2531343012', 'Dirección 4', 400, 4),
+  (5,'2531343012', 'Dirección 5', 500, 5),
+  (6,'2531343012', 'Dirección 6', 600, 6),
+  (7,'2531343012', 'Dirección 7', 700, 7),
+  (8,'2531343012', 'Dirección 8', 800, 8),
+  (9,'2531343012', 'Dirección 9', 900, 9),
+  (10, '2531343012', 'Dirección 10', 100, 10);
 
 INSERT INTO "Horario" ( "hor_dia", "hor_hora_entrada", "hor_hora_salida")
 VALUES
@@ -443,23 +494,23 @@ VALUES
   ('Plástico PET', 'Material ligero y reciclable comúnmente usado en envases'),
   ( 'Arcilla', 'Material natural utilizado en la fabricación de recipientes para fermentación');
 
-INSERT INTO "Material_Botella" ( "mat_bot_peso", "fk_material", "fk_botella")
+INSERT INTO "Material_Botella" ("mat_bot_id", "mat_bot_peso", "fk_material", "fk_botella")
 VALUES
-  ( 500, 3, 1),
-  ( 600, 7, 2),
-  ( 550, 5, 3),
-  ( 480, 9, 4),
-  ( 520, 2, 5),
-  ( 580, 1, 2);
+  (1, 500, 3, 1),
+  (2, 600, 7, 2),
+  (3, 550, 5, 3),
+  (4, 480, 9, 4),
+  (5, 520, 2, 5),
+  (6, 580, 1, 2);
 
-INSERT INTO "Material_Tapa" ( "fk_material", "fk_tapa")
+INSERT INTO "Material_Tapa" ("mat_tap_id", "fk_material", "fk_tapa")
 VALUES
-  (3, 1),
-  (7, 2),
-  (5, 3),
-  (9, 4),
-  (2, 5),
-  (1, 2);
+  (1, 3, 1),
+  (2, 7, 2),
+  (3, 5, 3),
+  (4, 9, 4),
+  (5, 2, 5),
+  (6, 1, 2);
 
 INSERT INTO "Mi_Punto"(mi_pun_cantidad)
 VALUES
@@ -485,19 +536,7 @@ VALUES
   (14, '2023-09-01', '2023-09-15'),
   (17, '2023-10-01', '2023-10-31');
   
-  INSERT INTO "Permiso" ( "per_accion", "per_tabla")
-VALUES
-  ('Crear', 'Empleado'),
-  ('Crear', 'Cliente_Natural'),
-  ('Crear', 'Proveedor'),
-  ('Crear', 'Producto'),
-  ('Eliminar', 'Departamento'),
-  ('Eliminar', 'Venta'),
-  ('Eliminar', 'Empleado_Beneficio'),
-  ('Consultar', 'Oferta'),
-  ('Consultar', 'Efectivo'),
-  ( 'Modificar', 'Evento');
-
+ 
 INSERT INTO "Premio" ( "pre_nombre")
 VALUES
   ('Mejor Ron del Año'),
@@ -521,13 +560,13 @@ VALUES
   ('J012345679', 'Ron Carúpano', 'Ron Carúpano Ltda.', 'www.carupanoron.com', 'Carrera 15, Maracay', 'Piso 10, Torre Premium', 600000),
   ('J456789012', 'Ron Santa Teresa', 'Ron Santa Teresa Corp.', 'www.ronsantateresa.com', 'Autopista Libertador, Barquisimeto', 'Local 7, Centro Comercial', 550000);
 
-INSERT INTO "Añejamiento" ("añe_descripcion", "añe_fecha_ini", "añe_fecha_final", "fk_añejamiento", "fk_destilacion")
+INSERT INTO "Añejamiento" ("añe_id", "añe_descripcion", "añe_fecha_ini", "añe_fecha_final", "fk_añejamiento", "fk_destilacion")
 VALUES
-  ( 'Añejamiento Clásico', '2023-01-01 12:00:00', '2025-01-01 12:00:00', NULL, 2),
-  ( 'Añejamiento Reserva', '2022-05-01 08:30:00', '2024-05-01 08:30:00', 1, 2),
-  ( 'Añejamiento Especial', '2022-10-15 18:45:00', '2024-10-15 18:45:00', 2, 3),
-  ( 'Añejamiento Premium', '2023-03-10 15:20:00', '2025-03-10 15:20:00', 3, 4),
-  ( 'Añejamiento Reserva Familiar', '2022-12-01 10:00:00', '2024-12-01 10:00:00', 4, 5);
+  (1, 'Añejamiento Clásico', '2023-01-01 12:00:00', '2025-01-01 12:00:00', NULL, 2),
+  (2, 'Añejamiento Reserva', '2022-05-01 08:30:00', '2024-05-01 08:30:00', 1, 2),
+  (3, 'Añejamiento Especial', '2022-10-15 18:45:00', '2024-10-15 18:45:00', 2, 3),
+  (4, 'Añejamiento Premium', '2023-03-10 15:20:00', '2025-03-10 15:20:00', 3, 4),
+  (5, 'Añejamiento Reserva Familiar', '2022-12-01 10:00:00', '2024-12-01 10:00:00', 4, 5);
 
 INSERT INTO "Producto" ( "pro_nombre", "pro_grados_alcohol", "pro_descripcion", "pro_tipo", "fk_añejamiento", "fk_proveedor", "fk_lugar", "fk_categoria", "fk_variedad")
 VALUES
@@ -600,16 +639,7 @@ VALUES
 
 INSERT INTO "Sabor" ( "sab_nombre", "sab_descripcion")
 VALUES
-    (1, 'Roble', 'Notas de roble ahumado y vainilla'),
-  (2, 'Canela', 'Toques cálidos de canela especiada'),
-  (3, 'Coco', 'Sabor tropical y cremoso de coco'),
-  (4, 'Tabaco', 'Aromas terrosos y ricos como el tabaco'),
-  (5, 'Jengibre', 'Picante y fresco sabor de jengibre'),
-  (6, 'Pimienta Negra', 'Especias intensas de pimienta negra'),
-  (7, 'Anís', 'Sabor distintivo de anís'),
-  (8, 'Naranja', 'Dulce y cítrico sabor a naranja'),
-  (9, 'Mango', 'Fragancia exótica y jugosa del mango'),
-  (10, 'Madera Ahumada', 'Toques ahumados de madera robusta');
+
   ( 'Roble', 'Notas de roble ahumado y vainilla'),
   ( 'Canela', 'Toques cálidos de canela especiada'),
   ( 'Coco', 'Sabor tropical y cremoso de coco'),
@@ -625,16 +655,16 @@ VALUES
 
 INSERT INTO "Producto_Sabor" ( "fk_producto", "fk_sabor")
 VALUES
-  ( 5, 11),
-  ( 1, 12),
-  ( 5, 13),
-  ( 4, 14),
-  ( 5, 15),
-  ( 5, 15),
-  ( 3, 14),
-  ( 2, 13),
-  ( 5, 12),
-  ( 1, 11);
+  ( 5, 1),
+  ( 1, 2),
+  ( 5, 3),
+  ( 4, 4),
+  ( 5, 5),
+  ( 5, 5),
+  ( 3, 4),
+  ( 2, 3),
+  ( 5, 2),
+  ( 1, 1);
 
 
 INSERT INTO "Rol" ( "rol_nombre", "rol_descripcion")
@@ -650,19 +680,7 @@ VALUES
   ( 'Cliente', 'Rol asignado a clientes registrados'),
   ( 'Reportero', 'Rol para generar y revisar informes');
 
-INSERT INTO "Rol_Permiso" ( "fk_rol", "fk_permiso")
-VALUES
-  (5, 1),
-  (1, 2),
-  (5, 3),
-  (4, 4),
-  (5, 5),
-  (5, 5),
-  (3, 4),
-  (2, 3),
-  (5, 2),
-  ( 1, 1);
-  
+
   
   INSERT INTO "Tarjeta" ( "tar_nombre", "tar_numero", "tar_CVV", "tar_fecha_vencimiento", "fk_cliente_juridico", "fk_cliente_natural_1", "fk_cliente_natural_2")
 VALUES
@@ -691,23 +709,23 @@ VALUES
   ('2025-08-01', '2025-08-15'),
   ( '2025-11-20', '2025-11-30');
 
-INSERT INTO "Virtual" ( "aso_rif", "aso_pag_web")
+INSERT INTO "Virtual" ("aso_id", "aso_rif", "aso_pag_web")
 VALUES
-  ( '2531343012', 'www.localhost:8081/ASORON'),
-  ( '2531343012', 'www.localhost:8082/ASORON'),
-  ( '2531343012', 'www.localhost:8083/ASORON'),
-  ( '2531343012', 'www.localhost:3000/ASORON'),
-  ( '2531343012', 'www.localhost:3300/ASORON');
+  (1, '2531343012', 'www.localhost:8081/ASORON'),
+  (2, '2531343012', 'www.localhost:8082/ASORON'),
+  (3, '2531343012', 'www.localhost:8083/ASORON'),
+  (4, '2531343012', 'www.localhost:3000/ASORON'),
+  (5, '2531343012', 'www.localhost:3300/ASORON');
 
 INSERT INTO "Compra" ( "com_fecha", "com_total", "fk_fisica", "fk_virtual")
 VALUES 
-    ('2023-01-01', 100.00, 1, 2),
-    ('2023-02-15', 150.50, 2, 3),
-    ('2023-03-20', 75.25, 3, 1),
-    ('2023-04-10', 200.75, 4, 5),
-    ('2023-05-05', 50.20, 5, 2),
-    ('2023-06-12', 120.00, 5, 3),
-    ('2023-07-08', 180.50, 4, 4);
+    ('2023-01-01', 100.00, 1, NULL),
+    ('2023-02-15', 150.50, 1, NULL),
+    ('2023-03-20', 75.25, 1, NULL),
+    ('2023-04-10', 200.75, NULL, 5),
+    ('2023-05-05', 50.20, NULL, 2),
+    ('2023-06-12', 120.00, NULL, 3),
+    ('2023-07-08', 180.50, 1, NULL);
 
 INSERT INTO "Departamento" ("dep_nombre", "dep_descripcion", "fk_fisica", "fk_virtual")
 VALUES
@@ -742,13 +760,42 @@ VALUES
   
 INSERT INTO "Entrada" ( "ent_fecha_hora", "ent_precio", "fk_evento")
 VALUES 
-    ('2023-01-01 18:00:00', 20.00, 1),
-    ('2023-02-15 19:30:00', 25.50, 2),
-    ('2023-03-20 20:15:00', 15.25, 3),
-    ('2023-04-10 17:45:00', 30.75, 4),
-    ('2023-05-05 21:00:00', 10.20, 5),
+  
     ('2023-06-12 18:30:00', 22.00, 6),
-    ('2023-07-08 19:15:00', 18.50, 7);
+    ('2023-06-12 18:30:00', 25.00, 9),
+    ('2023-06-12 18:30:00', 5.20, 11),
+    ('2023-06-12 18:30:00', 22.00, 12),
+    ('2023-06-12 18:30:00', 25.00, 14),
+    ('2023-06-12 18:30:00', 5.20, 13),
+    ('2023-06-12 18:30:00', 22.00, 15),
+    ('2023-06-12 18:30:00', 25.00, 16),
+    ('2023-06-12 18:30:00', 22.00, 17),
+    ('2023-06-12 18:30:00', 25.00, 19),
+    ('2023-06-12 18:30:00', 5.20, 21),
+    ('2023-06-12 18:30:00', 22.00, 24),
+    ('2023-06-12 18:30:00', 25.00, 25),
+    ('2023-06-12 18:30:00', 5.20, 5),
+    ('2023-06-12 18:30:00', 22.00, 4),
+    ('2023-06-12 18:30:00', 25.00, 26),
+    ('2023-06-12 18:30:00', 5.20, 29),
+    ('2023-06-12 18:30:00', 22.00, 30),
+    ('2023-06-12 18:30:00', 25.00, 31),
+    ('2023-06-12 18:30:00', 5.20, 29),
+    ('2023-06-12 18:30:00', 22.00, 37),
+    ('2023-06-12 18:30:00', 25.00, 38),
+    ('2023-07-08 19:15:00', 18.50, 39),
+    ('2023-06-12 18:30:00', 25.00, 7),
+    ('2023-06-12 18:30:00', 22.00, 41),
+    ('2023-06-12 18:30:00', 25.00, 42),
+    ('2023-06-12 18:30:00', 5.20, 43),
+    ('2023-06-12 18:30:00', 22.00, 44),
+    ('2023-06-12 18:30:00', 25.00, 45),
+    ('2023-06-12 18:30:00', 5.20, 46),
+    ('2023-06-12 18:30:00', 22.00, 47),
+    ('2023-06-12 18:30:00', 25.00, 48),
+    ('2023-06-12 18:30:00', 22.00, 1),
+    ('2023-06-12 18:30:00', 25.00, 50),
+    ('2023-07-08 19:15:00', 18.50, 49);
 
 INSERT INTO "Imagen" ( "ima_nombre", "ima_descripcion", "ima_url", "fk_producto")
 VALUES 
@@ -768,7 +815,7 @@ VALUES
     ('Botella Premium 1l', 'Presentación premium en botella',2, 3,1,3,1,1,3,1),
     ('Edición Especial 0,80ml', 'Presentación especial para coleccionistas', 1,7,1,3,1,1,3,1),
     ('Botella Grande 1,2l', 'Presentación en botella grande',3, 8,1,3,1,1,3,1),
-    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 0,1,3,1,1,3,1),
+    ('Edición Limitada 0,90l', 'Presentación de colección limitada',4, 1,1,3,1,1,3,1),
     ('Botella Pequeña 0,45l', 'Presentación en botella pequeña',1,  1,1,3,1,1,3,1);
 
 
@@ -823,7 +870,7 @@ VALUES
     (40, '2023-07-08', '2023-07-25', 4, 1);
 
 
-INSERT INTO "Compra_Presentacion" ( "com_prod_cantidad", "com_prod_precio_unitario", "fk_presentacion", "fk_producto")
+INSERT INTO "Compra_Presentacion" ( "com_pre_cantidad", "com_pre_precio_unitario", "fk_presentacion", "fk_compra")
 VALUES 
     (10, 50.00,1, 1),
     (15, 30.25, 2, 2),
@@ -848,38 +895,687 @@ VALUES
 INSERT INTO "Inventario_Virtual_Presentacion" ("inv_vir_pre_cantidad", "inv_vir_precio", "fk_virtual", "fk_presentacion")
 VALUES 
     (100, 50, 1, 2),
-    (150, 30.25, 2, 3),
-    (75, 45.75, 3, 2),
-    (200, 20.50, 4, 5),
-    (50, 15.00, 5, 3),
-    (120,27.80, 5, 1),
+    (150, 30.25, 1, 3),
+    (75, 45.75, 1, 4),
+    (200, 20.50, 1, 5),
+    (50, 15.00, 1, 5),
+    (120,27.80, 1, 1),
     (180, 40.25, 1, 2);
 
-INSERT INTO "Afiliado" ("afi_fecha_afiliacion", "afi_QR", "fk_fisica", "fk_virtual", "fk_cliente_natural", "fk_cliente_natural_2", "fk_estatus", "fk_cliente_juridico", "fk_proveedor")
+
+
+
+
+INSERT INTO "Afiliado" ("afi_id", "afi_fecha_afiliacion", "afi_QR", "fk_fisica", "fk_virtual", "fk_cliente_natural", "fk_cliente_natural_2", "fk_estatus", "fk_cliente_juridico", "fk_proveedor", "afi_codigo_iden")
 VALUES 
-    ('2023-01-01', 'J123456789', 1, 2, NULL, NULL, 4,'J123456789',NULL),
-    ('2023-02-15', 'J987654321', 2, 3, NULL, NULL, 3,'J987654321',NULL),
-	('2023-01-01', 'J568790123', 1, 2, NULL, NULL, 1, 'J568790123', NULL),
-    ('2023-02-15', 'J234567890', 2, 3, NULL, NULL, 2, 'J234567890', NULL),
-	('2023-02-15', 'J876543210', 2, 3, NULL, NULL, 2, 'J876543210', NULL),
-	('2023-01-01', '9876143', 1, 2, 1, '9876143', 2, NULL, NULL),
-	('2023-01-01', '5555535', 1, 2, 3, '5555535', 2, NULL, NULL),
-	('2023-01-01', '9999989', 1, 2, 8, '9999989', 2, NULL, NULL),
-    ('2023-02-15', '6666566', 2, 3, 5, '6666566', 1, NULL, NULL),
-	('2023-01-01', '4441444', 1, 2, 10, '4441444', 2, NULL, NULL);
+    (1,'2023-01-01', 'J123456789', 1, 2, NULL, NULL, 4,'J123456789',NULL, '11111111'),
+    (2,'2023-02-15', 'J987654321', 2, 3, NULL, NULL, 3,'J987654321',NULL, '22222222'),
+	(3,'2023-01-01', 'J568790123', 1, 2, NULL, NULL, 1,'J568790123',NULL, '33333333'),
+    (4,'2023-02-15', 'J234567890', 2, 3, NULL, NULL, 2,'J234567890',NULL, '44444444'),
+	(5,'2023-02-15', 'J876543210', 2, 3, NULL, NULL, 2,'J876543210',NULL, '55555555'),
+	(6,'2023-01-01', '9876143', 1, 2, 1, '9876143', 2, NULL, NULL, '66666666'),
+	(7,'2023-01-01', '5555535', 1, 2, 3, '5555535', 2, NULL, NULL, '77777777'),
+	(8,'2023-01-01', '9999989', 1, 2, 8, '9999989', 2, NULL, NULL, '88888888'),
+    (9,'2023-02-15', '6666566', 2, 3, 5, '6666566', 1, NULL, NULL, '99999999'),
+	(10,'2023-01-01', '4441444', 1, 2, 10, '4441444', 2, NULL, NULL,'12121212');
 	
 
 
-INSERT INTO "Usuario"( "usu_contraseña", "fk_rol",
+INSERT INTO "Usuario"("usu_id", "usu_contraseña", "fk_rol",
 					 "fk_cliente_juridico", "fk_proveedor",
 					 "fk_cliente_natural_1", "fk_cliente_natural_2",
 					 "fk_empleado_1", "fk_empleado_2")
 VALUES
-('123456', 1, NULL, NULL, NULL, NULL, 1, 1234567),
-('123456', 2, NULL, NULL, NULL, NULL, 2, 7654321),
-('123456', 3, NULL, NULL, NULL, NULL, 3, 9876543),
-('123456', 4, NULL, NULL, NULL, NULL, 4, 1111111),
-('123456', 5, NULL, NULL, NULL, NULL, 5, 2222222);
+(1,'123456', 1, NULL, NULL, NULL, NULL, 1, '1234567'),
+(2,'123456', 2, NULL, NULL, NULL, NULL, 2, '7654321'),
+(3,'123456', 3, NULL, NULL, NULL, NULL, 3, '9876543'),
+(4,'123456', 4, NULL, NULL, NULL, NULL, 4, '1111111'),
+(5,'123456', 5, NULL, NULL, NULL, NULL, 5, '2222222');
 
 
-   
+INSERT INTO "Permiso" ("per_id", "per_accion", "per_tabla")
+VALUES
+	(1,'Crear','Afiliado'),(2,'Consultar','Afiliado'),(3,'Modificar','Afiliado'),(4,'Eliminar','Afiliado'),
+	(5,'Crear','Añejamiento'),(6,'Consultar','Añejamiento'),(7,'Modificar','Añejamiento'),(8,'Eliminar','Añejamiento'),
+	(9,'Crear','Barril'),(10,'Consultar','Barril'),(11,'Modificar','Barril'),(12,'Eliminar','Barril'),
+	(13,'Crear','Beneficio'),(14,'Consultar','Beneficio'),(15,'Modificar','Beneficio'),(16,'Eliminar','Beneficio'),
+	(17,'Crear','Botella'),(18,'Consultar','Botella'),(19,'Modificar','Botella'),(20,'Eliminar','Botella'),
+	(21,'Crear','Caja'),(22,'Consultar','Caja'),(316,'Modificar','Caja'),(23,'Eliminar','Caja'),
+	(24,'Crear','Categoria'),(25,'Consultar','Categoria'),(26,'Modificar','Categoria'),(27,'Eliminar','Categoria'),
+	(28,'Crear','Cheque'),(29,'Consultar','Cheque'),(30,'Modificar','Cheque'),(31,'Eliminar','Cheque'),
+	(32,'Crear','Cliente_Juridico'),(33,'Consultar','Cliente_Juridico'),(34,'Modificar','Cliente_Juridico'),(35,'Eliminar','Cliente_Juridico'),
+	(36,'Crear','Cliente_Natural'),(37,'Consultar','Cliente_Natural'),(38,'Modificar','Cliente_Natural'),(39,'Eliminar','Cliente_Natural'),
+	(40,'Crear','Color'),(41,'Consultar','Color'),(42,'Modificar','Color'),(43,'Eliminar','Color'),
+	(44,'Crear','Compra'),(45,'Consultar','Compra'),(46,'Modificar','Compra'),(47,'Eliminar','Compra'),
+	(48,'Crear','Compra_Presentacion'),(49,'Consultar','Compra_Presentacion'),(50,'Modificar','Compra_Presentacion'),(51,'Eliminar','Compra_Presentacion'),
+	(52,'Crear','Control_Accion'),(53,'Consultar','Control_Accion'),(54,'Modificar','Control_Accion'),(55,'Eliminar','Control_Accion'),
+	(56,'Crear','Correo'),(57,'Consultar','Correo'),(58,'Modificar','Correo'),(59,'Eliminar','Correo'),
+	(60,'Crear','Departamento'),(61,'Consultar','Departamento'),(62,'Modificar','Departamento'),(63,'Eliminar','Departamento'),
+	(64,'Crear','Destilacion'),(65,'Consultar','Destilacion'),(66,'Modificar','Destilacion'),(67,'Eliminar','Destilacion'),
+	(68,'Crear','Detalle_Fisica'),(69,'Consultar','Detalle_Fisica'),(70,'Modificar','Detalle_Fisica'),(71,'Eliminar','Detalle_Fisica'),
+	(72,'Crear','Detalle_Fisica_Evento'),(73,'Consultar','Detalle_Fisica_Evento'),(74,'Modificar','Detalle_Fisica_Evento'),(75,'Eliminar','Detalle_Fisica_Evento'),
+	(76,'Crear','Detalle_Venta_Fisica_Entrada_Entrada'),(77,'Consultar','Detalle_Venta_Fisica_Entrada_Entrada'),(78,'Modificar','Detalle_Venta_Fisica_Entrada_Entrada'),(79,'Eliminar','Detalle_Venta_Fisica_Entrada_Entrada'),
+	(80,'Crear','Detalle_Venta_Fisica_Presentacion'),(81,'Consultar','Detalle_Venta_Fisica_Presentacion'),(82,'Modificar','Detalle_Venta_Fisica_Presentacion'),(83,'Eliminar','Detalle_Venta_Fisica_Presentacion'),
+	(84,'Crear','Detalle_Venta_Fisica_Presentacion_Evento'),(85,'Consultar','Detalle_Venta_Fisica_Presentacion_Evento'),(86,'Modificar','Detalle_Venta_Fisica_Presentacion_Evento'),(87,'Eliminar','Detalle_Venta_Fisica_Presentacion_Evento'),
+	(88,'Crear','Detalle_Venta_Virtual_Entada_Entrada'),(89,'Consultar','Detalle_Venta_Virtual_Entada_Entrada'),(90,'Modificar','Detalle_Venta_Virtual_Entada_Entrada'),(91,'Eliminar','Detalle_Venta_Virtual_Entada_Entrada'),
+	(92,'Crear','Detalle_Venta_Virtual_Presentacion'),(93,'Consultar','Detalle_Venta_Virtual_Presentacion'),(94,'Modificar','Detalle_Venta_Virtual_Presentacion'),(95,'Eliminar','Detalle_Venta_Virtual_Presentacion'),
+	(96,'Crear','Efectivo'),(97,'Consultar','Efectivo'),(98,'Modificar','Efectivo'),(99,'Eliminar','Efectivo'),
+	(100,'Crear','Empleado'),(101,'Consultar','Empleado'),(102,'Modificar','Empleado'),(103,'Eliminar','Empleado'),
+	(104,'Crear','Empleado_Beneficio'),(105,'Consultar','Empleado_Beneficio'),(106,'Modificar','Empleado_Beneficio'),(107,'Eliminar','Empleado_Beneficio'),
+	(108,'Crear','Empleado_Departamento'),(109,'Consultar','Empleado_Departamento'),(110,'Modificar','Empleado_Departamento'),(111,'Eliminar','Empleado_Departamento'),
+	(112,'Crear','Empleado_Horario'),(113,'Consultar','Empleado_Horario'),(114,'Modificar','Empleado_Horario'),(115,'Eliminar','Empleado_Horario'),
+	(116,'Crear','Entrada'),(117,'Consultar','Entrada'),(118,'Modificar','Entrada'),(119,'Eliminar','Entrada'),
+	(120,'Crear','Estatus'),(121,'Consultar','Estatus'),(122,'Modificar','Estatus'),(123,'Eliminar','Estatus'),
+	(124,'Crear','Evento'),(125,'Consultar','Evento'),(126,'Modificar','Evento'),(127,'Eliminar','Evento'),
+	(128,'Crear','Fermentacion'),(129,'Consultar','Fermentacion'),(130,'Modificar','Fermentacion'),(131,'Eliminar','Fermentacion'),
+	(132,'Crear','Fisica'),(133,'Consultar','Fisica'),(134,'Modificar','Fisica'),(135,'Eliminar','Fisica'),
+	(136,'Crear','Horario'),(137,'Consultar','Horario'),(138,'Modificar','Horario'),(139,'Eliminar','Horario'),
+	(140,'Crear','Imagen'),(141,'Consultar','Imagen'),(142,'Modificar','Imagen'),
+	(143,'Eliminar','Imagen'),(144,'Crear','Inventario_Fisico_Presentacion'),(145,'Consultar','Inventario_Fisico_Presentacion'),(146,'Modificar','Inventario_Fisico_Presentacion'),(147,'Eliminar','Inventario_Fisico_Presentacion'),
+	(148,'Crear','Inventario_Virtual_Presentacion'),(149,'Consultar','Inventario_Virtal_Presentacion'),(150,'Modificar','Inventario_Virtual_Presentacion'),(151,'Eliminar','Inventario_Virtual_Presentacion'),
+	(152,'Crear','Lugar'),(153,'Consultar','Lugar'),(154,'Modificar','Lugar'),(155,'Eliminar','Lugar'),
+	(156,'Crear','Lugar_Persona'),(157,'Consultar','Lugar_Persona'),(158,'Modificar','Lugar_Persona'),(159,'Eliminar','Lugar_Persona'),
+	(160,'Crear','Materia'),(161,'Consultar','Materia'),(162,'Modificar','Materia'),(163,'Eliminar','Materia'),
+	(164,'Crear','Material'),(165,'Consultar','Material'),(166,'Modificar','Material'),(167,'Eliminar','Material'),
+	(168,'Crear','Material_Botella'),(169,'Consultar','Material_Botella'),(170,'Modificar','Material_Botella'),(171,'Eliminar','Material_Botella'),
+	(172,'Crear','Material_Tapa'),(173,'Consultar','Material_Tapa'),(174,'Modificar','Material_Tapa'),(175,'Eliminar','Material_Tapa'),
+	(176,'Crear','Mi_Punto'),(177,'Consultar','Mi_Punto'),(178,'Modificar','Mi_Punto'),(179,'Eliminar','Mi_Punto'),
+	(180,'Crear','Nota_Cata'),(181,'Consultar','Nota_Cata'),(182,'Modificar','Nota_Cata'),(183,'Eliminar','Nota_Cata'),
+	(184,'Crear','Oferta'),(185,'Consultar','Oferta'),(186,'Modificar','Oferta'),(187,'Eliminar','Oferta'),
+	(188,'Crear','Pago_Afiliacion_Cuota'),(189,'Consultar','Pago_Afiliacion_Cuota'),(190,'Modificar','Pago_Afiliacion_Cuota'),(191,'Eliminar','Pago_Afiliacion_Cuota'),
+	(192,'Crear','Pago_Afiliacion_Cuota_Metodo_Pago'),(193,'Consultar','Pago_Afiliacion_Cuota_Metodo_Pago'),(194,'Modificar','Pago_Afiliacion_Cuota_Metodo_Pago'),(195,'Eliminar','Pago_Afiliacion_Cuota_Metodo_Pago'),
+	(196,'Crear','Pago_Entrada_Metodo_Pago'),(197,'Consultar','Pago_Entrada_Metodo_Pago'),(198,'Modificar','Pago_Entrada_Metodo_Pago'),(199,'Eliminar','Pago_Entrada_Metodo_Pago'),
+	(200,'Crear','Pago_Metodo_Pago'),(201,'Consultar','Pago_Metodo_Pago'),(202,'Modificar','Pago_Metodo_Pago'),(203,'Eliminar','Pago_Metodo_Pago'),
+	(204,'Crear','Permiso'),(205,'Consultar','Permiso'),(206,'Modificar','Permiso'),(207,'Eliminar','Permiso'),
+	(208,'Crear','Premio'),(209,'Consultar','Premio'),(210,'Modificar','Premio'),(211,'Eliminar','Premio'),
+	(212,'Crear','Presentacion'),(213,'Consultar','Presentacion'),(214,'Modificar','Presentacion'),(215,'Eliminar','Presentacion'),
+	(216,'Crear','Presentacion_Evento'),(217,'Consultar','Presentacion_Evento'),(218,'Modificar','Presentacion_Evento'),(219,'Eliminar','Presentacion_Evento'),
+	(220,'Crear','Presentacion_Oferta'),(221,'Consultar','Presentacion_Oferta'),(222,'Modificar','Presentacion_Oferta'),(223,'Eliminar','Presentacion_Oferta'),
+	(224,'Crear','Producto'),(225,'Consultar','Producto'),(226,'Modificar','Producto'),(227,'Eliminar','Producto'),
+	(228,'Crear','Producto_Color'),(229,'Consultar','Producto_Color'),(230,'Modificar','Producto_Color'),(231,'Eliminar','Producto_Color'),
+	(232,'Crear','Producto_Materia'),(233,'Consultar','Producto_Materia'),(234,'Modificar','Producto_Materia'),(235,'Eliminar','Producto_Materia'),
+	(236,'Crear','Producto_Sabor'),(237,'Consultar','Producto_Sabor'),(238,'Modificar','Producto_Sabor'),(239,'Eliminar','Producto_Sabor'),
+	(240,'Crear','Proveedor'),(241,'Consultar','Proveedor'),(242,'Modificar','Proveedor'),(243,'Eliminar','Proveedor'),
+	(244,'Crear','Punto'),(245,'Consultar','Punto'),(246,'Modificar','Punto'),(247,'Eliminar','Punto'),
+	(248,'Crear','Rol'),(249,'Consultar','Rol'),(250,'Modificar','Rol'),(251,'Eliminar','Rol'),
+	(252,'Crear','Rol_Permiso'),(253,'Consultar','Rol_Permiso'),(254,'Modificar','Rol_Permiso'),(255,'Eliminar','Rol_Permiso'),
+	(256,'Crear','Sabor'),(257,'Consultar','Sabor'),(258,'Modificar','Sabor'),(259,'Eliminar','Sabor'),
+	(260,'Crear','Tapa'),(261,'Consultar','Tapa'),(262,'Modificar','Tapa'),(263,'Eliminar','Tapa'),
+	(264,'Crear','Tarjeta'),(265,'Consultar','Tarjeta'),(266,'Modificar','Tarjeta'),(267,'Eliminar','Tarjeta'),
+	(268,'Crear','Tasa'),(269,'Consultar','Tasa'),(270,'Modificar','Tasa'),(271,'Eliminar','Tasa'),
+	(272,'Crear','Telefono'),(273,'Consultar','Telefono'),(274,'Modificar','Telefono'),(275,'Eliminar','Telefono'),
+	(276,'Crear','Usuario'),(277,'Consultar','Usuario'),(278,'Modificar','Usuario'),(279,'Eliminar','Usuario'),
+	(280,'Crear','Vacacion'),(281,'Consultar','Vacacion'),(282,'Modificar','Vacacion'),(283,'Eliminar','Vacacion'),
+	(284,'Crear','Variedad'),(285,'Consultar','Variedad'),(286,'Modificar','Variedad'),(287,'Eliminar','Variedad'),
+	(288,'Crear','Venta_Fisica'),(289,'Consultar','Venta_Fisica'),(290,'Modificar','Venta_Fisica'),(291,'Eliminar','Venta_Fisica'),
+	(292,'Crear','Venta_Fisica_Entrada'),(293,'Consultar','Venta_Fisica_Entrada'),(294,'Modificar','Venta_Fisica_Entrada'),(295,'Eliminar','Venta_Fisica_Entrada'),
+	(296,'Crear','Venta_Fisica_Estatus'),(297,'Consultar','Venta_Fisica_Estatus'),(298,'Modificar','Venta_Fisica_Estatus'),(299,'Eliminar','Venta_Fisica_Estatus'),
+	(300,'Crear','Venta_Virtual'),(301,'Consultar','Venta_Virtual'),(302,'Modificar','Venta_Virtual'),(303,'Eliminar','Venta_Virtual'),
+	(304,'Crear','Venta_Virtual_Entrada'),(305,'Consultar','Venta_Virtual_Entrada'),(306,'Modificar','Venta_Virtual_Entrada'),
+	(307,'Eliminar','Venta_Virtual_Entrada'),(308,'Crear','Venta_Virtual_Estatus'),(309,'Consultar','Venta_Virtual_Estatus'),(310,'Modificar','Venta_Virtual_Estatus'),(311,'Eliminar','Venta_Virtual_Estatus'),
+	(312,'Crear','Virtual'),(313,'Consultar','Virtual'),(314,'Modificar','Virtual'),(315,'Eliminar','Virtual');
+
+
+  INSERT INTO "Usuario"("usu_contraseña", "fk_rol",
+                     "fk_cliente_juridico", "fk_proveedor",
+                     "fk_cliente_natural_1", "fk_cliente_natural_2",
+                     "fk_empleado_1", "fk_empleado_2")
+VALUES
+('123456', 1, NULL, NULL, NULL, NULL, 6, '9999999'),
+('123456', 2, NULL, NULL, NULL, NULL, 7, '4444444'),
+('123456', 3, NULL, NULL, NULL, NULL, 8, '5555555'),
+('123456', 4, NULL, NULL, NULL, NULL, 9, '7777777'),
+('123456', 5, NULL, NULL, NULL, NULL, 10, '8888888'),
+('123456', 1, NULL, NULL, NULL, NULL, 11, '6666666'),
+('123456', 2, NULL, NULL, NULL, NULL, 12, '3333333'),
+('123456', 3, NULL, NULL, NULL, NULL, 13, '1010101'),
+('123456', 4, NULL, NULL, NULL, NULL, 14, '1212121'),
+('123456', 5, NULL, NULL, NULL, NULL, 15, '1313131'),
+('123456', 1, NULL, NULL, NULL, NULL, 16, '1414141'),
+('123456', 2, NULL, NULL, NULL, NULL, 17, '1515151'),
+('123456', 3, NULL, NULL, NULL, NULL, 18, '1616161'),
+('123456', 4, NULL, NULL, NULL, NULL, 19, '1717171'),
+('123456', 5, NULL, NULL, NULL, NULL, 20, '1818181');
+
+------------------------T0DO-VENTA---------------------------
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+('2024-01-03', 9876.00, 1, 1, '9876143', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 1, '9876143', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 2, '1111211', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 2, '1111211', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 3, '5555535', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 3, '5555535', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 4, '2224222', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 4, '2224222', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 5, '6666566', NULL, 1, '1234567'),
+('2024-01-03', 9876.00, 1, 5, '6666566', NULL, 1, '1234567');
+
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+('2024-01-03', 187.00, 1, 6, '3333633', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 6, '3333633', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 7, '8888788', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 7, '8888788', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 8, '9999989', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 8, '9999989', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 9, '7777797', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 9, '7777797', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 10, '4441444', NULL, 1, '1234567'),
+('2024-01-03', 187.00, 1, 10, '4441444', NULL, 1, '1234567');
+
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+('2024-01-03', 2561.00, 1, 11, '1222121', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 11, '1222121', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 12, '1013101', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 12, '1013101', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 13, '7774778', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 13, '7774778', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 14, '1212522', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 14, '1212522', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 15, '1363132', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 15, '1363132', NULL, 1, '1234567');
+
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+('2024-01-03', 2561.00, 1, 16, '1474142', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 16, '1474142', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 17, '1585152', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 17, '1585152', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 18, '1616962', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 18, '1616962', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 19, '1717572', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 19, '1717572', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 20, '1818182', NULL, 1, '1234567'),
+('2024-01-03', 2561.00, 1, 20, '1818182', NULL, 1, '1234567');
+
+
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+
+('2024-01-03', 561.00, 1, 21, '1919142', NULL, 1, '1234567'),
+('2024-01-03', 561.00, 1, 21, '1919142', NULL, 1, '1234567'),
+('2024-01-03', 561.00, 1, 22, '2120202', NULL, 1, '1234567'),
+('2024-01-03', 561.00, 1, 22, '2120202', NULL, 1, '1234567');
+
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J123456789', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J123456789', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J987654321', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J987654321', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J568790123', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J568790123', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J234567890', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J234567890', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J876543210', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J876543210', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J345678901', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J345678901', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J901234567', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J901234567', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J109876543', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J109876543', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J765432109', 1, '1234567'),
+('2024-01-03', 2561.00, 1, NULL, NULL, 'J765432109', 1, '1234567');
+
+
+INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
+VALUES 
+('2024-01-03', 261.00, 1, NULL, NULL, 'J432109876', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J432109876', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J121212121', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J121212121', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J343434343', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J343434343', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J565656565', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J565656565', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J787878787', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J787878787', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J989898989', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J989898989', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J232323232', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J232323232', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J454545454', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J454545454', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J676767676', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J898989898', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J898989898', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J121212122', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J121212122', 1, '1234567'),
+('2024-01-03', 261.00, 1, NULL, NULL, 'J676767676', 1, '1234567');
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 1, 3 ),
+('2024-01-03', '2024-01-03', 2, 3 ),
+('2024-01-03', '2024-01-03', 3, 3 ),
+('2024-01-03', '2024-01-03', 4, 3 ),
+('2024-01-03', '2024-01-03', 5, 3 ),
+('2024-01-03', '2024-01-03', 6, 3 ),
+('2024-01-03', '2024-01-03', 7, 3 ),
+('2024-01-03', '2024-01-03', 8, 3 ),
+('2024-01-03', '2024-01-03', 9, 3 ),
+('2024-01-03', '2024-01-03', 10, 3);
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 11, 3 ),
+('2024-01-03', '2024-01-03', 12, 3 ),
+('2024-01-03', '2024-01-03', 13, 3 ),
+('2024-01-03', '2024-01-03', 14, 3 ),
+('2024-01-03', '2024-01-03', 15, 3 ),
+('2024-01-03', '2024-01-03', 16, 3 ),
+('2024-01-03', '2024-01-03', 17, 3 ),
+('2024-01-03', '2024-01-03', 18, 3 ),
+('2024-01-03', '2024-01-03', 19, 3 ),
+('2024-01-03', '2024-01-03', 21, 3 ),
+('2024-01-03', '2024-01-03', 22, 3 ),
+('2024-01-03', '2024-01-03', 20,3);
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 23, 3 ),
+('2024-01-03', '2024-01-03', 24, 3 ),
+('2024-01-03', '2024-01-03', 25, 3 ),
+('2024-01-03', '2024-01-03', 26, 3 ),
+('2024-01-03', '2024-01-03', 27, 3 ),
+('2024-01-03', '2024-01-03', 28, 3 ),
+('2024-01-03', '2024-01-03', 29, 3 ),
+('2024-01-03', '2024-01-03', 30, 3 ),
+('2024-01-03', '2024-01-03', 31, 3 ),
+('2024-01-03', '2024-01-03', 32, 3 ),
+('2024-01-03', '2024-01-03', 33, 3 ),
+('2024-01-03', '2024-01-03', 34,3);
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 35, 3 ),
+('2024-01-03', '2024-01-03', 36, 3 ),
+('2024-01-03', '2024-01-03', 37, 3 ),
+('2024-01-03', '2024-01-03', 38, 3 ),
+('2024-01-03', '2024-01-03', 39, 3 ),
+('2024-01-03', '2024-01-03', 40, 3 ),
+('2024-01-03', '2024-01-03', 41, 3 ),
+('2024-01-03', '2024-01-03', 42, 3 ),
+('2024-01-03', '2024-01-03', 43, 3 ),
+('2024-01-03', '2024-01-03', 44, 3 );
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 45, 3 ),
+('2024-01-03', '2024-01-03', 46, 3 ),
+('2024-01-03', '2024-01-03', 47, 3 ),
+('2024-01-03', '2024-01-03', 48, 3 ),
+('2024-01-03', '2024-01-03', 49, 3 ),
+('2024-01-03', '2024-01-03', 50, 3 ),
+('2024-01-03', '2024-01-03', 51, 3 ),
+('2024-01-03', '2024-01-03', 52, 3 ),
+('2024-01-03', '2024-01-03', 52, 3 ),
+('2024-01-03', '2024-01-03', 54, 3 );
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 55, 3 ),
+('2024-01-03', '2024-01-03', 56, 3 ),
+('2024-01-03', '2024-01-03', 57, 3 ),
+('2024-01-03', '2024-01-03', 58, 3 ),
+('2024-01-03', '2024-01-03', 59, 3 ),
+('2024-01-03', '2024-01-03', 60, 3 ),
+('2024-01-03', '2024-01-03', 61, 3 ),
+('2024-01-03', '2024-01-03', 62, 3 ),
+('2024-01-03', '2024-01-03', 63, 3 ),
+('2024-01-03', '2024-01-03', 64, 3 );
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 65, 3 ),
+('2024-01-03', '2024-01-03', 66, 3 ),
+('2024-01-03', '2024-01-03', 67, 3 ),
+('2024-01-03', '2024-01-03', 68, 3 ),
+('2024-01-03', '2024-01-03', 69, 3 ),
+('2024-01-03', '2024-01-03', 70, 3 ),
+('2024-01-03', '2024-01-03', 71, 3 ),
+('2024-01-03', '2024-01-03', 72, 3 ),
+('2024-01-03', '2024-01-03', 73, 3 ),
+('2024-01-03', '2024-01-03', 74, 3 );
+
+INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 75, 3 ),
+('2024-01-03', '2024-01-03', 76, 3 ),
+('2024-01-03', '2024-01-03', 77, 3 ),
+('2024-01-03', '2024-01-03', 78, 3 ),
+('2024-01-03', '2024-01-03', 79, 3 ),
+('2024-01-03', '2024-01-03', 80, 3 ),
+('2024-01-03', '2024-01-03', 81, 3 ),
+('2024-01-03', '2024-01-03', 82, 3 ),
+('2024-01-03', '2024-01-03', 83, 3 ),
+('2024-01-03', '2024-01-03', 84, 3 );
+
+
+---INSERT INTO "Venta_Fisica_Estatus"(ven_fis_est_fecha_ini, ven_fis_est_fecha_fin, fk_venta_fisica, fk_estatus ) 
+--VALUES 
+
+--('2024-01-03', '2024-01-03', 85, 3 ),
+--('2024-01-03', '2024-01-03', 86, 3 ),
+--('2024-01-03', '2024-01-03', 87, 3 ),
+--('2024-01-03', '2024-01-03', 88, 3 );
+
+INSERT INTO "Venta_Fisica_Entrada"(ven_fis_ent_fecha, ven_fis_ent_total, fk_cliente_natural_1, fk_cliente_juridico, fk_cliente_natural_2, fk_fisica ) 
+VALUES 
+('2024-01-03', 850.00, 1, NULL, '9876143' ,1),
+('2024-01-03', 850.00, 1, NULL, '9876143' ,1),
+('2024-01-03', 850.00, 1, NULL, '9876143' ,1),
+('2024-01-03', 850.00, 1, NULL, '9876143' ,1),
+('2024-01-03', 850.00, 1, NULL, '9876143' ,1);
+
+
+-- Insertar valores para dólares
+INSERT INTO "Efectivo" ("ef_moneda", "met_pag_cantidad")
+VALUES 
+    ('$',1),
+    ('$',5),
+    ('$', 10),
+    ('$', 20),
+    ('$', 50),
+    ('$', 100);
+
+
+
+-- Insertar valores para euros
+INSERT INTO "Efectivo" ("ef_moneda", "met_pag_cantidad")
+VALUES 
+    ('€', 1),
+	('€', 5),
+    ('€', 10),
+    ('€', 20),
+    ('€', 50),
+    ('€',100);
+
+-- Insertar valores para euros
+INSERT INTO "Efectivo" ("ef_moneda", "met_pag_cantidad")
+VALUES 
+    ('Bs.S', 1),
+	('Bs.S', 5),
+    ('Bs.S', 10),
+    ('Bs.S', 20),
+    ('Bs.S', 50),
+    ('Bs.S',100);
+
+
+INSERT INTO "Venta_Virtual"(detallev_cantidad,detallev_precio_venta, fk_virtual, fk_cliente_natural_1, fk_cliente_juridico, fk_cliente_natural_2, fk_invp_1, fk_invp_2, fk_invp_3 ) 
+VALUES 
+(25,70,1, 1, NULL,'9876143', 1, 1, 2),
+(25,70,1, 1, NULL,'9876143', 2, 1, 3),
+(25,70,1, 1, NULL,'9876143', 3, 1, 4),
+(25,70,1, 1, NULL,'9876143', 4, 1, 5),
+(25,70,1, 1, NULL,'9876143', 5, 1, 5);
+
+INSERT INTO "Venta_Virtual_Estatus"(ven_vir_est_fecha_ini, ven_vir_est_fecha_fin, fk_venta_virtual, fk_estatus ) 
+VALUES 
+('2024-01-03', '2024-01-03', 1, 3 ),
+('2024-01-03', '2024-01-03', 2, 3 ),
+('2024-01-03', '2024-01-03', 3, 3 ),
+('2024-01-03', '2024-01-03', 4, 3 ),
+('2024-01-03', '2024-01-03', 5, 3 );
+
+INSERT INTO "Detalle_Venta_Fisica_Entrada_Entrada" ( "det_ven_fis_ent_ent_cantidad_ent", "det_ven_fis_ent_ent_precio_unitario", "fk_venta_fisica_entrada", "fk_entrada")
+VALUES 
+    (1,35.07,1, 1),
+    (2,35.07,2, 2),
+    (3,35.07,3, 3),
+    (4,35.07,4, 4),
+    (6,35.07,5, 5);
+
+
+INSERT INTO "Detalle_Venta_Fisica_Presentacion" ( "det_ven_fis_pre_cantidad", "det_ven_fis_pre_precio_venta", "fk_venta_fisica", "fk_presentacion", "fk_infp_1", "fk_infp_2")
+VALUES 
+    (1,180.07,1, 1,1,1),
+    (2,180.07,2, 1,1,1),
+    (3,180.07,3, 1,1,1),
+    (4,180.07,4, 1,1,1),
+	(1,180.07,5, 1,1,1),
+	
+    (1,180.07,6, 1,1,1),
+    (2,180.07,7, 1,1,1),
+    (3,180.07,8, 1,1,1),
+    (4,180.07,9, 1,1,1),
+	(1,180.07,10, 1,1,1),
+	
+    (1,180.07,11, 1,1,1),
+    (2,180.07,12, 1,1,1),
+    (3,180.07,13, 1,1,1),
+    (4,180.07,14, 1,1,1),
+	(1,180.07,15, 1,1,1),
+	
+	(1,180.07,16, 1,1,1),
+    (2,180.07,17, 1,1,1),
+    (3,180.07,18, 1,1,1),
+    (4,180.07,19, 1,1,1),
+	(1,180.07,20, 1,1,1),
+	
+	(1,180.07,21, 1,1,1),
+    (2,180.07,22, 1,1,1),
+    (3,180.07,23, 1,1,1),
+    (4,180.07,24, 1,1,1),
+	(1,180.07,25, 1,1,1);
+
+  INSERT INTO "Detalle_Venta_Fisica_Presentacion" ( "det_ven_fis_pre_cantidad", "det_ven_fis_pre_precio_venta", "fk_venta_fisica", "fk_presentacion", "fk_infp_1", "fk_infp_2")
+VALUES 
+    (1,180.07,26, 1,1,1),
+    (2,180.07,27, 1,1,1),
+    (3,180.07,28, 1,1,1),
+    (4,180.07,29, 1,1,1),
+	(1,180.07,30, 1,1,1),
+	
+    (1,180.07,31, 1,1,1),
+    (2,180.07,32, 1,1,1),
+    (3,180.07,33, 1,1,1),
+    (4,180.07,34, 1,1,1),
+	(1,180.07,35, 1,1,1),
+	
+    (1,180.07,36, 1,1,1),
+    (2,180.07,37, 1,1,1),
+    (3,180.07,38, 1,1,1),
+    (4,180.07,39, 1,1,1),
+	(1,180.07,40, 1,1,1),
+	
+	(1,180.07,41, 1,1,1),
+    (2,180.07,42, 1,1,1),
+    (3,180.07,43, 1,1,1),
+    (4,180.07,44, 1,1,1);
+
+  INSERT INTO "Venta_Virtual_Entrada"(ven_vir_ent_cantidad, ven_vir_ent_precio_venta, fk_cliente_natural_1, fk_cliente_juridico, fk_cliente_natural_2, fk_virtual ) 
+VALUES 
+(2,70,1, NULL,'9876143', 1),
+(2,70,2, NULL,'1111211', 1),
+(2,70,3, NULL,'5555535', 1),
+(2,70,4, NULL,'2224222', 1),
+(2,70,5, NULL,'6666566', 1);
+
+INSERT INTO "Detalle_Venta_Virtual_Entrada_Entrada"(det_ven_vir_ent_ent_cantidad_ent, det_ven_vir_ent_ent_precio_unitario, fk_venta_virtual_entrada, fk_entrada ) 
+VALUES 
+(3,18,1, 1),
+(3,18,2, 2),
+(3,18,3, 3),
+(3,18,4, 4),
+(3,18,5, 5);
+
+INSERT INTO "Detalle_Venta_Virtual_Presentacion"(det_ven_vir_pre_cantidad, det_ven_vir_pre_precio_venta, fk_venta_virtual, fk_presentacion ) 
+VALUES 
+(3,18,1, 1),
+(3,18,2, 1),
+(3,18,3, 1),
+(3,18,4, 1),
+(3,18,5, 1);
+
+ INSERT INTO "Control_Accion" (con_acc_accion, con_acc_tabla, con_acc_fecha_hora, fk_usuario) VALUES
+  ( 'Crear', 'Venta_Fisica_Entrada', '2023-10-31', 4),
+  ( 'Modificar', 'Evento', '2024-01-01', 4),
+  ( 'Consultar', 'Evento', '2024-01-01', 4),
+  ( 'Consultar', 'Evento', '2024-01-01', 4),
+  ( 'Consultar', 'Evento', '2024-01-02', 4),
+  ( 'Consultar', 'Cliente_Juridico', '2024-01-02', 4),
+  ( 'Eliminar', 'Cliente_Juridico', '2024-01-02', 4),
+  ( 'Consultar', 'Cliente_Juridico', '2024-01-03', 4),
+  ( 'Crear', 'Cliente_Natural', '2024-01-03', 4);
+
+
+INSERT INTO "Telefono" ("tel_numero", "fk_cliente_natural_1", "fk_cliente_natural_2", "fk_cliente_juridico", "fk_proveedor", "fk_empleado_1", "fk_empleado_2")
+VALUES
+('04124567890', 1, '9876143', NULL, NULL, NULL, NULL),
+('04126543210', 2, '1111211', NULL, NULL, NULL, NULL),
+('04125555555', 3, '5555535', NULL, NULL, NULL, NULL),
+('04122222222', NULL, NULL, 'J121212122', NULL, NULL, NULL),
+('04126666666', NULL, NULL, 'J987654321', NULL, NULL, NULL),
+('04123333333', NULL, NULL, 'J568790123', NULL, NULL, NULL),
+('04128888888', NULL, NULL, NULL, 'J012345679', NULL, NULL),
+('04129999999', NULL, NULL, NULL, NULL, 1, '1234567'),
+('04127777777', NULL, NULL, NULL, NULL, 2, '7654321');
+
+INSERT INTO "Rol_Permiso" ( "fk_rol", "fk_permiso")
+VALUES
+  (5, 1),
+  (1, 2),
+  (5, 3),
+  (4, 4),
+  (5, 5),
+  (5, 5),
+  (3, 4),
+  (2, 3),
+  (5, 2),
+  ( 1, 1);
+  
+  INSERT INTO "Pago_Afiliacion_Cuota" ("pa_af_cuo_id","pa_af_cuo_total", "pa_af_cuo_fecha", "pa_af_cuo_mes_can", "fk_afiliado")
+VALUES
+(1,100.00, '2023-12-01', 'Diciembre', 1),
+(2,150.00, '2023-12-01', 'Diciembre', 2),
+(3,200.00, '2023-12-01', 'Diciembre', 4),
+(4,180.00, '2023-12-01', 'Diciembre', 5),
+(5,160.00, '2024-01-01', 'Enero', 5),
+(6,130.00, '2024-01-01', 'Enero', 4),
+(7,170.00, '2024-01-01', 'Enero', 2);
+
+INSERT INTO "Pago_Afiliacion_Cuota_Metodo_Pago" ("Monto_parcial", "fk_pago_afiliacion_cuota", "fk_tarjeta", "fk_efectivo", "fk_cheque", "fk_mi_punto")
+VALUES
+(80.00, 1, NULL, NULL, 1, NULL),
+(120.00, 2, NULL, 14, NULL, NULL),
+(100.00, 3, NULL, NULL, 2, NULL),
+(150.00, 4, NULL, NULL, 4, NULL),
+(140.00, 5, NULL, NULL, 3, NULL),
+(130.00, 6, NULL, 16, NULL, NULL),
+(80.00, 7, NULL, NULL, 5, NULL);
+  
+
+
+
+
+Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+(9876.00, 1, NULL, NULL, 19, NULL, NULL),
+(9876.00, 2, NULL, NULL, 19, NULL, NULL),
+(9876.00, 3, NULL, NULL, 19, NULL, NULL),
+(9876.00, 4, NULL, NULL, 19, NULL, NULL),
+(9876.00, 5, NULL, NULL, 19, NULL, NULL),
+(9876.00, 6, NULL, NULL, 19, NULL, NULL),
+(9876.00, 7, NULL, NULL, 19, NULL, NULL),
+(9876.00, 8, NULL, NULL, 19, NULL, NULL),
+(9876.00, 9, NULL, NULL, 19, NULL, NULL),
+(9876.00, 10, NULL, NULL, 19, NULL, NULL);
+
+Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+(187.00, 11, NULL, NULL, 20, NULL, NULL),
+(187.00, 12, NULL, NULL, 20, NULL, NULL),
+(187.00, 13, NULL, NULL, 20, NULL, NULL),
+(187.00, 14, NULL, NULL, 20, NULL, NULL),
+(187.00, 15, NULL, NULL, 20, NULL, NULL),
+(187.00, 16, NULL, NULL, 20, NULL, NULL),
+(187.00, 17, NULL, NULL, 20, NULL, NULL),
+(187.00, 18, NULL, NULL, 20, NULL, NULL),
+(187.00, 19, NULL, NULL, 20, NULL, NULL),
+(187.00, 20, NULL, NULL, 20, NULL, NULL);
+
+
+Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+(2561.00, 21, NULL, NULL, 21, NULL, NULL),
+(2561.00, 22, NULL, NULL, 21, NULL, NULL),
+(2561.00, 23, NULL, NULL, 21, NULL, NULL),
+(2561.00, 24, NULL, NULL, 21, NULL, NULL),
+(2561.00, 25, NULL, NULL, 21, NULL, NULL),
+(2561.00, 26, NULL, NULL, 21, NULL, NULL),
+(2561.00, 27, NULL, NULL, 21, NULL, NULL),
+(2561.00, 28, NULL, NULL, 21, NULL, NULL),
+(2561.00, 29, NULL, NULL, 21, NULL, NULL),
+(2561.00, 30, NULL, NULL, 21, NULL, NULL),
+(2561.00, 31, NULL, NULL, 21, NULL, NULL),
+(2561.00, 32, NULL, NULL, 21, NULL, NULL),
+(2561.00, 33, NULL, NULL, 21, NULL, NULL),
+(2561.00, 34, NULL, NULL, 21, NULL, NULL),
+(2561.00, 35, NULL, NULL, 21, NULL, NULL),
+(2561.00, 36, NULL, NULL, 21, NULL, NULL),
+(2561.00, 37, NULL, NULL, 21, NULL, NULL),
+(2561.00, 38, NULL, NULL, 21, NULL, NULL),
+(2561.00, 39, NULL, NULL, 21, NULL, NULL),
+(2561.00, 40, NULL, NULL, 21, NULL, NULL);
+
+
+Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+
+(2561.00, 45, NULL, NULL, 21, NULL, NULL),
+(2561.00, 46, NULL, NULL, 21, NULL, NULL),
+(2561.00, 47, NULL, NULL, 21, NULL, NULL),
+(2561.00, 48, NULL, NULL, 21, NULL, NULL),
+(2561.00, 49, NULL, NULL, 21, NULL, NULL),
+(2561.00, 50, NULL, NULL, 21, NULL, NULL),
+(2561.00, 51, NULL, NULL, 21, NULL, NULL),
+(2561.00, 52, NULL, NULL, 21, NULL, NULL),
+(2561.00, 53, NULL, NULL, 21, NULL, NULL),
+(2561.00, 54, NULL, NULL, 21, NULL, NULL),
+(2561.00, 55, NULL, NULL, 21, NULL, NULL),
+(2561.00, 56, NULL, NULL, 21, NULL, NULL),
+(2561.00, 57, NULL, NULL, 21, NULL, NULL),
+(2561.00, 58, NULL, NULL, 21, NULL, NULL),
+(2561.00, 59, NULL, NULL, 21, NULL, NULL),
+(2561.00, 60, NULL, NULL, 21, NULL, NULL),
+(2561.00, 61, NULL, NULL, 21, NULL, NULL),
+(2561.00, 62, NULL, NULL, 21, NULL, NULL);
+
+Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+
+(561.00, 41, NULL, NULL, 22, NULL, NULL),
+(561.00, 42, NULL, NULL, 22, NULL, NULL),
+(561.00, 43, NULL, NULL, 22, NULL, NULL),
+(561.00, 44, NULL, NULL, 22, NULL, NULL);
+
+Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+
+
+(261.00, 63, NULL, NULL, 23, NULL, NULL),
+(261.00, 64, NULL, NULL, 23, NULL, NULL),
+(261.00, 65, NULL, NULL, 23, NULL, NULL),
+(261.00, 66, NULL, NULL, 23, NULL, NULL),
+(261.00, 67, NULL, NULL, 23, NULL, NULL),
+(261.00, 68, NULL, NULL, 23, NULL, NULL),
+(261.00, 69, NULL, NULL, 23, NULL, NULL),
+(261.00, 70, NULL, NULL, 23, NULL, NULL),
+(261.00, 71, NULL, NULL, 23, NULL, NULL),
+(261.00, 72, NULL, NULL, 23, NULL, NULL),
+(261.00, 73, NULL, NULL, 23, NULL, NULL),
+(261.00, 74, NULL, NULL, 23, NULL, NULL),
+(261.00, 75, NULL, NULL, 23, NULL, NULL),
+(261.00, 76, NULL, NULL, 23, NULL, NULL),
+(261.00, 77, NULL, NULL, 23, NULL, NULL),
+(261.00, 78, NULL, NULL, 23, NULL, NULL),
+(261.00, 79, NULL, NULL, 23, NULL, NULL),
+(261.00, 80, NULL, NULL, 23, NULL, NULL),
+(261.00, 81, NULL, NULL, 23, NULL, NULL),
+(261.00, 82, NULL, NULL, 23, NULL, NULL),
+(261.00, 83, NULL, NULL, 23, NULL, NULL),
+(261.00, 84, NULL, NULL, 23, NULL, NULL);

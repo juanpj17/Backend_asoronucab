@@ -145,8 +145,11 @@ const modificarPostJ = async (req, res = response) => {
             clave, parroquia_fisica,
             direccion_fisica, parroquia_fiscal,
             direccion_fiscal, paraNull, tipoFa, tipoFl} = req.body;
-        console.log('este es el query')
+        console.log('este es el query1')
         console.log(req.body)
+    
+    
+    
         const result = await pool.query(
             'CALL modificar_juridico($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
             [denominacion_comercial, razon_social, pagina_web, capital_disponible, rif, clave, parroquia_fisica, direccion_fisica, parroquia_fiscal, direccion_fiscal, paraNull, tipoFa, tipoFl]
@@ -227,8 +230,16 @@ const clientePostJ = async (req, res = response) => {
                 rif, clave, parroquia_fisica, direccion_fisica ,parroquia_fiscal, direccion_fiscal, 
                 tipo_fisica, tipo_fiscal} = req.body;
             console.log('aqui post ')
-            
+            // mens_1 := insertar_cliente_juridico(
+            //     rif,
+            //     denominacion_comercial,
+            //     razon_social,
+            //     pagina_web,
+            //     direccion_fisica,
+            //     direccion_fiscal,
+            //     capital_disponible          
             console.log(req.body)
+     
         const result = await pool.query(
             'CALL agregar_juridico($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
             [denominacion_comercial, razon_social, pagina_web, capital_disponible, 
