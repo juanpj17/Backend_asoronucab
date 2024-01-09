@@ -68,6 +68,8 @@ const buscarPermisos = async(req = request, res = response) => {
     }   
 };
 const asignarPermisos = async(req = request, res = response) => {
+    console.log('asignar permisos')
+    console.log(req.body)
     
     try {
         const permisos = await pool.query('SELECT public.insertar_permiso_rol($1,$2)',[req.body.codigo_permiso,req.body.codigo_rol]);

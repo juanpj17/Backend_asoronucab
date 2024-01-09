@@ -20,7 +20,9 @@ import { productoGet,
         pagar,
         crearOrden,
         mostrarCarrito,
-        fechaFactura
+        fechaFactura,
+        productopostById,
+        productoById
     } from '../controllers/producto-control.js';
 
 export const routerProducto = Router();
@@ -54,3 +56,5 @@ routerProducto.post('/crearOrden', crearOrden )
 routerProducto.post('/carrito', mostrarCarrito )
 routerProducto.post('/fecha', fechaFactura )
 routerProducto.post('/modificar', productoPut)
+routerProducto.post('/presentacionId', presentacionByProveedor)
+routerProducto.post('/id',productoById )
