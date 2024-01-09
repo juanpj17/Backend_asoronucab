@@ -3,9 +3,9 @@ import { clienteGet, clientePost, clientePut, clienteDelete, clienteGetN ,client
     clienteDeleteN , clienteGetJ ,clientePutJ, clientePostJ, clienteDeleteJ , telefonoClienteN, 
     modificarClienteN, modificarUsuario, consultarClienteJ, buscarCorreoN, consultarUsuario,
     modificarCorreo, consultarLugar, consultarUsuarioJ, consultarTelefonoJ, insertarTelefonoJ,
-    modificarPostJ,insertarCorreoJ,seleccionarCorreoJ
+    modificarPostJ,
 } from '../controllers/cliente-control.js';
-
+// insertarCorreoJ,seleccionarCorreoJ
 export const routerCliente = Router();
 
 routerCliente.get('/', clienteGet);
@@ -57,5 +57,5 @@ routerCliente.post('/consultarTelefonoJ', consultarTelefonoJ)
 routerCliente.post('/insertarTelefonoJ', insertarTelefonoJ)
 
 routerCliente.post('/modificarPostJ', modificarPostJ)
-routerCliente.post('/insertarCorreoJ', insertarCorreoJ)
-routerCliente.post('/seleccionarCorreoJ', seleccionarCorreoJ)
+// routerCliente.post('/insertarCorreoJ', insertarCorreoJ)
+// routerCliente.post('/seleccionarCorreoJ', seleccionarCorreoJ)
