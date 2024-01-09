@@ -56,8 +56,9 @@ const productoAñejamientoGet = async(req = request, res = response) => {
     try {
 
         const productos = await pool.query('SELECT * FROM seleccionar_añejamiento()');
+        console.log(productos.rows)
         res.json(productos.rows);   
-
+        
     } catch (error) {
 
         console.error('Error al ejecutar la consulta:', error);
@@ -195,8 +196,6 @@ const productoByProveedor = async(req = request, res = response) => {
     
 };
 
-
-
 const productoPost = async (req = request, res = response) => {
     const {
         nombre,
@@ -210,9 +209,9 @@ const productoPost = async (req = request, res = response) => {
         variedad,
         sabor,
         color,
-        materia,
-        imagen,
-        presentacion
+        materiaPrima,
+        imagenes,
+        presentaciones
     } = req.body;
 
     console.log(req.body);
@@ -236,15 +235,17 @@ const productoPost = async (req = request, res = response) => {
         console.log(productId);
 
         
-        await pool.query('SELECT public.insertar_sabores($1, $2)', [productId, sabor.map(str => parseInt(str, 10))]);
+        await pool.query('SELECT public.insertar_sabores($1, $2)', [productId, sabor]);
 
-        await pool.query('SELECT public.insertar_colores($1, $2)', [productId, color.map(str => parseInt(str, 10))]);
+        await pool.query('SELECT public.insertar_colores($1, $2)', [productId, color]);
 
-        await pool.query('SELECT public.insertar_materia($1, $2)', [productId, materia.map(str => parseInt(str, 10))]);
+        await pool.query('SELECT public.insertar_materia($1, $2)', [productId, materiaPrima]);
 
-        await pool.query('SELECT public.insertar_imagen($1, $2)', [productId, imagen]);
+        await pool.query('SELECT public.insertar_presentacion($1, $2)', [productId, presentaciones]);
 
-        await pool.query('SELECT public.insertar_presentacion($1, $2)', [productId, presentacion.map(str => parseInt(str, 10))]);
+        await pool.query('SELECT public.insertar_imagen($1, $2)', [productId, imagenes]);
+
+       // await pool.query('SELECT public.insertar_presentacion($1, $2)', [productId, presentaciones]);
 
         // Confirmar la transacción
         await pool.query('COMMIT');
@@ -257,6 +258,8 @@ const productoPost = async (req = request, res = response) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     } 
 };
+
+
 
 const buscarElUltimoProducto = async (req, res = response) => {
     try {
@@ -271,15 +274,57 @@ const buscarElUltimoProducto = async (req, res = response) => {
 };
 
 
-const productoPut = (req, res = response) => {
+const productoPut = async(req, res = response) => {
 
-    const id = req.params.id;
+    const {
+        id,
+        nombre,
+        descripcion,
+        gradosa,
+        tipo,
+        añejamiento,
+        proveedor,
+        parroquia,
+        categoria,
+        variedad,
+        sabor,
+        color,
+        materiaPrima,
+        imagen,
+        presentacion
+    } = req.body;
 
-    res.json({
-        msg: 'Mensaje: metodo put recibido - controlador',
-        id
-    });
-}
+    try{
+
+        const dbresponse = await pool.query('SELECT public.modificar_producto($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)', 
+        [
+            id,
+            nombre,
+            descripcion,
+            gradosa,
+            tipo,
+            añejamiento,
+            proveedor,
+            parroquia,
+            categoria,
+            variedad
+        ]);
+
+        await pool.query('SELECT public.actualizar_sabores($1, $2)', [id, sabor]);
+        await pool.query('SELECT public.actualizar_colores($1, $2)', [id, color]);
+        await pool.query('SELECT public.actualizar_materia($1, $2)', [id, materiaPrima]);
+        await pool.query('SELECT public.actualizar_imagen($1, $2)', [id, imagen]);
+        await pool.query('SELECT public.actualizar_presentacion($1, $2)', [id, presentacion]);
+
+
+        res.json(' solicitud recibida ');
+
+    } catch(error) {
+            
+            console.error(error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
 
 const productoDelete = async(req, res = response) => {
    
@@ -385,7 +430,7 @@ const mostrarCarrito = async(req = request, res = response) => {
     console.log(req.body)
     try {
         console.log(req.body)
-        const carrito = await pool.query('SELECT (public.carrito($1,$2)).*',[req.body.cod1,req.body.cod2]);
+        const carrito = await pool.query('SELECT (public.carrito($1,$2,$3)).*',[req.body.cod1,req.body.cod2,req.body.estatus]);
         console.log(carrito.rows)
         res.json(carrito.rows);   
         
@@ -398,6 +443,42 @@ const mostrarCarrito = async(req = request, res = response) => {
     }
 
 };
+const fechaFactura = async(req = request, res = response) => {
+    console.log(req.body)
+    try {
+        console.log(req.body)
+        const factura = await pool.query('SELECT public.fecha_factura_virtual($1)',[req.body.cod]);
+        console.log(factura.rows)
+        res.json(factura.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+const datosFactura = async(req = request, res = response) => {
+    console.log(req.body)
+    try {
+        console.log(req.body)
+        const factura = await pool.query('SELECT( public.datos_factura_venta_virtual($1,$2)).*',[req.body.cod1,req.body.cod2]);
+        console.log(factura.rows)
+        res.json(factura.rows);   
+        
+
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+};
+
+
 
 
 
@@ -426,5 +507,7 @@ export{
     detalleGetById,
     pagar,
     crearOrden,
-    mostrarCarrito
+    mostrarCarrito,
+    fechaFactura,
+    datosFactura,
 }
