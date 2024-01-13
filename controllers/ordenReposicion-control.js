@@ -14,6 +14,7 @@ const ordenesActivas = async (req = request, res = response) => {
 const datosOrdenCompra = async (req = request, res = response) => {
     try {
         const ordenes = await pool.query('SELECT (public.factura_ordenes_reposicion($1)).*',[req.body.id]);
+        console.log(ordenes)
         res.json(ordenes.rows);
         
     } catch (error) {
@@ -22,10 +23,13 @@ const datosOrdenCompra = async (req = request, res = response) => {
     }
 };
 const direccionProveedor = async (req = request, res = response) => {
-    console.log(req.body)
+    console.log(req.body.id)
+    console.log('-------')
     try {
-        const ordenes = await pool.query('SELECT public.direccion_proveedor($1)',[req.body.id]);
-        res.json(ordenes.rows);
+        const ordenes = await pool.query('SELECT public.direccion_proveedor($1)',['J123456789']);
+        console.log('en drirecion proveedor')
+        console.log(ordenes.rows[0])
+        res.json(ordenes.rows[0]);
         
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
