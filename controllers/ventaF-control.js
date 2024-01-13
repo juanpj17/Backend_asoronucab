@@ -49,40 +49,33 @@ const ventaFInsertar = async(req, res = response) => {
                 cod_empleado_1, 
                 cod_empleado_2,
                 cod_cliente_juridico,
-                cod_estatus,
-                cod_inventario_1,
-                cod_inventario_2,
-                cod_inventario_3 } = req.body;
+                cod_estatus
+                } = req.body;
                 if(cod_cliente_natural_1 == null){
                     const result = await pool.query(
-                        'SELECT agregar_venta_fisica($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+                        'SELECT agregar_venta_fisica($1, $2, $3, $4, $5, $6, $7)',
                         [   total,
                             vacio, 
                             cod_cliente_natural_1,
                             cod_empleado_1, 
                             cod_empleado_2,
                             cod_cliente_juridico,
-                            cod_estatus,
-                            cod_inventario_1,
-                            cod_inventario_2,
-                            cod_inventario_3    ]
+                            cod_estatus
+                               ]
                       );
                       
                     res.json(result.rows[0]);
                 }else{
                     const idCliente = await buscarIdClienteNPorCedula(cod_cliente_natural_1)
                     const result = await pool.query(
-                        'SELECT agregar_venta_fisica($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+                        'SELECT agregar_venta_fisica($1, $2, $3, $4, $5, $6, $7)',
                         [   total,
                             idCliente, 
                             cod_cliente_natural_1,
                             cod_empleado_1, 
                             cod_empleado_2,
                             cod_cliente_juridico,
-                            cod_estatus,
-                            cod_inventario_1,
-                            cod_inventario_2,
-                            cod_inventario_3    ]
+                            cod_estatus  ]
                     );
               
                     res.json(result.rows[0]);

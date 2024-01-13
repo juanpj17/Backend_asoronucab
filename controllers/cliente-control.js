@@ -145,7 +145,7 @@ const modificarPostJ = async (req, res = response) => {
             clave, parroquia_fisica,
             direccion_fisica, parroquia_fiscal,
             direccion_fiscal, paraNull, tipoFa, tipoFl} = req.body;
-        console.log('este es el query1')
+        console.log('este es el query')
         console.log(req.body)
     
     
@@ -155,7 +155,8 @@ const modificarPostJ = async (req, res = response) => {
             [denominacion_comercial, razon_social, pagina_web, capital_disponible, rif, clave, parroquia_fisica, direccion_fisica, parroquia_fiscal, direccion_fiscal, paraNull, tipoFa, tipoFl]
           );
           
-        console.log('aqui')
+
+
         res.json(result.rows[0]);
     } catch (error) {
         console.error('Error al ejecutar la consulta:', error);
@@ -431,6 +432,7 @@ const consultarClienteJ = async(req, res = response) => {
         console.error('Error al ejecutar la consulta:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
+
 };
 const insertarCorreoJ = async(req, res = response) => {
  
@@ -484,6 +486,7 @@ const datosFactura = async(req, res = response) => {
 
 
 
+
 export{
     clienteGet,
     clientePost,
@@ -513,4 +516,5 @@ export{
     insertarCorreoJ,
     seleccionarCorreoJ,
     datosFactura
+
 }

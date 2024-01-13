@@ -727,6 +727,13 @@ VALUES
     ('2023-06-12', 120.00, NULL, 3),
     ('2023-07-08', 180.50, 1, NULL);
 
+    
+INSERT INTO "Compra" ( "com_fecha", "com_total", "fk_fisica", "fk_virtual")
+VALUES 
+    ('2023-01-01', 100.00, 1, NULL),
+    ('2023-02-15', 150.50, 1, NULL),
+    ('2023-07-08', 180.50, 1, NULL);
+
 INSERT INTO "Departamento" ("dep_nombre", "dep_descripcion", "fk_fisica", "fk_virtual")
 VALUES
   ('Finanzas', 'Departamento de Finanzas', 1, 1),
@@ -921,16 +928,7 @@ VALUES
 	
 
 
-INSERT INTO "Usuario"("usu_id", "usu_contraseña", "fk_rol",
-					 "fk_cliente_juridico", "fk_proveedor",
-					 "fk_cliente_natural_1", "fk_cliente_natural_2",
-					 "fk_empleado_1", "fk_empleado_2")
-VALUES
-(1,'123456', 1, NULL, NULL, NULL, NULL, 1, '1234567'),
-(2,'123456', 2, NULL, NULL, NULL, NULL, 2, '7654321'),
-(3,'123456', 3, NULL, NULL, NULL, NULL, 3, '9876543'),
-(4,'123456', 4, NULL, NULL, NULL, NULL, 4, '1111111'),
-(5,'123456', 5, NULL, NULL, NULL, NULL, 5, '2222222');
+
 
 
 INSERT INTO "Permiso" ("per_id", "per_accion", "per_tabla")
@@ -1021,6 +1019,11 @@ VALUES
                      "fk_cliente_natural_1", "fk_cliente_natural_2",
                      "fk_empleado_1", "fk_empleado_2")
 VALUES
+('123456', 1, NULL, NULL, NULL, NULL, 1, '1234567'),
+('123456', 2, NULL, NULL, NULL, NULL, 2, '7654321'),
+('123456', 3, NULL, NULL, NULL, NULL, 3, '9876543'),
+('123456', 4, NULL, NULL, NULL, NULL, 4, '1111111'),
+('123456', 5, NULL, NULL, NULL, NULL, 5, '2222222'),
 ('123456', 1, NULL, NULL, NULL, NULL, 6, '9999999'),
 ('123456', 2, NULL, NULL, NULL, NULL, 7, '4444444'),
 ('123456', 3, NULL, NULL, NULL, NULL, 8, '5555555'),
@@ -1036,6 +1039,7 @@ VALUES
 ('123456', 3, NULL, NULL, NULL, NULL, 18, '1616161'),
 ('123456', 4, NULL, NULL, NULL, NULL, 19, '1717171'),
 ('123456', 5, NULL, NULL, NULL, NULL, 20, '1818181');
+
 
 ------------------------T0DO-VENTA---------------------------
 INSERT INTO "Venta_Fisica"(ven_fis_fecha, ven_fis_total, fk_fisica, fk_cliente_natural_1, fk_cliente_natural_2, fk_cliente_juridico, fk_empleado_1, fk_empleado_2 ) 
@@ -1305,13 +1309,14 @@ VALUES
     ('Bs.S',100);
 
 
-INSERT INTO "Venta_Virtual"(detallev_cantidad,detallev_precio_venta, fk_virtual, fk_cliente_natural_1, fk_cliente_juridico, fk_cliente_natural_2, fk_invp_1, fk_invp_2, fk_invp_3 ) 
+INSERT INTO "Venta_Virtual"(detallev_fecha_venta,detallev_total_venta, fk_virtual, fk_cliente_natural_1, fk_cliente_juridico, fk_cliente_natural_2) 
 VALUES 
-(25,70,1, 1, NULL,'9876143', 1, 1, 2),
-(25,70,1, 1, NULL,'9876143', 2, 1, 3),
-(25,70,1, 1, NULL,'9876143', 3, 1, 4),
-(25,70,1, 1, NULL,'9876143', 4, 1, 5),
-(25,70,1, 1, NULL,'9876143', 5, 1, 5);
+('08/01/2024',70,1, 1, NULL,'9876143'),
+('08/01/2024',70,1, 1, NULL,'9876143'),
+('08/01/2024',70,1, 1, NULL,'9876143'),
+('08/01/2024',70,1, 1, NULL,'9876143'),
+('08/01/2024',70,1, 1, NULL,'9876143'),
+('08/01/2024',70,1, NULL, 'J123456789',NULL);
 
 INSERT INTO "Venta_Virtual_Estatus"(ven_vir_est_fecha_ini, ven_vir_est_fecha_fin, fk_venta_virtual, fk_estatus ) 
 VALUES 
@@ -1319,7 +1324,8 @@ VALUES
 ('2024-01-03', '2024-01-03', 2, 3 ),
 ('2024-01-03', '2024-01-03', 3, 3 ),
 ('2024-01-03', '2024-01-03', 4, 3 ),
-('2024-01-03', '2024-01-03', 5, 3 );
+('2024-01-03', '2024-01-03', 5, 3 ),
+('2024-01-03', '2024-01-03', 6, 3 );
 
 INSERT INTO "Detalle_Venta_Fisica_Entrada_Entrada" ( "det_ven_fis_ent_ent_cantidad_ent", "det_ven_fis_ent_ent_precio_unitario", "fk_venta_fisica_entrada", "fk_entrada")
 VALUES 
@@ -1448,6 +1454,12 @@ VALUES
   (5, 2),
   ( 1, 1);
   
+Insert into "Efectivo"(met_pag_cantidad, ef_moneda) Values (9876, 'Bs.S');
+Insert into "Efectivo"(met_pag_cantidad, ef_moneda) Values (561, 'Bs.S');
+Insert into "Efectivo"(met_pag_cantidad, ef_moneda) Values (850, 'Bs.S');
+Insert into "Efectivo"(met_pag_cantidad, ef_moneda) Values (261, 'Bs.S');
+
+
   INSERT INTO "Pago_Afiliacion_Cuota" ("pa_af_cuo_id","pa_af_cuo_total", "pa_af_cuo_fecha", "pa_af_cuo_mes_can", "fk_afiliado")
 VALUES
 (1,100.00, '2023-12-01', 'Diciembre', 1),
@@ -1468,8 +1480,6 @@ VALUES
 (130.00, 6, NULL, 16, NULL, NULL),
 (80.00, 7, NULL, NULL, 5, NULL);
   
-
-
 
 
 Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
@@ -1557,25 +1567,57 @@ Insert into "Pago_Metodo_Pago" (monto_parcial, fk_venta_fisica, fk_venta_virtual
 VALUES 
 
 
-(261.00, 63, NULL, NULL, 23, NULL, NULL),
-(261.00, 64, NULL, NULL, 23, NULL, NULL),
-(261.00, 65, NULL, NULL, 23, NULL, NULL),
-(261.00, 66, NULL, NULL, 23, NULL, NULL),
-(261.00, 67, NULL, NULL, 23, NULL, NULL),
-(261.00, 68, NULL, NULL, 23, NULL, NULL),
-(261.00, 69, NULL, NULL, 23, NULL, NULL),
-(261.00, 70, NULL, NULL, 23, NULL, NULL),
-(261.00, 71, NULL, NULL, 23, NULL, NULL),
-(261.00, 72, NULL, NULL, 23, NULL, NULL),
-(261.00, 73, NULL, NULL, 23, NULL, NULL),
-(261.00, 74, NULL, NULL, 23, NULL, NULL),
-(261.00, 75, NULL, NULL, 23, NULL, NULL),
-(261.00, 76, NULL, NULL, 23, NULL, NULL),
-(261.00, 77, NULL, NULL, 23, NULL, NULL),
-(261.00, 78, NULL, NULL, 23, NULL, NULL),
-(261.00, 79, NULL, NULL, 23, NULL, NULL),
-(261.00, 80, NULL, NULL, 23, NULL, NULL),
-(261.00, 81, NULL, NULL, 23, NULL, NULL),
-(261.00, 82, NULL, NULL, 23, NULL, NULL),
-(261.00, 83, NULL, NULL, 23, NULL, NULL),
-(261.00, 84, NULL, NULL, 23, NULL, NULL);
+(261.00, 63, NULL, NULL, 22, NULL, NULL),
+(261.00, 64, NULL, NULL, 22, NULL, NULL),
+(261.00, 65, NULL, NULL, 22, NULL, NULL),
+(261.00, 66, NULL, NULL, 22, NULL, NULL),
+(261.00, 67, NULL, NULL, 22, NULL, NULL),
+(261.00, 68, NULL, NULL, 22, NULL, NULL),
+(261.00, 69, NULL, NULL, 22, NULL, NULL),
+(261.00, 70, NULL, NULL, 22, NULL, NULL),
+(261.00, 71, NULL, NULL, 22, NULL, NULL),
+(261.00, 72, NULL, NULL, 22, NULL, NULL),
+(261.00, 73, NULL, NULL, 22, NULL, NULL),
+(261.00, 74, NULL, NULL, 22, NULL, NULL),
+(261.00, 75, NULL, NULL, 22, NULL, NULL),
+(261.00, 76, NULL, NULL, 22, NULL, NULL),
+(261.00, 77, NULL, NULL, 22, NULL, NULL),
+(261.00, 78, NULL, NULL, 22, NULL, NULL),
+(261.00, 79, NULL, NULL, 22, NULL, NULL),
+(261.00, 80, NULL, NULL, 22, NULL, NULL),
+(261.00, 81, NULL, NULL, 22, NULL, NULL),
+(261.00, 82, NULL, NULL, 22, NULL, NULL),
+(261.00, 83, NULL, NULL, 22, NULL, NULL),
+(261.00, 84, NULL, NULL, 22, NULL, NULL);
+
+Insert into "Pago_Entrada_Metodo_Pago" ("pag_ent_met_pag_Monto_parcial", fk_entrada, fk_venta_fisica_entrada, fk_venta_virtual_entrada, fk_tarjeta, fk_efectivo, fk_cheque, fk_mi_punto)
+VALUES 
+
+(850.00, 1, 1, NULL, NULL, 21, NULL, NULL),
+(850.00, 1, 2, NULL, NULL, 21, NULL, NULL),
+(850.00, 1, 3, NULL, NULL, 21, NULL, NULL),
+(850.00, 1, 4, NULL, NULL, 21, NULL, NULL),
+(850.00, 1, 5, NULL, NULL, 21, NULL, NULL);
+
+INSERT INTO "Compra_Estatus" ( "com_est_fecha_ini", "com_estfecha_fin", "fk_compra", "fk_estatus")
+VALUES 
+  	('2023-01-01','2023-01-02', 1,3),
+    ('2023-02-15','2023-02-16', 2,9),
+    ('2023-03-20','2023-03-21', 3,7),
+    ('2023-04-10','2023-04-11', 4,9),
+    ('2023-05-05','2023-05-06', 5,7),
+    ('2023-06-12','2023-06-13', 6,3),
+    ('2023-07-08','2023-07-09', 7,9),
+    ('2023-01-01','2023-01-02', 8,7),
+    ('2023-02-15','2023-02-16', 9,7),
+    ('2023-07-08','2023-07-09', 10,3 );
+
+    INSERT INTO "Detalle_Venta_Fisica_Presentacion_Evento" ( "det_ven_fis_pre_eve_cantidad", "det_ven_fis_pre_eve_precio_venta", "fk_venta_fisica", "fk_presentacion_evento", "fk_presentacion_evento_1", fk_presentacion_evento_2)
+VALUES 
+	(10, 450.06, 45, 1,1,1),
+    (10, 450.06, 46, 2,2,2),
+	(10, 450.06, 47, 3,3,3),
+    (10, 450.06, 48, 4,4,4),
+	(10, 450.06, 49, 5,5,5),
+    (10, 450.06, 50, 6,6,6);
+	

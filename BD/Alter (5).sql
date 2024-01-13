@@ -694,10 +694,8 @@ ALTER TABLE "Venta_Virtual"
 ADD COLUMN "fk_virtual" INT NOT NULL,
 ADD COLUMN "fk_cliente_natural_1" INT NOT NULL,
 ADD COLUMN "fk_cliente_juridico" VARCHAR(16) NOT NULL,
-ADD COLUMN "fk_cliente_natural_2" VARCHAR(16) NOT NULL,
-ADD COLUMN "fk_invp_1" INT NOT NULL,
-ADD COLUMN "fk_invp_2" INT NOT NULL,
-ADD COLUMN "fk_invp_3" INT NOT NULL;
+ADD COLUMN "fk_cliente_natural_2" VARCHAR(16) NOT NULL;
+
 
 -- Foraneas
 ALTER TABLE "Venta_Virtual"
@@ -709,10 +707,18 @@ FOREIGN KEY ("fk_cliente_natural_1","fk_cliente_natural_2") REFERENCES "Cliente_
 ON DELETE CASCADE,
 ADD CONSTRAINT "fk_cliente_juridico"
 FOREIGN KEY ("fk_cliente_juridico") REFERENCES "Cliente_Juridico"("per_jur_rif")
-ON DELETE CASCADE,
-ADD CONSTRAINT "fk_invp"
-FOREIGN KEY ("fk_invp_1", "fk_invp_2","fk_invp_3") REFERENCES "Inventario_Virtual_Presentacion"("inv_vir_pre_id", "fk_virtual", "fk_presentacion")
 ON DELETE CASCADE;
+
+--Arco_venta_virtual_entrada
+ALTER TABLE "Venta_Virtual"
+ADD CHECK(
+    CASE WHEN (fk_cliente_natural_1 IS NOT NULL AND fk_cliente_natural_2 IS NOT NULL) 
+    AND fk_cliente_juridico IS NULL THEN 1
+    WHEN (fk_cliente_natural_1 IS NULL AND fk_cliente_natural_2 IS NULL) 
+    AND fk_cliente_juridico IS NOT NULL THEN 1
+    ELSE 0 END = 1
+);
+
 
 
 alter  table "Afiliado"
@@ -746,3 +752,12 @@ ALTER TABLE "Venta_Virtual_Entrada"
 ALTER COLUMN "fk_cliente_natural_1" DROP NOT NULL,
 ALTER COLUMN "fk_cliente_juridico" DROP NOT NULL,
 ALTER COLUMN "fk_cliente_natural_2" DROP NOT NULL;
+
+ALTER TABLE "Venta_Fisica"
+ALTER COLUMN "fk_cliente_natural_1" DROP NOT NULL,
+ALTER COLUMN "fk_cliente_natural_2" DROP NOT NULL;
+
+ALTER TABLE "Telefono"
+DROP COLUMN "tel_tipo";
+
+ALTER SEQUENCE "Cliente_Natural_per_nat_id_seq"  RESTART WITH 80;

@@ -26,7 +26,7 @@ const eventoGet = async(req = request, res = response) => {
 const eventoPost = async (req = request, res = response) => {
     try {
         const { nombre, descripcion, num_entradas, fecha_hora_inicial, fecha_hora_final, direccion, parroquia } = req.body;
-
+      console.log('aca,', req.body)
         const result = await pool.query(
             'SELECT insertar_evento($1, $2, $3, $4, $5, $6, $7)',
             [nombre, descripcion, num_entradas, fecha_hora_inicial, fecha_hora_final, direccion, parroquia]
@@ -225,6 +225,20 @@ const insertarNotaCata = async (req=request, res = response) => {
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
+
+  const presentacionesxProveedor = async (req=request, res = response) => {
+ 
+    try {
+      console.log(req.body)
+      const usuario = await pool.query('SELECT * from obtener_presentaciones_por_proveedor($1)', [req.body.proveedor]);
+      res.json(usuario.rows);
+    } catch (error) {
+      console.error('Error al buscar el usuario:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  };
+
+
   const insertarPremio = async (req=request, res = response) => {
  
     try {
@@ -255,5 +269,6 @@ export{
     insertarNotaCata,
     obtenerPremios,
     obtenerPresentaciones,
-    insertarPremio
+    insertarPremio,
+    presentacionesxProveedor
 }
