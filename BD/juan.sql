@@ -1,3 +1,61 @@
+CREATE OR REPLACE FUNCTION detalles_inventario_fisico(dato TEXT)
+RETURNS TABLE
+(
+
+	codigo INT,
+	nombre VARCHAR(255),
+	fecha VARCHAR(255),
+	cantidad NUMERIC(10,0)
+)
+AS $$
+	DECLARE
+	mes INT;
+	
+BEGIN
+
+	mes := validar_mes(dato);
+	RAISE NOTICE 'Mes = %', mes;
+	RETURN QUERY
+		SELECT "pre_id", "pre_nombre", "ven_fis_est_fecha_fin", "det_ven_fis_pre_cantidad"
+		FROM "Venta_Fisica" AS venta
+		JOIN "Detalle_Venta_Fisica_Presentacion" AS detalle ON detalle."fk_venta_fisica" = venta."ven_fis_id"
+		JOIN "Presentacion" AS pre ON pre."pre_id" = detalle."fk_presentacion"
+		JOIN "Venta_Fisica_Estatus" AS estatus ON estatus."fk_venta_fisica" = venta."ven_fis_id"
+		WHERE estatus."fk_estatus" = 7
+			AND EXTRACT(MONTH FROM CAST(estatus."ven_fis_est_fecha_fin" AS timestamp)) = mes;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION detalles_inventario_fisico_evento(dato TEXT)
+RETURNS TABLE
+(
+
+	codigo INT,
+	nombre VARCHAR(255),
+	fecha VARCHAR(255),
+	cantidad NUMERIC(10,0)
+)
+AS $$
+	DECLARE
+	mes INT;
+	
+BEGIN
+
+	mes := validar_mes(dato);
+	RAISE NOTICE 'Mes = %', mes;
+	RETURN QUERY
+		SELECT "pre_id", "pre_nombre", "ven_fis_est_fecha_fin", "det_ven_fis_pre_eve_cantidad"
+		FROM "Venta_Fisica" AS venta
+		JOIN "Detalle_Venta_Fisica_Presentacion_Evento" AS detalle ON detalle."fk_venta_fisica" = venta."ven_fis_id"
+		JOIN "Presentacion" AS pre ON pre."pre_id" = detalle."fk_presentacion_evento_1"
+		JOIN "Venta_Fisica_Estatus" AS estatus ON estatus."fk_venta_fisica" = venta."ven_fis_id"
+		WHERE estatus."fk_estatus" = 7
+			AND EXTRACT(MONTH FROM CAST(estatus."ven_fis_est_fecha_fin" AS timestamp)) = mes;
+	
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION detalles_inventario_virtual_venta(dato TEXT)
 RETURNS TABLE
 (
