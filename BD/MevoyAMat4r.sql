@@ -5515,7 +5515,7 @@ BEGIN
             CALL crear_orden_reposicion(1, presentaciones[i]);
         END IF;
 
-        CALL actualizar_inventario_virtual(presentaciones[i], retirado);
+        CALL actualizar_inventario_virtual(presentaciones[i], retirado, 0);
     END LOOP;
 
     RETURN NEW;
@@ -5579,20 +5579,7 @@ AFTER INSERT ON "Pago_Metodo_Pago"
 FOR EACH ROW
 EXECUTE FUNCTION "actualizacion_estatus_venta"();
 
-CREATE OR REPLACE PROCEDURE "actualizar_inventario_virtual"( codigo INT, retirado NUMERIC )
-AS $$
-	DECLARE
-	total NUMERIC(10,0);
 
-BEGIN
-
-	total := buscar_cantidad(codigo) - retirado;
-	UPDATE "Inventario_Virtual_Presentacion"
-	SET "inv_vir_pre_cantidad" = total
-	WHERE "fk_presentacion" = codigo;
-
-END;
-$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION "buscar_cantidad"( codigo INT )
 RETURNS NUMERIC
@@ -5732,6 +5719,7 @@ CREATE OR REPLACE FUNCTION public.actualizar_ordenes_compra(
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
 declare aux int;
+        codigo int;
 begin 
 SELECT com_est_id into aux
 	FROM public."Compra_Estatus"
@@ -5745,5 +5733,12 @@ SELECT com_est_id into aux
 	VALUES (cast(substring(cast(current_timestamp at time zone 'VET' as varchar) from 1 for 10) as timestamp), null,cast(codigo_orden as int ) ,7);
 	end if;
 
+    SELECT "pre_id" INTO codigo
+    FROM "Compra_Presentacion"
+    WHERE "fk_compra" = codigo_orden;
+
+    CALL actualizar_inventario_virtual(codigo, 0, 1000);
+
 end;
 $BODY$;
+
