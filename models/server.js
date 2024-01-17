@@ -20,6 +20,7 @@ import {routerAfiliado} from '../routes/afiliado.js';
 import {routerTasa} from '../routes/tasa.js';
 import {routerOrdenReposicion} from '../routes/orderReposicion.js';
 import {routerGrafico} from '../routes/grafico.js';
+import { routerInventario } from '../routes/inventario.js';
 
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -57,7 +58,8 @@ class Server {
             tiendafisicaPath: '/api/tiendafisica',
             usuarioPath:'/api/usuario',
             ventaFPath:'/api/ventaF',
-            graficoPath: '/api/grafico'
+            graficoPath: '/api/grafico',
+            inventarioPath: '/api/inventario'
         };
         this.pool = pool;
 
@@ -102,6 +104,7 @@ class Server {
         this.app.use(this.path.usuarioPath,routerUsuario);
         this.app.use(this.path.ventaFPath, routerVentaFisica);
         this.app.use(this.path.ordenReposicion,routerOrdenReposicion);
+        this.app.use(this.path.inventarioPath, routerInventario);
         
     }
 }
