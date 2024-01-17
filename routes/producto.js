@@ -22,8 +22,11 @@ import { productoGet,
         mostrarCarrito,
         fechaFactura,
         productopostById,
-        productoById
+        productoById,
+        ficha,
+        ficha_calculo
     } from '../controllers/producto-control.js';
+import { calculateBsToDollar } from 'venecodollar';
 
 export const routerProducto = Router();
 
@@ -58,3 +61,5 @@ routerProducto.post('/fecha', fechaFactura )
 routerProducto.post('/modificar', productoPut)
 routerProducto.post('/presentacionId', presentacionByProveedor)
 routerProducto.post('/id',productoById )
+routerProducto.post('/ficha',ficha )
+routerProducto.post('/fichaCalculo',ficha_calculo )

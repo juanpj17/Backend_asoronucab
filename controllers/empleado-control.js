@@ -252,7 +252,37 @@ const consultarCorreoEmpleado = async(req, res = response) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 
-}
+};
+const insertarAsistencia = async(req, res = response) => {
+ console.log(req.body)
+    try {
+        const { fecha,hor_ent,hora_sal,cedula } = req.body;
+        const result = await pool.query(
+           'SELECT public.insertar_horario($1,$2,$3,$4)',
+            [fecha,req.body.hora_ent,hora_sal,cedula]
+          );
+          
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+const mostrarAsistencias = async(req, res = response) => {
+    console.log(req.body)
+       try {
+           const { fecha_i,fecha_f} = req.body;
+           const result = await pool.query(
+              'SELECT (public.cumplimiento_horario($1,$2)).*',
+               [fecha_i,fecha_f]
+             );
+             
+           res.json(result.rows);
+       } catch (error) {
+           console.error('Error al ejecutar la consulta:', error);
+           res.status(500).json({ error: 'Error interno del servidor' });
+       }
+   }
 
 
 const empleadoPut = () => {
@@ -273,6 +303,8 @@ export{
     telefonoEmpleado,
     consultarTelefonoEmpleado,
     consultarCorreoEmpleado,
-    modificarCorreo
+    modificarCorreo,
+    insertarAsistencia,
+    mostrarAsistencias
   
 }
