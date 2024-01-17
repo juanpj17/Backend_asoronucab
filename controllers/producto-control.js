@@ -517,6 +517,43 @@ const productoById = async(req = request, res = response) => {
     }
 
 }
+const ficha = async(req = request, res = response) => {
+
+    const { producto,presentacion } = req.body;
+
+    try {
+
+        const productos = await pool.query('SELECT (public.ficha($1,$2)).*', [producto,presentacion]);
+
+        res.json(productos.rows);
+        
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+}
+const ficha_calculo = async(req = request, res = response) => {
+
+    const {codigo_a } = req.body;
+
+    try {
+
+        const productos = await pool.query('SELECT public."calcular_añejamiento"($1)', [codigo_a]);
+
+        res.json(productos.rows);
+        
+    } catch (error) {
+
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+            
+    }
+
+}
+
 
 
 
@@ -551,5 +588,7 @@ export{
     fechaFactura,
     datosFactura,
     productopostById,
-    productoById
+    productoById,
+    ficha,
+    ficha_calculo
 }

@@ -10,7 +10,17 @@ const puntoGet = async (req = request, res = response) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+const ventaPunto = async (req = request, res = response) => {
+    try {
+        const punto = await pool.query('SELECT (public.venta_punto()).*');
+        res.json(punto.rows);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
 
 export{
-    puntoGet
+    puntoGet,
+    ventaPunto
 }
