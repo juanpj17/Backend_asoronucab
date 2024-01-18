@@ -5741,4 +5741,699 @@ SELECT com_est_id into aux
 
 end;
 $BODY$;
+--Nuevo de andi
+CREATE OR REPLACE FUNCTION obtenerVentasPorProducto(fecha_inicial timestamp, fecha_final timestamp) 
+RETURNS TABLE
+(
+    fk_presentacion int,
+    total_cantidad numeric
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        dvfp.fk_presentacion,
+        SUM(dvfp.det_ven_fis_pre_cantidad) AS total_cantidad
+    FROM
+        "Venta_Fisica" vf
+    JOIN
+        "Detalle_Venta_Fisica_Presentacion" dvfp ON vf.ven_fis_id = dvfp.fk_venta_fisica
+    WHERE
+        vf.ven_fis_fecha BETWEEN fecha_inicial AND fecha_final
+    GROUP BY
+        dvfp.fk_presentacion;
 
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION obtenerVentasPorCliente()
+RETURNS TABLE
+(
+    fk_lugar int,
+    cantidad_ventas bigINT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        cn.fk_lugar,
+        COUNT(*) AS cantidad_ventas
+    FROM
+        "Cliente_Natural" cn
+    JOIN
+        "Venta_Virtual" vv ON cn.per_nat_id = vv.fk_cliente_natural_1
+    GROUP BY
+        cn.fk_lugar
+    ORDER BY
+        cantidad_ventas DESC
+    LIMIT
+        10;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION obtenerVentasPorMes(fecha_inicial timestamp, fecha_final timestamp) 
+RETURNS TABLE
+(
+    presentacion int,
+    total_cantidad numeric
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        dvfp.fk_presentacion as presentacion,
+        SUM(dvfp.det_ven_fis_pre_cantidad) AS total_cantidad
+    FROM
+        "Venta_Fisica" vf
+    JOIN
+        "Detalle_Venta_Fisica_Presentacion" dvfp ON vf.ven_fis_id = dvfp.fk_venta_fisica
+    WHERE
+        vf.ven_fis_fecha BETWEEN fecha_inicial AND fecha_final
+    GROUP BY
+        dvfp.fk_presentacion;
+
+    -- Agregamos la lógica para Venta Virtual
+    RETURN QUERY
+    SELECT
+        dvvp.fk_presentacion as presentacion,
+        SUM(dvvp.det_ven_vir_pre_cantidad) AS total_cantidad
+    FROM
+        "Venta_Virtual" vv
+	JOIN
+        "Detalle_Venta_Virtual_Presentacion" dvvp ON vv.detallev_id = dvvp.fk_venta_virtual
+    WHERE
+        vv.detallev_fecha_venta BETWEEN fecha_inicial AND fecha_final
+    GROUP BY
+        dvvp.fk_presentacion;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtenerCantidadVentas(fecha_inicial varchar, fecha_final varchar)
+RETURNS INTEGER
+AS $$
+DECLARE
+    total_ventas INTEGER;
+BEGIN
+    SELECT
+        COUNT(*) + (
+            SELECT COUNT(*)
+            FROM "Venta_Fisica_Estatus"
+            WHERE fk_estatus = 3 AND ven_fis_est_fecha_ini BETWEEN fecha_inicial AND fecha_final
+        ) AS total
+    INTO
+        total_ventas
+    FROM "Venta_Virtual_Estatus"
+    WHERE fk_estatus = 3 AND ven_vir_est_fecha_ini BETWEEN fecha_inicial AND fecha_final;
+
+    RETURN total_ventas;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION obtenerTotalPuntos(fecha_inicial timestamp, fecha_final timestamp)
+RETURNS NUMERIC
+AS $$
+DECLARE
+    total_ventas NUMERIC;
+BEGIN
+    SELECT
+        COALESCE(SUM(pmep.monto_parcial), 0) + 
+        COALESCE((
+            SELECT SUM(pemp."pag_ent_met_pag_Monto_parcial")
+            FROM "Venta_Fisica_Entrada" vfe
+            JOIN "Pago_Entrada_Metodo_Pago" pemp ON vfe.ven_fis_ent_id = pemp.fk_venta_fisica_entrada
+            WHERE vfe.ven_fis_ent_fecha BETWEEN fecha_inicial AND fecha_final
+            AND pemp.fk_mi_punto IS NOT NULL
+        ), 0) INTO total_ventas
+    FROM
+        "Venta_Fisica" vf
+    JOIN
+        "Pago_Metodo_Pago" pmep ON vf.ven_fis_id = pmep.fk_venta_fisica
+    WHERE
+        vf.ven_fis_fecha BETWEEN fecha_inicial AND fecha_final
+        AND pmep.fk_mi_punto IS NOT NULL;
+    RETURN total_ventas;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION obtenerCantidadesPorEstatus(fecha_inicial varchar, fecha_final varchar)
+RETURNS TABLE
+(
+    est_nombre VARCHAR(255),
+    cantidad bigINT
+)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        est.est_nombre,
+        COUNT(*) AS cantidad
+    FROM
+        "Venta_Virtual_Estatus" vve
+    JOIN
+        "Estatus" est ON vve.fk_estatus = est.est_id
+    WHERE
+        vve.ven_vir_est_fecha_ini BETWEEN fecha_inicial AND fecha_final
+    GROUP BY
+        est.est_nombre;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION contarOrdenesConFechaFinalNull(fecha_inicial varchar, fecha_final varchar)
+RETURNS INTEGER
+AS $$
+DECLARE
+    cantidad_ordenes INTEGER;
+BEGIN
+    SELECT
+        COUNT(*)
+    INTO
+        cantidad_ordenes
+    FROM
+        "Venta_Virtual_Estatus"
+    WHERE
+        ven_vir_est_fecha_ini BETWEEN fecha_inicial AND fecha_final
+
+        AND ven_vir_est_fecha_fin IS NULL; 
+
+    RETURN cantidad_ordenes;
+END;
+$$ LANGUAGE plpgsql;
+---nuevo gaby
+CREATE OR REPLACE FUNCTION public.venta_punto(
+	)
+    RETURNS TABLE(venta_f integer, codigo integer, cantidad_cangeada numeric, tipo text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+
+return query 	
+   SELECT  fk_venta_fisica as venta , fk_mi_punto as punto, monto_parcial as monto, 'Venta_Fisica' as tipo
+	FROM public."Pago_Metodo_Pago"
+	group by fk_venta_fisica,fk_mi_punto, monto_parcial
+	having  fk_mi_punto is not null
+	union
+	SELECT  fk_venta_fisica_entrada as venta, "fk_mi_punto" as punto,"pag_ent_met_pag_Monto_parcial" as monto,'Venta_Entrada' as tipo
+	FROM public."Pago_Entrada_Metodo_Pago"
+	group by fk_venta_fisica_entrada,
+    "fk_mi_punto","pag_ent_met_pag_Monto_parcial"
+	 having "fk_mi_punto" is not null ;
+	
+end;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION public."calcular_añejamiento"(
+	"id_añe" integer)
+    RETURNS character varying[]
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare aux int;
+declare aux2 varchar;
+declare años_array varchar[];
+begin
+aux:=0;
+aux2:=0;
+	while aux is not null loop
+ 		select split_part(cast((SELECT distinct (añe_fecha_final - añe_fecha_ini)/365  AS dias_diferencia
+			FROM "Añejamiento" where  id_añe=añe_id) as varchar), 'days', 1) into aux2;
+			 RAISE NOTICE 'Valor de la variable aux1 es %', aux;
+			select into años_array array_append(años_array, aux2 );
+  select fk_añejamiento into aux from "Añejamiento" 
+  where  id_añe=añe_id;
+ 	id_añe=aux;
+ end loop;
+	return años_array;
+end;
+$BODY$;
+
+CREATE OR REPLACE FUNCTION public.cumplimiento_horario(
+	fecha_i date,
+	fecha_f date)
+    RETURNS TABLE(cedula character varying, dia character varying, hora_llegada time without time zone, hora_entrada timestamp without time zone, hora_retiro time without time zone, hora_salida timestamp without time zone, cumplimiento text, nombre text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+return query SELECT "Empleado_Horario".fk_empleado_2,
+    "Horario".hor_dia,
+    "Empleado_Horario".hora_ent,
+    "Horario".hor_hora_entrada,
+    "Empleado_Horario".hora_sal,
+    "Horario".hor_hora_salida,
+    'Horario Cumplido'::text AS "?column?",
+    ("Empleado".per_nat_p_nombre::text || ' '::text) || "Empleado".per_nat_p_apellido::text AS nombre_completo
+   FROM "Empleado_Horario",
+    "Horario",
+    "Empleado"
+  WHERE "Empleado_Horario".fecha >= fecha_i::date AND "Empleado_Horario".fecha <= fecha_f::date AND "Empleado_Horario".fk_horario = "Horario".hor_id AND "Empleado_Horario".hora_ent <= "Horario".hor_hora_entrada::time without time zone AND "Empleado_Horario".hora_sal >= "Horario".hor_hora_salida::time without time zone AND "Empleado".per_nat_ci::text = "Empleado_Horario".fk_empleado_2::text
+UNION
+ SELECT DISTINCT "Empleado_Horario".fk_empleado_2,
+    "Horario".hor_dia,
+    "Empleado_Horario".hora_ent,
+    "Horario".hor_hora_entrada,
+    "Empleado_Horario".hora_sal,
+    "Horario".hor_hora_salida,
+    'Horario Incumplido'::text,
+    ("Empleado".per_nat_p_nombre::text || ' '::text) || "Empleado".per_nat_p_apellido::text AS nombre_completo
+   FROM "Empleado_Horario",
+    "Horario",
+    "Empleado"
+  WHERE "Empleado_Horario".fecha >= fecha_i::date AND "Empleado_Horario".fecha <= fecha_f::date AND "Empleado_Horario".fk_horario = "Horario".hor_id AND NOT ("Empleado_Horario".emp_hor_id IN ( SELECT "Empleado_Horario_1".emp_hor_id
+           FROM "Empleado_Horario" "Empleado_Horario_1",
+            "Horario" "Horario_1"
+          WHERE "Empleado_Horario_1".fecha >= fecha_i::date AND "Empleado_Horario_1".fecha <= fecha_f::date AND "Empleado_Horario_1".fk_horario = "Horario_1".hor_id AND "Empleado_Horario_1".hora_ent <= "Horario_1".hor_hora_entrada::time without time zone AND "Empleado_Horario_1".hora_sal >= "Horario_1".hor_hora_salida::time without time zone)) AND "Empleado".per_nat_ci::text = "Empleado_Horario".fk_empleado_2::text;
+end;
+$BODY$;
+CREATE OR REPLACE FUNCTION public.ficha(
+	codigo_pro integer,
+	codigo_pres integer)
+    RETURNS TABLE(codigo integer, nombre character varying, grados_alcohol numeric, descripcion character varying, tipo character varying, categoria character varying, variedad character varying, "añejamiento" integer, lugar integer, proveedor character varying, materia_pri character varying[], codigo_presentacion integer, url character varying, nota character varying, elaboracion character varying, empaque_ind character varying, caja_grande_desc character varying, caja_grande_cap numeric, paleta_cap numeric, peso numeric, nombre_botella character varying, altura numeric, ancho numeric, capacidad numeric, tapa character varying, direccion_f text, barril character varying, destilacion character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+ return query SELECT pro_codigo, pro_nombre, pro_grados_alcohol, pro_descripcion, pro_tipo, cat_nombre, 
+var_nombre, "fk_añejamiento", fk_lugar, fk_proveedor, materia_prima, pre_id, ima_url, not_cat_descripcion,
+"añe_descripcion", caja_individual, caja_grande, cg_capacidad, paleta_capacidad, mat_bot_peso,
+bot_nombre, bot_altura, bot_ancho, bot_capacidad, tap_descripcion, direccion, bar_descripcion, 
+des_descripcion
+	FROM public.ficha
+	where pro_codigo=codigo_pro and pre_id=codigo_pres ;
+end;
+$BODY$;
+CREATE OR REPLACE FUNCTION public.insertar_horario(
+	fecha date,
+	hora_e time without time zone,
+	hora_sal time without time zone,
+	cedula character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare codigo int;
+declare aux int;
+declare codigo_horario int[];
+DECLARE i integer = 0;
+
+begin
+
+select fk_empleado into codigo from "Empleado_Horario" where  fk_empleado_2=cedula;
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula and fk_empleado=codigo and hor_id=fk_horario and hor_dia='Lunes';
+select into codigo_horario array_append(codigo_horario,aux);
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula  and hor_id=fk_horario and hor_dia='Martes';
+select into codigo_horario array_append(codigo_horario,aux);
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula  and hor_id=fk_horario and hor_dia='Miercoles';
+select into codigo_horario array_append(codigo_horario,aux);
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula and hor_id=fk_horario and hor_dia='Jueves';
+select into codigo_horario array_append(codigo_horario,aux);
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula and  hor_id=fk_horario and hor_dia='Viernes';
+select into codigo_horario array_append(codigo_horario,aux);
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula and  hor_id=fk_horario and hor_dia='Sabado';
+select into codigo_horario array_append(codigo_horario,aux);
+select fk_horario  into aux from "Empleado_Horario","Horario" where  fk_empleado_2=cedula and hor_id=fk_horario and hor_dia='Domingo';
+select into codigo_horario array_append(codigo_horario,aux);
+
+FOR i IN 1..7
+	LOOP
+		if date_part('dow',cast(fecha as date))=i and codigo_horario[i] is not null then
+	INSERT INTO public."Empleado_Horario"(
+	fk_empleado, fk_empleado_2, fk_horario, fecha, hora_ent, hora_sal)
+	VALUES (codigo, cedula, codigo_horario[i], fecha, hora_e, hora_sal);
+end if;
+	END LOOP;
+
+end;
+$BODY$;
+--nuevo juan
+CREATE OR REPLACE FUNCTION detalles_inventario_fisico(dato TEXT)
+RETURNS TABLE
+(
+
+	codigo INT,
+	nombre VARCHAR(255),
+	fecha VARCHAR(255),
+	cantidad NUMERIC(10,0)
+)
+AS $$
+	DECLARE
+	mes INT;
+	
+BEGIN
+
+	mes := validar_mes(dato);
+	RAISE NOTICE 'Mes = %', mes;
+	RETURN QUERY
+		SELECT "pre_id", "pre_nombre", "ven_fis_est_fecha_fin", "det_ven_fis_pre_cantidad"
+		FROM "Venta_Fisica" AS venta
+		JOIN "Detalle_Venta_Fisica_Presentacion" AS detalle ON detalle."fk_venta_fisica" = venta."ven_fis_id"
+		JOIN "Presentacion" AS pre ON pre."pre_id" = detalle."fk_presentacion"
+		JOIN "Venta_Fisica_Estatus" AS estatus ON estatus."fk_venta_fisica" = venta."ven_fis_id"
+		WHERE estatus."fk_estatus" = 7
+			AND EXTRACT(MONTH FROM CAST(estatus."ven_fis_est_fecha_fin" AS timestamp)) = mes;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION detalles_inventario_fisico_evento(dato TEXT)
+RETURNS TABLE
+(
+
+	codigo INT,
+	nombre VARCHAR(255),
+	fecha VARCHAR(255),
+	cantidad NUMERIC(10,0)
+)
+AS $$
+	DECLARE
+	mes INT;
+	
+BEGIN
+
+	mes := validar_mes(dato);
+	RAISE NOTICE 'Mes = %', mes;
+	RETURN QUERY
+		SELECT "pre_id", "pre_nombre", "ven_fis_est_fecha_fin", "det_ven_fis_pre_eve_cantidad"
+		FROM "Venta_Fisica" AS venta
+		JOIN "Detalle_Venta_Fisica_Presentacion_Evento" AS detalle ON detalle."fk_venta_fisica" = venta."ven_fis_id"
+		JOIN "Presentacion" AS pre ON pre."pre_id" = detalle."fk_presentacion_evento_1"
+		JOIN "Venta_Fisica_Estatus" AS estatus ON estatus."fk_venta_fisica" = venta."ven_fis_id"
+		WHERE estatus."fk_estatus" = 7
+			AND EXTRACT(MONTH FROM CAST(estatus."ven_fis_est_fecha_fin" AS timestamp)) = mes;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION detalles_inventario_virtual_venta(dato TEXT)
+RETURNS TABLE
+(
+
+	codigo INT,
+	nombre VARCHAR(255),
+	fecha VARCHAR(255),
+	cantidad NUMERIC(10,0)
+)
+AS $$
+	DECLARE
+	mes INT;
+	
+BEGIN
+
+	mes := validar_mes(dato);
+	RAISE NOTICE 'Mes = %', mes;
+	RETURN QUERY
+		SELECT "pre_id", "pre_nombre", "ven_vir_est_fecha_fin", "det_ven_vir_pre_cantidad"
+		FROM "Venta_Virtual" AS venta
+		JOIN "Detalle_Venta_Virtual_Presentacion" AS detalle ON detalle."fk_venta_virtual" = venta."detallev_id"
+		JOIN "Presentacion" AS pre ON pre."pre_id" = detalle."fk_presentacion"
+		JOIN "Venta_Virtual_Estatus" AS estatus ON estatus."fk_venta_virtual" = venta."detallev_id"
+		WHERE estatus."fk_estatus" = 7
+			AND EXTRACT(MONTH FROM CAST(estatus."ven_vir_est_fecha_fin" AS timestamp)) = mes;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION detalles_inventario_virtual_compra(dato TEXT)
+RETURNS TABLE
+(
+
+	codigo INT,
+	nombre VARCHAR(255),
+	fecha TIMESTAMP(255),
+	cantidad NUMERIC(10,0)
+)
+AS $$
+	DECLARE
+	mes INT;
+	
+BEGIN
+
+	mes := validar_mes(dato);
+	RAISE NOTICE 'Mes = %', mes;
+	RETURN QUERY
+		SELECT "pre_id", "pre_nombre", "com_estfecha_fin", "com_pre_cantidad"
+		FROM "Compra" AS compra
+		JOIN "Compra_Presentacion" AS detalle ON detalle."fk_compra" = compra."com_id"
+		JOIN "Presentacion" AS pre ON pre."pre_id" = detalle."fk_presentacion"
+		JOIN "Compra_Estatus" AS estatus ON estatus."fk_compra" = compra."com_id"
+		WHERE estatus."fk_estatus" = 7
+			AND EXTRACT(MONTH FROM CAST(estatus."com_estfecha_fin" AS timestamp)) = mes;
+	
+END;
+$$ LANGUAGE plpgsql;
+	
+CREATE OR REPLACE FUNCTION validar_mes(dato TEXT)
+RETURNS INTEGER AS $$
+DECLARE
+    mes INT;
+BEGIN
+    BEGIN
+        mes := CAST(dato AS INTEGER);
+    EXCEPTION
+        WHEN others THEN
+            BEGIN
+                mes := EXTRACT(MONTH FROM TO_DATE(dato || ' 2022', 'Month YYYY'));
+            EXCEPTION
+                WHEN others THEN                
+                    mes := CASE UPPER(dato)
+                            WHEN 'ENERO' THEN 1
+                            WHEN 'FEBRERO' THEN 2
+                            WHEN 'MARZO' THEN 3
+                            WHEN 'ABRIL' THEN 4
+                            WHEN 'MAYO' THEN 5
+                            WHEN 'JUNIO' THEN 6
+                            WHEN 'JULIO' THEN 7
+                            WHEN 'AGOSTO' THEN 8
+                            WHEN 'SEPTIEMBRE' THEN 9
+                            WHEN 'OCTUBRE' THEN 10
+                            WHEN 'NOVIEMBRE' THEN 11
+                            WHEN 'DICIEMBRE' THEN 12
+                            ELSE 1  
+                          END;
+            END;
+    END;
+    RAISE NOTICE 'Mes = %', mes;
+    RETURN mes;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE "actualizar_inventario_virtual"
+( 
+	codigo INT, 
+	retirado NUMERIC, 
+	reposicion NUMERIC 
+)
+AS $$
+	DECLARE
+	total NUMERIC(10,0);
+
+BEGIN
+	IF(reposicion = 0) THEN
+		total := buscar_cantidad(codigo) - retirado;
+		UPDATE "Inventario_Virtual_Presentacion"
+		SET "inv_vir_pre_cantidad" = total
+		WHERE "fk_presentacion" = codigo;
+	ELSE
+		UPDATE "Inventario_Virtual_Presentacion"
+		SET "inv_vir_pre_cantidad" = reposicion
+		WHERE "fk_presentacion" = codigo;
+	END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION InsertarOfertaFunc(numero INT)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Oferta" (ofe_valor, ofe_fecha_inicio, ofe_fecha_final) 
+    VALUES (numero, CURRENT_DATE, CURRENT_DATE + INTERVAL '10' DAY);
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_ultimo_id_oferta()
+RETURNS INT AS $$
+DECLARE
+    ultimo_id INT;
+BEGIN
+    SELECT MAX(ofe_id) INTO ultimo_id FROM "Oferta";
+    RETURN COALESCE(ultimo_id, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION buscar_oferta_producto(codigo INT)
+RETURNS INT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    id_presentacion INT;
+BEGIN
+    SELECT pre_id INTO id_presentacion
+    FROM "Presentacion"
+    WHERE fk_producto = codigo 
+    LIMIT 1;
+
+
+    RETURN id_presentacion;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION Insertar_pre_ofe(presentacion INT, oferta INT)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Presentacion_Oferta" (pre_ofe_valor, fk_presentacion, fk_oferta) 
+    VALUES (1, presentacion, oferta);
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE agregarOferta(
+    IN descuento INT,
+    IN producto INT
+)
+AS $$
+DECLARE
+    ultimo_id_oferta INT;
+    id_presentacion INT;
+BEGIN
+	PERFORM insertarofertafunc(descuento);
+  
+    SELECT obtener_ultimo_id_oferta() INTO ultimo_id_oferta;
+
+    id_presentacion := buscar_oferta_producto(producto);
+
+    PERFORM Insertar_pre_ofe(id_presentacion,ultimo_id_oferta);
+   
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION ObtenerOfertasVigentes()
+RETURNS TABLE(ofe_id INT , id_pro INTEGER)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT ofe.ofe_id
+    FROM "Presentacion_Oferta" po
+    JOIN "Oferta" ofe ON ofe.ofe_id = po.fk_oferta
+	JOIN "Presentacion" pre ON pre.pre_id = po.fk_presentacion
+    WHERE CURRENT_DATE BETWEEN ofe.ofe_fecha_inicio AND ofe.ofe_fecha_final;
+END;
+$$;
+
+CREATE OR REPLACE VIEW ofertas_vista AS
+SELECT 
+    pr.pro_codigo, 
+    pr.pro_nombre, 
+    pr.pro_grados_alcohol, 
+    pr.pro_descripcion, 
+    pr.pro_tipo, 
+    pr.fk_lugar, 
+    pr.fk_categoria, 
+    pr.fk_variedad,
+    i.ima_url,
+    b.bot_capacidad,
+    inv.inv_vir_precio,
+    subquery.ofe_valor 
+FROM "Producto" pr
+JOIN "Imagen" i ON i."fk_producto" = pr."pro_codigo"
+JOIN "Presentacion" pre ON pre."fk_producto" = pr."pro_codigo"
+JOIN "Botella" b ON b."bot_id" = pre."fk_material_botella_3"
+JOIN "Inventario_Virtual_Presentacion" inv ON inv."fk_presentacion" = pre."pre_id"
+JOIN (
+    SELECT presub.fk_producto, ofe.ofe_valor
+    FROM "Presentacion_Oferta" po
+    JOIN "Oferta" ofe ON ofe.ofe_id = po.fk_oferta
+    JOIN "Presentacion" presub ON presub.pre_id = po.fk_presentacion
+    WHERE CURRENT_DATE BETWEEN ofe.ofe_fecha_inicio AND ofe.ofe_fecha_final
+) subquery ON subquery.fk_producto = pr.pro_codigo;
+
+
+
+
+---------------------------VISTA FICHA---------------------------------------------
+
+CREATE OR REPLACE VIEW public.ficha
+ AS
+ SELECT pr.pro_codigo,
+    pr.pro_nombre,
+    pr.pro_grados_alcohol,
+    pr.pro_descripcion,
+    pr.pro_tipo,
+    c.cat_nombre,
+    v.var_nombre,
+    pr."fk_añejamiento",
+    pr.fk_lugar,
+    pr.fk_proveedor,
+    array_agg(DISTINCT mat.mat_nombre) AS materia_prima,
+    pre.pre_id,
+    i.ima_url,
+    nc.not_cat_descripcion,
+    a."añe_descripcion",
+    ci.caj_descripcion AS caja_individual,
+    cg.caj_descripcion AS caja_grande,
+    cg.caj_capacidad AS cg_capacidad,
+    paleta.caj_capacidad AS paleta_capacidad,
+    mb.mat_bot_peso,
+    b.bot_nombre,
+    b.bot_altura,
+    b.bot_ancho,
+    b.bot_capacidad,
+    t.tap_descripcion,
+    (((e.lug_nombre::text || '-'::text) || m.lug_nombre::text) || '-'::text) || p.lug_nombre::text AS direccion,
+    bar.bar_descripcion,
+    des.des_descripcion
+   FROM "Producto" pr
+     JOIN "Imagen" i ON i.fk_producto = pr.pro_codigo
+     JOIN "Categoria" c ON pr.fk_categoria = c.cat_id
+     JOIN "Variedad" v ON pr.fk_variedad = v.var_id
+     JOIN "Añejamiento" a ON a."añe_id" = pr."fk_añejamiento"
+     JOIN "Barril" bar ON bar.bar_id = a.fk_barril
+     JOIN "Presentacion" pre ON pre.fk_producto = pr.pro_codigo
+     JOIN "Caja" ci ON ci.caj_id = pre.fk_caja
+     JOIN "Caja" cg ON cg.caj_id = ci.fk_caja
+     JOIN "Caja" paleta ON paleta.caj_id = cg.fk_caja
+     JOIN "Material_Botella" mb ON pre.fk_material_botella_1 = mb.mat_bot_id AND pre.fk_material_botella_2 = mb.fk_material AND pre.fk_material_botella_3 = mb.fk_botella
+     LEFT JOIN "Nota_Cata" nc ON nc.fk_presentacion_evento_2 = pre.pre_id
+     JOIN "Botella" b ON b.bot_id = pre.fk_material_botella_3
+     JOIN "Tapa" t ON t.tap_id = pre.fk_material_tapa_3
+     LEFT JOIN "Producto_Sabor" ps ON ps.fk_producto = pr.pro_codigo
+     LEFT JOIN "Producto_Color" pc ON pc.fk_producto = pr.pro_codigo
+     LEFT JOIN "Producto_Materia" pm ON pm.fk_producto = pr.pro_codigo
+     JOIN "Materia" mat ON mat.mat_id = pm.fk_materia
+     JOIN "Lugar" p ON pr.fk_lugar = p.lug_id
+     JOIN "Lugar" m ON p.fk_lugar = m.lug_id
+     JOIN "Lugar" e ON m.fk_lugar = e.lug_id
+     JOIN "Destilacion" des ON des."des_Id" = a.fk_destilacion
+  GROUP BY pr.pro_codigo, pr.pro_nombre, pr.pro_grados_alcohol, 
+  pr.pro_descripcion, pr.pro_tipo, pr.fk_categoria, pr.fk_variedad, pr."fk_añejamiento",
+  pr.fk_lugar, pr.fk_proveedor, pre.pre_id, i.ima_url, a."añe_descripcion", ci.caj_descripcion,
+  cg.caj_descripcion, cg.caj_capacidad, paleta.caj_capacidad, mb.mat_bot_peso, b.bot_nombre, 
+  b.bot_altura, b.bot_ancho, b.bot_capacidad, t.tap_descripcion, c.cat_nombre, v.var_nombre, 
+  ((((e.lug_nombre::text || '-'::text) || m.lug_nombre::text) || '-'::text) || p.lug_nombre::text),
+  bar.bar_descripcion, des.des_descripcion, nc.not_cat_descripcion;

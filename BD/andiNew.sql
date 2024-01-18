@@ -185,3 +185,113 @@ BEGIN
     RETURN cantidad_ordenes;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-------------------------NUEVAS----------------------------
+CREATE OR REPLACE FUNCTION InsertarOfertaFunc(numero INT)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Oferta" (ofe_valor, ofe_fecha_inicio, ofe_fecha_final) 
+    VALUES (numero, CURRENT_DATE, CURRENT_DATE + INTERVAL '10' DAY);
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_ultimo_id_oferta()
+RETURNS INT AS $$
+DECLARE
+    ultimo_id INT;
+BEGIN
+    SELECT MAX(ofe_id) INTO ultimo_id FROM "Oferta";
+    RETURN COALESCE(ultimo_id, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION buscar_oferta_producto(codigo INT)
+RETURNS INT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    id_presentacion INT;
+BEGIN
+    SELECT pre_id INTO id_presentacion
+    FROM "Presentacion"
+    WHERE fk_producto = codigo 
+    LIMIT 1;
+
+
+    RETURN id_presentacion;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION Insertar_pre_ofe(presentacion INT, oferta INT)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Presentacion_Oferta" (pre_ofe_valor, fk_presentacion, fk_oferta) 
+    VALUES (1, presentacion, oferta);
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE agregarOferta(
+    IN descuento INT,
+    IN producto INT
+)
+AS $$
+DECLARE
+    ultimo_id_oferta INT;
+    id_presentacion INT;
+BEGIN
+	PERFORM insertarofertafunc(descuento);
+  
+    SELECT obtener_ultimo_id_oferta() INTO ultimo_id_oferta;
+
+    id_presentacion := buscar_oferta_producto(producto);
+
+    PERFORM Insertar_pre_ofe(id_presentacion,ultimo_id_oferta);
+   
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION ObtenerOfertasVigentes()
+RETURNS TABLE(ofe_id INT , id_pro INTEGER)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT ofe.ofe_id
+    FROM "Presentacion_Oferta" po
+    JOIN "Oferta" ofe ON ofe.ofe_id = po.fk_oferta
+	JOIN "Presentacion" pre ON pre.pre_id = po.fk_presentacion
+    WHERE CURRENT_DATE BETWEEN ofe.ofe_fecha_inicio AND ofe.ofe_fecha_final;
+END;
+$$;
+
+CREATE OR REPLACE VIEW ofertas_vista AS
+SELECT 
+    pr.pro_codigo, 
+    pr.pro_nombre, 
+    pr.pro_grados_alcohol, 
+    pr.pro_descripcion, 
+    pr.pro_tipo, 
+    pr.fk_lugar, 
+    pr.fk_categoria, 
+    pr.fk_variedad,
+    i.ima_url,
+    b.bot_capacidad,
+    inv.inv_vir_precio,
+    subquery.ofe_valor 
+FROM "Producto" pr
+JOIN "Imagen" i ON i."fk_producto" = pr."pro_codigo"
+JOIN "Presentacion" pre ON pre."fk_producto" = pr."pro_codigo"
+JOIN "Botella" b ON b."bot_id" = pre."fk_material_botella_3"
+JOIN "Inventario_Virtual_Presentacion" inv ON inv."fk_presentacion" = pre."pre_id"
+JOIN (
+    SELECT presub.fk_producto, ofe.ofe_valor
+    FROM "Presentacion_Oferta" po
+    JOIN "Oferta" ofe ON ofe.ofe_id = po.fk_oferta
+    JOIN "Presentacion" presub ON presub.pre_id = po.fk_presentacion
+    WHERE CURRENT_DATE BETWEEN ofe.ofe_fecha_inicio AND ofe.ofe_fecha_final
+) subquery ON subquery.fk_producto = pr.pro_codigo;

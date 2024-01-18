@@ -21,6 +21,7 @@ import {routerTasa} from '../routes/tasa.js';
 import {routerOrdenReposicion} from '../routes/orderReposicion.js';
 import {routerGrafico} from '../routes/grafico.js';
 import { routerInventario } from '../routes/inventario.js';
+import { routerDiario } from '../routes/diario.js'
 
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -59,7 +60,8 @@ class Server {
             usuarioPath:'/api/usuario',
             ventaFPath:'/api/ventaF',
             graficoPath: '/api/grafico',
-            inventarioPath: '/api/inventario'
+            inventarioPath: '/api/inventario',
+            diarioPath: '/api/diario'
         };
         this.pool = pool;
 
@@ -105,6 +107,7 @@ class Server {
         this.app.use(this.path.ventaFPath, routerVentaFisica);
         this.app.use(this.path.ordenReposicion,routerOrdenReposicion);
         this.app.use(this.path.inventarioPath, routerInventario);
+        this.app.use(this.path.diarioPath, routerDiario);
         
     }
 }
